@@ -1,5 +1,3 @@
-require
-
 # Example of a suspicous message found in auth.log
 # 15:59:42 ip-10-77-20-248 sshd[3242]: error: maximum authentication attempts exceeded for root from 186.128.152.44 port 34605 ssh2 [preauth]
 # ip-10-77-20-248 = Hostname
@@ -31,28 +29,51 @@ meta_data =
   :Time,
   :Host,
   :PID,
-  :Log_level,
-  :Invalid_user,
-  :Target,
+  :Message,
+  :User,
   :Source_IP,
-  :Source_port,
-  :SSH_protocol
+  :Source_port
 ]
 
 # This method reads from the given file path. If a file is not given, then read_log uses default file located in the data directory.
 # If line contains any of the log level keywords, then call parse_string with the single line and line number
 def read_log(filename = "./data/auth.log")
-  File.foreach(filename).with_index do |line, line_num| if line.include?('error') then parse_line(line, line_num)
+  File.foreach(filename).with_index do |line, line_num| if line.include?('error') then parse_error_line(line, line_num)
   end
 end
 end
 
 
-# 3903: Mar 31 10:36:28 ip-10-77-20-248 sshd[19551]: error: maximum authentication attempts exceeded for root from 122.191.89.89 port 37753 ssh2 [preauth]
-# 3932: Mar 31 11:06:50 ip-10-77-20-248 sshd[19710]: error: maximum authentication attempts exceeded for invalid user ajay from 42.184.142.151 port 47882 ssh2 [preauth]
-def parse_line(line, line_num)
-  puts line_num
-  puts line
+
+def parse_error_line(line, line_num)
+  
+  date = line.match(/^\D{4}\d{2}/)
+  time = line.match(/\d{2}\:\d{2}\:\d{2}/)
+  host = line.match(/\D{3}\d{2}\-\d{2}\-\d{2}-\d{3}/)
+  pid = line.match(/\[(\d+)\]/)
+  pid_num = pid[1] if pid
+  message = line.match(/(error)(.*?)(?=for)/)
+  user = line.match(/(\w+)(?=\s+from)/)
+  src_ip = line.match(/\d{2,3}\.\d{2,3}\.\d{2,3}\.\d{2,3}/)
+  puts src_ip
+  port = line.match(/port\s(\d{5})/)
+  src_port = port[1] if port
+
+  log_pattern = /(^\D{4}\d{2}) (\d{2}\:\d{2}\:\d{2}) (\D{3}\d{2}\-\d{2}\-\d{2}-\d{3}) (\[(\d+)\]) ((error)(.*?)(?=for)) ((\w+)(?=\s+from)) (\d{2}\.\d{3}\.\d{3}\.\d{3}) (port\s(\d{5}))/
+  
+  line_hash = 
+  {
+    Line_number: line_num, 
+    Date: date[0], 
+    Time: time[0], 
+    Host: host[0], 
+    PID: pid_num, 
+    Message: message[0], 
+    User: user[0], 
+    Source_IP: src_ip[0], 
+    Source_port: src_port 
+  }
+  
 end
 
-read_log()
+read_log("./data/auth-test.log")
