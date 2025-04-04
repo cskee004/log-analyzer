@@ -10,30 +10,30 @@ def read_log(filename = "./data/auth.log")
     host = line.match(/\D{3}\d{2}\-\d{2}\-\d{2}-\d{3}/)
     case line
     when /error/
-      puts parse_error(line, line_num, date[0], time[0], host[0])
+      puts parse_error(line, line_num, "Error flag" ,date[0], time[0], host[0])
     when /authentication failure/
-      puts parse_auth_failure(line, line_num, date[0], time[0], host[0])
+      puts parse_auth_failure(line, line_num,"Authentication failure" ,date[0], time[0], host[0])
     when /Disconnected/
-      puts parse_disconnect(line, line_num, date[0], time[0], host[0])
+      puts parse_disconnect(line, line_num, "Disconnect", date[0], time[0], host[0])
     when /session opened/
-      puts parse_session_open(line, line_num, date[0], time[0], host[0])
+      puts parse_session_open(line, line_num, "Session opened",date[0], time[0], host[0])
     when /session closed/
-      puts parse_session_close(line, line_num, date[0], time[0], host[0])
+      puts parse_session_close(line, line_num, "Session closed" ,date[0], time[0], host[0])
     when /(PWD)*(USER)*(COMMAND)/
-      puts parse_sudo_command(line, line_num, date[0], time[0], host[0])
+      puts parse_sudo_command(line, line_num, "Sudo command",date[0], time[0], host[0])
     when /Accepted/
-      puts parse_accept_event(line, line_num, date[0], time[0], host[0])
+      puts parse_accept_event(line, line_num, "Accept event",date[0], time[0], host[0])
     when /Invalid user/
-      puts parse_invalid_user(line, line_num, date[0], time[0], host[0])
+      puts parse_invalid_user(line, line_num, "Invalid user",date[0], time[0], host[0])
     when /Failed password/
-      puts parse_failed_password(line, line_num, date[0], time[0], host[0])
+      puts parse_failed_password(line, line_num, "Failed password",date[0], time[0], host[0])
     end
   end
 end
 
 
 
-def parse_error(line, line_num, date, time, host)
+def parse_error(line, line_num, type, date, time, host)
   pid = line.match(/\[(\d+)\]/)
   message = line.match(/(error)(.*?)(?=for)/)
   user = line.match(/(\w+)(?=\s+from)/)
@@ -47,6 +47,7 @@ def parse_error(line, line_num, date, time, host)
   error_hash = 
   {
     Line_number: line_num, 
+    Type: type,
     Date: date, 
     Time: time, 
     Host: host, 
@@ -59,7 +60,7 @@ def parse_error(line, line_num, date, time, host)
   
 end
 
-def parse_auth_failure(line, line_num, date, time, host)
+def parse_auth_failure(line, line_num, type, date, time, host)
   pid = line.match(/\[(\d+)\]/)
   message = line.match(/(Disconnecting)(.*?)(?<=failures)/)
   pid_num = pid[1] if pid
@@ -68,6 +69,7 @@ def parse_auth_failure(line, line_num, date, time, host)
   auth_hash = 
   {
     Line_number: line_num, 
+    Type: type,
     Date: date, 
     Time: time, 
     Host: host, 
@@ -76,7 +78,7 @@ def parse_auth_failure(line, line_num, date, time, host)
   }
 end
 
-def parse_disconnect(line, line_num, date, time, host)
+def parse_disconnect(line, line_num, type, date, time, host)
   pid = line.match(/\[(\d+)\]/)
   src_ip = line.match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/)
   port = line.match(/port\s(\d{5})/)
@@ -86,47 +88,47 @@ def parse_disconnect(line, line_num, date, time, host)
   disconnect_hash = 
   {
     Line_number: line_num, 
+    Type: type,
     Date: date, 
     Time: time, 
     Host: host, 
     PID: pid_num, 
-    Message: "Disconnected",  
     Source_IP: src_ip[0], 
     Source_port: src_port 
   }
 end
 
-def parse_session_open(line, line_num, date, time, host)
+def parse_session_open(line, line_num, type, date, time, host)
   user = line.match(/(?<=user\s)(\w+)/)
   u = user[0] if user
 
   session_open_hash =
   {
     Line_number: line_num, 
+    Type: type,
     Date: date, 
     Time: time, 
-    Host: host,  
-    Message: "Session opened", 
+    Host: host, 
     User: u
   }
 end
 
-def parse_session_close(line, line_num, date, time, host)
+def parse_session_close(line, line_num, type, date, time, host)
   user = line.match(/(?<=user\s)(\w+)/)
   u = user[0] if user
 
   session_open_hash =
   {
     Line_number: line_num, 
+    Type: type,
     Date: date, 
     Time: time, 
     Host: host,  
-    Message: "Session closed", 
     User: u
   }
 end
 
-def parse_sudo_command(line, line_num, date, time, host)
+def parse_sudo_command(line, line_num, type, date, time, host)
   pwd = line.match(/(?<=PWD=)(.*?)(?=\s+\;)/)
   user = line.match(/(?<=USER=)(.*?)(?=\s+\;)/)
   command = line.match(/(?<=COMMAND=)(.*)/)
@@ -134,6 +136,7 @@ def parse_sudo_command(line, line_num, date, time, host)
   sudo_command_hash = 
   {
     Line_number: line_num,
+    Type: type,
     Date: date,
     Time: time, 
     Host: host,
@@ -143,7 +146,7 @@ def parse_sudo_command(line, line_num, date, time, host)
   }
 end
 
-def parse_accept_event(line, line_num, date, time, host)
+def parse_accept_event(line, line_num, type, date, time, host)
   pid = line.match(/\[(\d+)\]/)
   message = line.match(/Accepted \w+/)
   user = line.match(/for\s+(\S+)\s+from/)
@@ -160,6 +163,7 @@ def parse_accept_event(line, line_num, date, time, host)
 
   {
     Line_number: line_num,
+    Type: type,
     Date: date,
     Time: time,
     Host: host,
@@ -173,7 +177,7 @@ def parse_accept_event(line, line_num, date, time, host)
 end
 
 
-def parse_invalid_user(line, line_num, date, time, host)
+def parse_invalid_user(line, line_num, type, date, time, host)
   pid = line.match(/\[(\d+)\]/)
   user = line.match(/(\w+)(?=\s+from)/)
   src_ip = line.match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/)
@@ -182,17 +186,17 @@ def parse_invalid_user(line, line_num, date, time, host)
   invalid_hash = 
   {
     Line_number: line_num, 
+    Type: type,
     Date: date, 
     Time: time, 
     Host: host, 
-    PID: pid_num, 
-    Message: "Invalid user", 
+    PID: pid_num,
     User: user[0], 
     Source_IP: src_ip[0],
   }
 end
 
-def parse_failed_password(line, line_num, date, time, host)
+def parse_failed_password(line, line_num, type, date, time, host)
   pid = line.match(/\[(\d+)\]/)
   user = line.match(/(\w+)(?=\s+from)/)
   src_ip = line.match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/)
@@ -204,10 +208,10 @@ def parse_failed_password(line, line_num, date, time, host)
   {
     Line_number: line_num, 
     Date: date, 
+    Type: type,
     Time: time, 
     Host: host, 
-    PID: pid_num, 
-    Message: "Failed password", 
+    PID: pid_num,
     User: user[0], 
     Source_IP: src_ip[0],
     Source_port: src_port

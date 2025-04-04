@@ -10,6 +10,7 @@ describe "Preprocess log" do
       expected = 
       {
         Line_number: 3903, 
+        Type: "Error flag",
         Date: "Mar 31", 
         Time: "10:36:28", 
         Host: "ip-10-77-20-248", 
@@ -30,6 +31,7 @@ describe "Preprocess log" do
       expected = 
       {
         Line_number: 87,
+        Type: "Authentication failure",
         Date: "Mar 27",
         Time: "14:01:39",
         Host: "ip-10-77-20-248",
@@ -46,12 +48,12 @@ describe "Preprocess log" do
       result = parse_disconnect(disconnect, 89, "Mar 27", "14:02:16", "ip-10-77-20-248")
       expected = 
       {
-        Line_number: 89, 
-        Date: "Mar 27", 
+        Line_number: 89,
+        Type: "Disconnect", 
+        Date: "Mar 27",
         Time: "14:02:16", 
         Host: "ip-10-77-20-248", 
-        PID: "2856", 
-        Message: "Disconnected",  
+        PID: "2856",  
         Source_IP: "85.245.107.41", 
         Source_port: "54866", 
       }
@@ -66,10 +68,10 @@ describe "Preprocess log" do
       expected = 
       {
         Line_number: 11, 
+        Type: "Session opened",
         Date: "Mar 27", 
         Time: "13:09:37", 
-        Host: "ip-10-77-20-248", 
-        Message: "Session opened",
+        Host: "ip-10-77-20-248",
         User: "root",  
       }
       expect(result).to eq(expected)
@@ -83,10 +85,10 @@ describe "Preprocess log" do
       expected = 
       {
         Line_number: 12, 
+        Type: "Session closed",
         Date: "Mar 27", 
         Time: "13:09:38", 
         Host: "ip-10-77-20-248", 
-        Message: "Session closed",
         User: "root",  
       }
       expect(result).to eq(expected)
@@ -100,6 +102,7 @@ describe "Preprocess log" do
       expected = 
       {
         Line_number: 37, 
+        Type: "Sudo command",
         Date: "Mar 27", 
         Time: "13:11:35", 
         Host: "ip-10-77-20-248", 
@@ -118,6 +121,7 @@ describe "Preprocess log" do
       expected = 
       {
         Line_number: 841, 
+        Type: "Accept event",
         Date: "Mar 28", 
         Time: "14:09:55", 
         Host: "ip-10-77-20-248", 
@@ -139,11 +143,11 @@ describe "Preprocess log" do
       expected = 
       {
         Line_number: 3741, 
+        Type: "Invalid user",
         Date: "Mar 31", 
         Time: "06:34:36", 
         Host: "ip-10-77-20-248", 
         PID: "18539", 
-        Message: "Invalid user",  
         User: "pruebas", 
         Source_IP: "60.187.118.40", 
       }
@@ -158,11 +162,11 @@ describe "Preprocess log" do
       expected = 
       {
         Line_number: 3745, 
+        Type: "Failed password",
         Date: "Mar 31", 
         Time: "06:34:38", 
         Host: "ip-10-77-20-248", 
-        PID: "18539", 
-        Message: "Failed password",  
+        PID: "18539",  
         User: "pruebas", 
         Source_IP: "60.187.118.40", 
         Source_port: "41838"
