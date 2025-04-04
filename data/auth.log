@@ -3557,13 +3557,13 @@ Mar 31 01:33:18 ip-10-77-20-248 sshd[17250]: Received disconnect from 85.245.107
 Mar 31 01:33:18 ip-10-77-20-248 sshd[17250]: Disconnected from 85.245.107.41 port 60980
 Mar 31 01:33:18 ip-10-77-20-248 sshd[17211]: pam_unix(sshd:session): session closed for user elastic_user_7
 Mar 31 01:33:18 ip-10-77-20-248 systemd-logind[1118]: Removed session 258.
-Mar 31 01:35:14 ip-10-77-20-248 sshd[17262]: Invalid user admin from 122.189.198.238
+Mar 31 01:35:14 ip-10-77-20-248 sshd[17262]:  user admin from 122.189.198.238
 Mar 31 01:35:14 ip-10-77-20-248 sshd[17262]: input_userauth_request: invalid user admin [preauth]
 Mar 31 01:35:14 ip-10-77-20-248 sshd[17262]: pam_unix(sshd:auth): check pass; user unknown
 Mar 31 01:35:14 ip-10-77-20-248 sshd[17262]: pam_unix(sshd:auth): authentication failure; logname= uid=0 euid=0 tty=ssh ruser= rhost=122.189.198.238
 Mar 31 01:35:16 ip-10-77-20-248 sshd[17262]: Failed password for invalid user admin from 122.189.198.238 port 43749 ssh2
 Mar 31 01:35:16 ip-10-77-20-248 sshd[17262]: pam_unix(sshd:auth): check pass; user unknown
-Mar 31 01:35:18 ip-10-77-20-248 sshd[17262]: Failed password for invalid user admin from 122.189.198.238 port 43749 ssh2
+Mar 31 01:35:18 ip-10-77-20-248 sshd[17262]: Failed password for invalid user admin from 122.189.198.238 port 4Invalid3749 ssh2
 Mar 31 01:35:18 ip-10-77-20-248 sshd[17262]: pam_unix(sshd:auth): check pass; user unknown
 Mar 31 01:35:21 ip-10-77-20-248 sshd[17262]: Failed password for invalid user admin from 122.189.198.238 port 43749 ssh2
 Mar 31 01:35:21 ip-10-77-20-248 sshd[17262]: pam_unix(sshd:auth): check pass; user unknown
