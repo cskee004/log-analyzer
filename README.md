@@ -3,7 +3,7 @@
 ### Acknowledgements
 This project uses log data from [Machine Learning/Security Analytics Recipes/suspicious_login_activity/data/auth.log](https://github.com/elastic/examples) by Elastic, licensed under the Apache License 2.0.  
 Original dataset: [auth.log](https://github.com/elastic/examples/blob/master/Machine%20Learning/Security%20Analytics%20Recipes/suspicious_login_activity/data/auth.log)  
-Modifications: Created a smaller version of 'auth.log' for testing.
+Modifications: [test-auth.log](https://github.com/cskee004/log-analyzer/blob/main/data/auth-test.log).
 
 
 ### Description
