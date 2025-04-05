@@ -30,6 +30,20 @@ require 'pry-byebug'
 #
 class LogParser
   
+  
+  @@parsed_log = 
+  {
+    Error: [],
+    Auth_Failure: [],
+    Disconnect: [],
+    Session_opened: [],
+    Session_closed: [],
+    Sudo_command: [],
+    Accepted: [],
+    Invalid_user: [],
+    Failed_password: []
+  }
+
   # Parse the given auth.log file
   # The data, time, and host are parsed before calling the appropriate method
   # 
@@ -42,36 +56,37 @@ class LogParser
       host = line.match(/\D{3}\d{2}\-\d{2}\-\d{2}-\d{3}/)
       case line
       when /error/
-        puts parse_error(line, line_num, "Error flag" ,date[0], time[0], host[0])
+        @@parsed_log[:Error] << parse_error(line, line_num, "Error flag" ,date[0], time[0], host[0])
       when /authentication failure/
-        puts parse_auth_failure(line, line_num,"Authentication failure" ,date[0], time[0], host[0])
+        @@parsed_log[:Auth_Failure] << parse_auth_failure(line, line_num,"Authentication failure" ,date[0], time[0], host[0])
       when /Disconnected/
-        puts parse_disconnect(line, line_num, "Disconnect", date[0], time[0], host[0])
+        @@parsed_log[:Disconnect] << parse_disconnect(line, line_num, "Disconnect", date[0], time[0], host[0])
       when /session opened/
-        puts parse_session_open(line, line_num, "Session opened",date[0], time[0], host[0])
+        @@parsed_log[:Session_opened] << parse_session_open(line, line_num, "Session opened",date[0], time[0], host[0])
       when /session closed/
-        puts parse_session_close(line, line_num, "Session closed" ,date[0], time[0], host[0])
+        @@parsed_log[:Session_closed] << parse_session_close(line, line_num, "Session closed" ,date[0], time[0], host[0])
       when /(PWD)*(USER)*(COMMAND)/
-        puts parse_sudo_command(line, line_num, "Sudo command",date[0], time[0], host[0])
+        @@parsed_log[:Sudo_command] << parse_sudo_command(line, line_num, "Sudo command",date[0], time[0], host[0])
       when /Accepted/
-        puts parse_accept_event(line, line_num, "Accept event",date[0], time[0], host[0])
+        @@parsed_log[:Accepted] << parse_accept_event(line, line_num, "Accept event",date[0], time[0], host[0])
       when /Invalid user/
-        puts parse_invalid_user(line, line_num, "Invalid user",date[0], time[0], host[0])
+        @@parsed_log[:Invalid_user] << parse_invalid_user(line, line_num, "Invalid user",date[0], time[0], host[0])
       when /Failed password/
-        puts parse_failed_password(line, line_num, "Failed password",date[0], time[0], host[0])
+        @@parsed_log[:Failed_password] << parse_failed_password(line, line_num, "Failed password",date[0], time[0], host[0])
       end
     end
+    @@parsed_log
   end
 
 
   # Parse the given 'error' line and return a hash representation with keyword data extracted
   # 
-  # @param line A string representation of the line containing 'error' event
-  # @param line_num A int representing the line number from auth.log
-  # @param type A string of the event type
-  # @param date A string containing the date of the event
-  # @param time A string containing the time of the event
-  # @param host A string containing the ip of the host machine the event happened on
+  # @param line string representation of the line containing 'error' event
+  # @param line_num int representing the line number from auth.log
+  # @param type string of the event type
+  # @param date string containing the date of the event
+  # @param time string containing the time of the event
+  # @param host string containing the ip of the host machine the event happened on
   # 
   # @return error_hash with meta data from event
   def parse_error(line, line_num, type, date, time, host)
@@ -103,12 +118,12 @@ class LogParser
 
   # Parse the given 'authentication failure' line and return a hash representation with keyword data extracted
   # 
-  # @param line A string representation of the line containing 'authentication failure' event
+  # @param line string representation of the line containing 'authentication failure' event
   # @param line_num A int representing the line number from auth.log
-  # @param type A string of the event type
-  # @param date A string containing the date of the event
-  # @param time A string containing the time of the event
-  # @param host A string containing the ip of the host machine the event happened on
+  # @param type string of the event type
+  # @param date string containing the date of the event
+  # @param time string containing the time of the event
+  # @param host string containing the ip of the host machine the event happened on
   # 
   # @return auth_hash with meta data from event
   def parse_auth_failure(line, line_num, type, date, time, host)
@@ -131,12 +146,12 @@ class LogParser
 
   # Parse the given 'Disconnected' line and return a hash representation with keyword data extracted
   # 
-  # @param line A string representation of the line containing 'Disconnected' event
-  # @param line_num A int representing the line number from auth.log
-  # @param type A string of the event type
-  # @param date A string containing the date of the event
-  # @param time A string containing the time of the event
-  # @param host A string containing the ip of the host machine the event happened on
+  # @param line string representation of the line containing 'Disconnected' event
+  # @param line_num int representing the line number from auth.log
+  # @param type string of the event type
+  # @param date string containing the date of the event
+  # @param time string containing the time of the event
+  # @param host string containing the ip of the host machine the event happened on
   # 
   # @return disconnect_hash with meta data from event
   def parse_disconnect(line, line_num, type, date, time, host)
@@ -161,12 +176,12 @@ class LogParser
 
   # Parse the given 'session opened' line and return a hash representation with keyword data extracted
   # 
-  # @param line A string representation of the line containing 'session open' event
-  # @param line_num A int representing the line number from auth.log
-  # @param type A string of the event type
-  # @param date A string containing the date of the event
-  # @param time A string containing the time of the event
-  # @param host A string containing the ip of the host machine the event happened on
+  # @param line string representation of the line containing 'session open' event
+  # @param line_num int representing the line number from auth.log
+  # @param type string of the event type
+  # @param date string containing the date of the event
+  # @param time string containing the time of the event
+  # @param host string containing the ip of the host machine the event happened on
   # 
   # @return session_open_hash with meta data from event
   def parse_session_open(line, line_num, type, date, time, host)
@@ -186,12 +201,12 @@ class LogParser
 
   # Parse the given 'session closed' line and return a hash representation with keyword data extracted
   # 
-  # @param line A string representation of the line containing 'session closed' event
-  # @param line_num A int representing the line number from auth.log
-  # @param type A string of the event type
-  # @param date A string containing the date of the event
-  # @param time A string containing the time of the event
-  # @param host A string containing the ip of the host machine the event happened on
+  # @param line string representation of the line containing 'session closed' event
+  # @param line_num int representing the line number from auth.log
+  # @param type string of the event type
+  # @param date string containing the date of the event
+  # @param time string containing the time of the event
+  # @param host string containing the ip of the host machine the event happened on
   # 
   # @return session_close_hash with meta data from event
   def parse_session_close(line, line_num, type, date, time, host)
@@ -211,12 +226,12 @@ class LogParser
 
   # Parse the given 'sudo command' line and return a hash representation with keyword data extracted
   # 
-  # @param line A string representation of the line containing 'sudo command' event
-  # @param line_num A int representing the line number from auth.log
-  # @param type A string of the event type
-  # @param date A string containing the date of the event
-  # @param time A string containing the time of the event
-  # @param host A string containing the ip of the host machine the event happened on
+  # @param line string representation of the line containing 'sudo command' event
+  # @param line_num int representing the line number from auth.log
+  # @param type string of the event type
+  # @param date string containing the date of the event
+  # @param time string containing the time of the event
+  # @param host string containing the ip of the host machine the event happened on
   # 
   # @return sudo_command_hash with meta data from event
   def parse_sudo_command(line, line_num, type, date, time, host)
@@ -239,12 +254,12 @@ class LogParser
 
   # Parse the given 'Accepted' line and return a hash representation with keyword data extracted
   # 
-  # @param line A string representation of the line containing 'Accepted' event
-  # @param line_num A int representing the line number from auth.log
-  # @param type A string of the event type
-  # @param date A string containing the date of the event
-  # @param time A string containing the time of the event
-  # @param host A string containing the ip of the host machine the event happened on
+  # @param line string representation of the line containing 'Accepted' event
+  # @param line_num int representing the line number from auth.log
+  # @param type string of the event type
+  # @param date string containing the date of the event
+  # @param time string containing the time of the event
+  # @param host string containing the ip of the host machine the event happened on
   # 
   # @return accepted_hash with meta data from event
   def parse_accept_event(line, line_num, type, date, time, host)
@@ -309,12 +324,12 @@ class LogParser
 
   # Parse the given 'failed password' line and return a hash representation with keyword data extracted
   # 
-  # @param line A string representation of the line containing 'failed password' event
-  # @param line_num A int representing the line number from auth.log
-  # @param type A string of the event type
-  # @param date A string containing the date of the event
-  # @param time A string containing the time of the event
-  # @param host A string containing the ip of the host machine the event happened on
+  # @param line string representation of the line containing 'failed password' event
+  # @param line_num int representing the line number from auth.log
+  # @param type string of the event type
+  # @param date string containing the date of the event
+  # @param time string containing the time of the event
+  # @param host string containing the ip of the host machine the event happened on
   # 
   # @return error_hash with meta data from event
   def parse_failed_password(line, line_num, type, date, time, host)
@@ -341,4 +356,4 @@ class LogParser
 end
 
 log_parser = LogParser.new
-log_parser.read_log()
+log = log_parser.read_log()
