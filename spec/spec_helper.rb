@@ -77,6 +77,7 @@ RSpec.configure do |config|
     # (e.g. via a command-line flag).
     config.default_formatter = "doc"
   end
+  
 
   # Print the 10 slowest examples and example groups at the
   # end of the spec run, to help surface which specs are running
@@ -95,4 +96,9 @@ RSpec.configure do |config|
   # as the one that triggered the failure.
   Kernel.srand config.seed
 =end
+RSpec.configure do |config|
+  config.formatter = :json
+  config.add_formatter 'json', 'results/rspec_results.json'
+end
+
 end

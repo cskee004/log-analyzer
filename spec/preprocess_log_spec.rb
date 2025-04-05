@@ -2,11 +2,12 @@ require "spec_helper"
 require "preprocess_log"
 
 describe "Preprocess log" do
+  log_parser = LogParser.new
 
   error = "Mar 31 10:36:28 ip-10-77-20-248 sshd[19551]: error: maximum authentication attempts exceeded for root from 122.191.89.89 port 37753 ssh2 [preauth]" #3903
   describe "parse error flag" do
     it "returns hash meta data for error flags" do
-      result = parse_error(error, 3903, "Mar 31", "10:36:28", "ip-10-77-20-248")
+      result = log_parser.parse_error(error, 3903, "Error flag", "Mar 31", "10:36:28", "ip-10-77-20-248")
       expected = 
       {
         Line_number: 3903, 
@@ -27,7 +28,7 @@ describe "Preprocess log" do
   auth_fail = "Mar 27 14:01:39 ip-10-77-20-248 sshd[2938]: Disconnecting: Too many authentication failures [preauth]" #87
   describe "parse authentication failure" do
     it "returns hash meta data for authenitcation failure" do
-      result = parse_auth_failure(auth_fail, 87, "Mar 27", "14:01:39", "ip-10-77-20-248")
+      result = log_parser.parse_auth_failure(auth_fail, 87, "Authentication failure" ,"Mar 27", "14:01:39", "ip-10-77-20-248")
       expected = 
       {
         Line_number: 87,
@@ -45,7 +46,8 @@ describe "Preprocess log" do
   disconnect = "Mar 27 14:02:16 ip-10-77-20-248 sshd[2856]: Disconnected from 85.245.107.41 port 54866" #89
   describe "parse disconnected event" do
     it "returns hash meta data for a disonnected event" do
-      result = parse_disconnect(disconnect, 89, "Mar 27", "14:02:16", "ip-10-77-20-248")
+      log_parser = LogParser.new
+      result = log_parser.parse_disconnect(disconnect, 89, "Disconnect" ,"Mar 27", "14:02:16", "ip-10-77-20-248")
       expected = 
       {
         Line_number: 89,
@@ -64,7 +66,7 @@ describe "Preprocess log" do
   open = "Mar 27 13:09:37 ip-10-77-20-248 sudo: pam_unix(sudo:session): session opened for user root by ubuntu(uid=0)" #11
   describe "parse session opened event" do
     it "returns hash meta data for session open event" do
-      result = parse_session_open(open, 11, "Mar 27", "13:09:37", "ip-10-77-20-248")
+      result = log_parser.parse_session_open(open, 11, "Session opened", "Mar 27", "13:09:37", "ip-10-77-20-248")
       expected = 
       {
         Line_number: 11, 
@@ -81,7 +83,7 @@ describe "Preprocess log" do
   close = "Mar 27 13:09:38 ip-10-77-20-248 sudo: pam_unix(sudo:session): session closed for user root" #12
   describe "parse session closed event" do
     it "returns hash meta data for session closed event" do
-      result = parse_session_close(close, 12, "Mar 27", "13:09:38", "ip-10-77-20-248")
+      result = log_parser.parse_session_close(close, 12, "Session closed", "Mar 27", "13:09:38", "ip-10-77-20-248")
       expected = 
       {
         Line_number: 12, 
@@ -98,7 +100,7 @@ describe "Preprocess log" do
   sudo = "Mar 27 13:11:35 ip-10-77-20-248 sudo:   ubuntu : TTY=pts/0 ; PWD=/home/ubuntu ; USER=root ; COMMAND=/usr/bin/apt-get install packetbeat" #37
   describe "parse sudo command event" do
     it "returns hash meta data for sudo command event" do
-      result = parse_sudo_command(sudo, 37, "Mar 27", "13:11:35", "ip-10-77-20-248")
+      result = log_parser.parse_sudo_command(sudo, 37, "Sudo command" ,"Mar 27", "13:11:35", "ip-10-77-20-248")
       expected = 
       {
         Line_number: 37, 
@@ -117,7 +119,7 @@ describe "Preprocess log" do
   accepted = "Mar 28 14:09:55 ip-10-77-20-248 sshd[29069]: Accepted publickey for ubuntu from 85.245.107.41 port 55779 ssh2: RSA SHA256:Kl8kPGZrTiz7g4FO1hyqHdsSBBb5Fge6NWOobN03XJg" #841
   describe "parse accepted event" do
     it "returns hash meta data for accept event" do
-      result = parse_accept_event(accepted, 841, "Mar 28", "14:09:55", "ip-10-77-20-248")
+      result = log_parser.parse_accept_event(accepted, 841, "Accept event" ,"Mar 28", "14:09:55", "ip-10-77-20-248")
       expected = 
       {
         Line_number: 841, 
@@ -139,7 +141,7 @@ describe "Preprocess log" do
   invalid_user = "Mar 31 06:34:36 ip-10-77-20-248 sshd[18539]: Invalid user pruebas from 60.187.118.40" #3741
   describe "parse invalid user event" do
     it "returns hash meta data for invalid user event" do
-      result = parse_invalid_user(invalid_user, 3741, "Mar 31", "06:34:36", "ip-10-77-20-248")
+      result = log_parser.parse_invalid_user(invalid_user, 3741, "Invalid user", "Mar 31", "06:34:36", "ip-10-77-20-248")
       expected = 
       {
         Line_number: 3741, 
@@ -158,7 +160,7 @@ describe "Preprocess log" do
   failed_password = "Mar 31 06:34:38 ip-10-77-20-248 sshd[18539]: Failed password for invalid user pruebas from 60.187.118.40 port 41838 ssh2" #3745
   describe "parse failed password event" do
     it "returns hash meta data for failed password event" do
-      result = parse_failed_password(failed_password, 3745, "Mar 31", "06:34:38", "ip-10-77-20-248")
+      result = log_parser.parse_failed_password(failed_password, 3745, "Failed password", "Mar 31", "06:34:38", "ip-10-77-20-248")
       expected = 
       {
         Line_number: 3745, 

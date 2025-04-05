@@ -1,8 +1,7 @@
 require 'pry-byebug'
 
-
-# This method reads from the given file path. If a file is not given, then read_log uses default file located in the data directory.
-# If a single line contains any of the log level keywords, then call parse_string with the single line and line number
+class LogParser
+  
 def read_log(filename = "./data/auth.log")
   File.foreach(filename).with_index do |line, line_num|
     date = line.match(/^[A-Z][a-z]{2}\s+\d{1,2}/)
@@ -30,7 +29,6 @@ def read_log(filename = "./data/auth.log")
     end
   end
 end
-
 
 
 def parse_error(line, line_num, type, date, time, host)
@@ -217,5 +215,7 @@ def parse_failed_password(line, line_num, type, date, time, host)
     Source_port: src_port
   }
 end
+end
 
-read_log()
+log_parser = LogParser.new
+log_parser.read_log()
