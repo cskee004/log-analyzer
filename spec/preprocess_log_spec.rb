@@ -191,7 +191,7 @@ describe "Preprocess log" do
     it "returns hash containing results from scan" do
       log = log_parser.read_log("./data/auth.log")
       expect(log[:Error].length).to eq(189)
-      expect(log[:Auth_Failure].length).to eq(673)
+      expect(log[:Auth_failure].length).to eq(673)
       expect(log[:Disconnect].length).to eq(307)
       expect(log[:Session_opened].length).to eq(1268)
       expect(log[:Session_closed].length).to eq(1074)

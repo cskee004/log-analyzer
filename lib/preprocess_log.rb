@@ -34,7 +34,7 @@ class LogParser
   @@parsed_log = 
   {
     Error: [],
-    Auth_Failure: [],
+    Auth_failure: [],
     Disconnect: [],
     Session_opened: [],
     Session_closed: [],
@@ -58,7 +58,7 @@ class LogParser
       when /error/
         @@parsed_log[:Error] << parse_error(line, line_num, "Error flag" ,date[0], time[0], host[0])
       when /authentication failure/
-        @@parsed_log[:Auth_Failure] << parse_auth_failure(line, line_num,"Authentication failure" ,date[0], time[0], host[0])
+        @@parsed_log[:Auth_failure] << parse_auth_failure(line, line_num,"Authentication failure" ,date[0], time[0], host[0])
       when /Disconnected/
         @@parsed_log[:Disconnect] << parse_disconnect(line, line_num, "Disconnect", date[0], time[0], host[0])
       when /session opened/
