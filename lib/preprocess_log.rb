@@ -354,6 +354,3 @@ class LogParser
     }
   end
 end
-
-log_parser = LogParser.new
-log = log_parser.read_log()

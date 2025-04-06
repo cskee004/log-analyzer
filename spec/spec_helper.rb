@@ -97,7 +97,7 @@ RSpec.configure do |config|
   Kernel.srand config.seed
 =end
 RSpec.configure do |config|
-  config.formatter = :json
+  config.add_formatter 'progress'
   config.add_formatter 'json', 'results/rspec_results.json'
 end
 
