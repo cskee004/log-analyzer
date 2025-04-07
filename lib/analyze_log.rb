@@ -33,15 +33,36 @@ require_relative 'preprocess_log'
 
 class LogAnalyzer
 
-  def security_keyword_freq(parsed_log)
-    rows = []
+  def security_concerns(parsed_results)
+    high_rows = []
+    med_rows = []
+    ops_rows = []
     
-    parsed_log.each do |key, value|
-      rows << [key.to_s, value.length] 
-    end
+    high_rows << ["Error Flags", parsed_results[:Error].length]
+    high_rows << ["Authentication failures", parsed_results[:Auth_failure].length]
+    high_rows << ["Invalid users", parsed_results[:Invalid_user].length]
+    high_rows << ["Failed password attempts", parsed_results[:Failed_password].length]
+
+    med_rows << ["Disconnects", parsed_results[:Disconnect].length]
+    med_rows << ["Accepted events", parsed_results[:Accepted].length]
+    med_rows << ["Session Opens", parsed_results[:Session_opened].length]
+    med_rows << ["Session Closes", parsed_results[:Session_closed].length]
+
+    ops_rows << ["Sudo usage", parsed_results[:Sudo_command].length]
     
-    table = Terminal::Table.new :title => "Security Keyword Frequency" , :headings => ['Word', 'Occurrences'], :rows => rows
-    puts table
+    high_table = Terminal::Table.new :title => "High Security Concerns" , :headings => ['Event Type', 'Occurrences'], :rows => high_rows
+    med_table = Terminal::Table.new :title => "Medium Security Concerns" , :headings => ['Event Type', 'Occurrences'], :rows => med_rows
+    ops_table = Terminal::Table.new :title => "Operational Monitoring" , :headings => ['Event Type', 'Occurrences'], :rows => ops_rows
+
+    puts high_table
+    puts med_table 
+    puts ops_table   
+
+
+  end
+
+  def create_table(title, rows)
+    
   end
   
   def suspicious_ips(parsed_log)
@@ -58,5 +79,5 @@ log_parser = LogParser.new
 log = log_parser.read_log("./data/auth.log")
 
 log_analyzer = LogAnalyzer.new
-log_analyzer.security_keyword_freq(log)
-log_analyzer.suspicious_ips(log)
+log_analyzer.security_concerns(log)
+
