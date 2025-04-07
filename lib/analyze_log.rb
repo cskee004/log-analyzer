@@ -44,7 +44,8 @@ class LogAnalyzer
     high_rows << ["Failed password attempts", parsed_results[:Failed_password].length]
 
     med_rows << ["Disconnects", parsed_results[:Disconnect].length]
-    med_rows << ["Accepted events", parsed_results[:Accepted].length]
+    med_rows << ["Accepted publickey", parsed_results[:Accepted_publickey].length]
+    med_rows << ["Accepted password", parsed_results[:Accepted_password].length]
     med_rows << ["Session Opens", parsed_results[:Session_opened].length]
     med_rows << ["Session Closes", parsed_results[:Session_closed].length]
 

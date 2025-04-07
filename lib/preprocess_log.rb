@@ -39,7 +39,8 @@ class LogParser
     Session_opened: [],
     Session_closed: [],
     Sudo_command: [],
-    Accepted: [],
+    Accepted_publickey: [],
+    Accepted_password: [],
     Invalid_user: [],
     Failed_password: []
   }
@@ -67,8 +68,10 @@ class LogParser
         @@parsed_log[:Session_closed] << parse_session_close(line, line_num, "Session closed" ,date[0], time[0], host[0])
       when /(PWD)*(USER)*(COMMAND)/
         @@parsed_log[:Sudo_command] << parse_sudo_command(line, line_num, "Sudo command",date[0], time[0], host[0])
-      when /Accepted/
-        @@parsed_log[:Accepted] << parse_accept_event(line, line_num, "Accept event",date[0], time[0], host[0])
+      when /Accepted publickey/
+        @@parsed_log[:Accepted_publickey] << parse_accept_event(line, line_num, "Accept publickey",date[0], time[0], host[0])
+      when /Accepted password/ 
+        @@parsed_log[:Accepted_password] << parse_accept_event(line, line_num, "Accepted password", date[0], time[0], host[0])
       when /Invalid user/
         @@parsed_log[:Invalid_user] << parse_invalid_user(line, line_num, "Invalid user",date[0], time[0], host[0])
       when /Failed password/
