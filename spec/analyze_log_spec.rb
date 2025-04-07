@@ -10,8 +10,8 @@ describe "Analyze Log" do
 
   log_analyzer = LogAnalyzer.new
 
-  describe "bridges IPs to high security events" do
-    it "returns suspicious IPs found in log" do
+  describe "connects IP's to high security events" do
+    it "returns suspicious IP's found in log" do
       result = log_analyzer.suspicious_ips(log)
       h = result["178.219.248.139"]
       expect(h.length).to eq(8)

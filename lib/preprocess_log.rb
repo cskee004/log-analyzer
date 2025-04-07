@@ -10,7 +10,7 @@ require 'pry-byebug'
 #   parsed_log = log_parser.read_log(path/to/file)
 # 
 # Attributes:
-# - 'log_results' Hash(Array(Hash)) : A Hash of event types with corresponding individual events
+# - 'parsed_log' Hash(Array(Hash)) : A Hash of event types with corresponding individual events
 #   {
 #     event_type_0: [{event_0}, {event_1}]
 #     event_type_1: [{event_0}, {event_1}]
