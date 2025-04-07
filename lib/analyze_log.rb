@@ -15,25 +15,27 @@ require_relative 'preprocess_log'
 # - Invalid_user : Time + IP
 # - Failed_password : Time + IP + User
 #
-# Security Keyword Frequency:
-# - "Failed password" → 20 occurrences
-# - "Invalid user" → 12 occurrences
-# - "Root access" → 5 occurrences
-# 
 # Top Suspicious IPs:
 # 1. 192.168.1.50 (10 security incidents, users: admin, guest)
 # 2. 203.0.113.12 (5 security incidents, user: root)
 # 
-## - 'log_results' Hash(Array(Hash)) : A Hash of event types with corresponding individual events
-#   {
-#     event_type_0: [{event_0}, {event_1}]
-#     event_type_1: [{event_0}, {event_1}]
-#    }
-# 
+# LogAnalyzer Class
+# This class is responsible for analyzing security related events found in parsed_results. This class makes the following assumptions...
+# High Security Concerns:
+# - Error Flags: Repeated errors could indicate malicious network patterns, suspicious login hours, or abnormal sequences of actions
+# - Authentication failures: Many failures in a short time could indicate brute-force or credential stuffing attacks
+# - Invalid user: Usernames that don't exist could indicate brute-force attempts
+# - Failed password: The wrong password could be a legitimate error by the user or brute-force attempts
+# Medium Security Concerns:
+# - Disconnects: Abnormal disconnects could indicate session hijacking or instability due to network load 
+# - Accepted publickey and passwords: Logins from strange IPs using a password 
+# - Session opens/closes: Unusual session durations, late-night activity, or sessions without proper closure could indicate system compromise 
+# Operation Monitoring:
+# - Sudo commands: Sudo usage from non-admins could indicate insider threats or privilege abuse
 
 class LogAnalyzer
 
-  def security_concerns(parsed_results)
+  def get_summary(parsed_results)
     high_rows = []
     med_rows = []
     ops_rows = []
@@ -62,10 +64,6 @@ class LogAnalyzer
 
   end
 
-  def create_table(title, rows)
-    
-  end
-  
   def suspicious_ips(parsed_log)
     # Iterate through Error, Invalid_user, and Failed_password
     # If IP not in hash, add hash[new_IP] += 1
@@ -80,5 +78,5 @@ log_parser = LogParser.new
 log = log_parser.read_log("./data/auth.log")
 
 log_analyzer = LogAnalyzer.new
-log_analyzer.security_concerns(log)
+log_analyzer.get_summary(log)
 
