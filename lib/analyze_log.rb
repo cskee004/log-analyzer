@@ -32,6 +32,10 @@ require_relative 'preprocess_log'
 # - Session opens/closes: Unusual session durations, late-night activity, or sessions without proper closure could indicate system compromise 
 # Operation Monitoring:
 # - Sudo commands: Sudo usage from non-admins could indicate insider threats or privilege abuse
+# 
+# Usage
+# log_analyzer = LogAnalyzer.new
+# log_analyzer.get_summary(log)
 
 class LogAnalyzer
 
@@ -65,18 +69,20 @@ class LogAnalyzer
   end
 
   def suspicious_ips(parsed_log)
-    # Iterate through Error, Invalid_user, and Failed_password
-    # If IP not in hash, add hash[new_IP] += 1
-    # Else, hash[old_IP] += 1
-    
-    
-    
+    # Create empty hash
+    # Loop through parsed logs, filtering only high security events
+    #   Get source ip from event
+    #   If ip does not exist in hash, create new array with the event hash 
+    #   If ip does exist in hash, append array with event hash
+    event_types = [:Error, :Invalid_user, :Failed_password]
+    result = {}
+   
+    event_types.each do |symbol|
+      parsed_log[symbol].select { |event| event }.each do |event|
+          result[event[:Source_IP]] ||= [] # Set result[ip] to new empty array if nil or doesn't exist
+          result[event[:Source_IP]] << event # Add event to array
+      end 
+    end
+    # result.each {|key, value| puts "IP: #{key}, #{value.length} occurrences"}
   end
 end
-
-log_parser = LogParser.new
-log = log_parser.read_log("./data/auth.log")
-
-log_analyzer = LogAnalyzer.new
-log_analyzer.get_summary(log)
-
