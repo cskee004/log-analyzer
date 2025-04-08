@@ -31,19 +31,7 @@ require 'pry-byebug'
 class LogParser
   
   
-  @@parsed_log = 
-  {
-    Error: [],
-    Auth_failure: [],
-    Disconnect: [],
-    Session_opened: [],
-    Session_closed: [],
-    Sudo_command: [],
-    Accepted_publickey: [],
-    Accepted_password: [],
-    Invalid_user: [],
-    Failed_password: []
-  }
+
 
   # Parse the given auth.log file
   # The data, time, and host are parsed before calling the appropriate method
@@ -51,34 +39,47 @@ class LogParser
   # @param filename The location of the auth.log to be parsed
   # @return A hash containing an individual event found in auth.log
   def read_log(filename = "./data/auth.log")
+    @parsed_log = 
+    {
+      Error: [],
+      Auth_failure: [],
+      Disconnect: [],
+      Session_opened: [],
+      Session_closed: [],
+      Sudo_command: [],
+      Accepted_publickey: [],
+      Accepted_password: [],
+      Invalid_user: [],
+      Failed_password: []
+    }
     File.foreach(filename).with_index do |line, line_num|
       date = line.match(/^[A-Z][a-z]{2}\s+\d{1,2}/)
       time = line.match(/\d{2}\:\d{2}\:\d{2}/)
       host = line.match(/\D{3}\d{2}\-\d{2}\-\d{2}-\d{3}/)
       case line
       when /error/
-        @@parsed_log[:Error] << parse_error(line, line_num, "Error flag" ,date[0], time[0], host[0])
+        @parsed_log[:Error] << parse_error(line, line_num, "Error flag" ,date[0], time[0], host[0])
       when /authentication failure/
-        @@parsed_log[:Auth_failure] << parse_auth_failure(line, line_num,"Authentication failure" ,date[0], time[0], host[0])
+        @parsed_log[:Auth_failure] << parse_auth_failure(line, line_num,"Authentication failure" ,date[0], time[0], host[0])
       when /Disconnected/
-        @@parsed_log[:Disconnect] << parse_disconnect(line, line_num, "Disconnect", date[0], time[0], host[0])
+        @parsed_log[:Disconnect] << parse_disconnect(line, line_num, "Disconnect", date[0], time[0], host[0])
       when /session opened/
-        @@parsed_log[:Session_opened] << parse_session_open(line, line_num, "Session opened",date[0], time[0], host[0])
+        @parsed_log[:Session_opened] << parse_session_open(line, line_num, "Session opened",date[0], time[0], host[0])
       when /session closed/
-        @@parsed_log[:Session_closed] << parse_session_close(line, line_num, "Session closed" ,date[0], time[0], host[0])
+        @parsed_log[:Session_closed] << parse_session_close(line, line_num, "Session closed" ,date[0], time[0], host[0])
       when /(PWD)*(USER)*(COMMAND)/
-        @@parsed_log[:Sudo_command] << parse_sudo_command(line, line_num, "Sudo command",date[0], time[0], host[0])
+        @parsed_log[:Sudo_command] << parse_sudo_command(line, line_num, "Sudo command",date[0], time[0], host[0])
       when /Accepted publickey/
-        @@parsed_log[:Accepted_publickey] << parse_accept_event(line, line_num, "Accept publickey",date[0], time[0], host[0])
+        @parsed_log[:Accepted_publickey] << parse_accept_event(line, line_num, "Accept publickey",date[0], time[0], host[0])
       when /Accepted password/ 
-        @@parsed_log[:Accepted_password] << parse_accept_event(line, line_num, "Accepted password", date[0], time[0], host[0])
+        @parsed_log[:Accepted_password] << parse_accept_event(line, line_num, "Accepted password", date[0], time[0], host[0])
       when /Invalid user/
-        @@parsed_log[:Invalid_user] << parse_invalid_user(line, line_num, "Invalid user",date[0], time[0], host[0])
+        @parsed_log[:Invalid_user] << parse_invalid_user(line, line_num, "Invalid user",date[0], time[0], host[0])
       when /Failed password/
-        @@parsed_log[:Failed_password] << parse_failed_password(line, line_num, "Failed password",date[0], time[0], host[0])
+        @parsed_log[:Failed_password] << parse_failed_password(line, line_num, "Failed password",date[0], time[0], host[0])
       end
     end
-    @@parsed_log
+    @parsed_log
   end
 
 
@@ -345,9 +346,9 @@ class LogParser
 
     failed_hash = 
     {
-      Line_number: line_num, 
-      Date: date, 
+      Line_number: line_num,
       Type: type,
+      Date: date,
       Time: time, 
       Host: host, 
       PID: pid_num,

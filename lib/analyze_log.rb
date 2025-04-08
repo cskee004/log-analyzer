@@ -25,8 +25,23 @@ require_relative 'preprocess_log'
 # Methods:
 #   - 'get_summary' : Prints a table for each severity level (High, Medium, regular ops)
 #   - 'suspicious_ips' : Analyzes the parsed results by connecting IP addresses to high security events
+#   - 'events_by_hour' : Analyzes the hours that each event took place
+#   - 'events_by_day' :
 
 class LogAnalyzer
+  def initialize
+    @event_types = [
+      :Error, :Auth_failure, 
+      :Disconnect, :Session_opened, 
+      :Session_closed, :Sudo_command, 
+      :Accepted_publickey, :Accepted_password, 
+      :Invalid_user, :Failed_password
+    ]
+    @high_events = [:Error, :Invalid_user, :Failed_password]
+    @med_events  = [:Disconnect, :Accepted_publickey, :Accepted_password, :Session_opened, :Session_closed]
+    @low_events  = [:Sudo_command]
+    
+  end
 
   # Prints to console results sorted into severity type along with how many occurrences 
   # 
@@ -61,27 +76,41 @@ class LogAnalyzer
   # Collects unique IP addresses and their associated high security events
   #       
   # @param parsed_log hash containing meta data for each event type
-  # @return A hash of unique IP addresses with associated meta data 
+  # @return A hash of unique IP addresses with associated events for that specific IP 
   def suspicious_ips(parsed_log)
-
-    event_types = [:Error, :Invalid_user, :Failed_password]
     result = {}
-   
-    event_types.each do |symbol|
-      parsed_log[symbol].select { |event| event }.each do |event|
-          result[event[:Source_IP]] ||= [] # Set result[ip] to new empty array if nil or doesn't exist
-          result[event[:Source_IP]] << event # Add event to array
+    
+    @high_events.each do |symbol|
+      parsed_log[symbol].select { |event| event }.each do |event|    
+        result[event[:Source_IP]] ||= [] # Set result[ip] to new empty array if nil or doesn't exist
+        result[event[:Source_IP]] << event # Add event to array
       end 
     end
-     #result.each {|key, value| puts "IP: #{key}, #{value.length} occurrences"}
-     result
+    result
+  end
+
+  # Finds the number of occurrences of each type of event by the hour
+  # 
+  # @param parsed_log hash containing meta data for each event type 
+  # @return A hash of event types with number of occurrences for each hour that event took place
+  def events_by_hour(parsed_log)
+    result = {}
+    
+    @event_types.each do |symbol|
+      parsed_log[symbol].select { |event| event}.each do |event|
+        time = event[:Time].split(":")
+        hour = time[0].to_sym
+        result[symbol] ||= {}
+        result[symbol][hour] ||= 0
+        result[symbol][hour] += 1
+      end
+    end
+    result
+  end
+
+  def events_by_day(parsed_log)
+
   end
 
 
 end
-
-#log_parser = LogParser.new
-#log = log_parser.read_log()
-
-#log_analyzer = LogAnalyzer.new
-#log_analyzer.suspicious_ips(log)
