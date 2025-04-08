@@ -1,6 +1,8 @@
 require 'pry-byebug'
 require 'terminal-table'
 require_relative 'preprocess_log'
+require 'date'
+require 'unicode_plot'
 
 # LogAnalyzer Class
 # This class is responsible for analyzing security related events found in parsed_log. This class makes the following assumptions...
@@ -24,9 +26,11 @@ require_relative 'preprocess_log'
 #
 # Methods:
 #   - 'get_summary' : Prints a table for each severity level (High, Medium, regular ops)
-#   - 'suspicious_ips' : Analyzes the parsed results by connecting IP addresses to high security events
-#   - 'events_by_hour' : Analyzes the hours that each event took place
-#   - 'events_by_day' :
+#   - 'suspicious_ips' : Rank IPs by number of high security concerns
+#   - 'events_by_hour' : Finds what event type happens during each hour of the day
+#   - 'events_by_day' : Finds what event type happens during each day
+#   - 'daily_volume' : Reports how busy the system is each day 
+#   - 'login_patterns' : Reports when users typically log in and when failures occur
 
 class LogAnalyzer
   def initialize
@@ -40,9 +44,17 @@ class LogAnalyzer
     @high_events = [:Error, :Invalid_user, :Failed_password]
     @med_events  = [:Disconnect, :Accepted_publickey, :Accepted_password, :Session_opened, :Session_closed]
     @low_events  = [:Sudo_command]
+    @login_events = [:Accepted_password, :Failed_password]
+    @months = {"Jan" => "1", "Feb" => "2", "Mar" => "3", "Apr" => "4", "May" => "5", "Jun" => "6", "Jul" => "7", "Aug" => "8", "Sep" => "9", "Oct" => "10", "Nov" => "11", "Dec" => "12"}
     
   end
 
+  def generate_bar(data)
+    x_values = data.keys
+    y_values = data.values
+    plot = UnicodePlot.barplot(x_values, y_values, title: "Bar").render
+  end
+  
   # Prints to console results sorted into severity type along with how many occurrences 
   # 
   # @param parsed_log hash containing meta data for each event type
@@ -76,7 +88,7 @@ class LogAnalyzer
   # Collects unique IP addresses and their associated high security events
   #       
   # @param parsed_log hash containing meta data for each event type
-  # @return A hash of unique IP addresses with associated events for that specific IP 
+  # @return result hash of unique IP addresses with associated events 
   def suspicious_ips(parsed_log)
     result = {}
     
@@ -92,7 +104,7 @@ class LogAnalyzer
   # Finds the number of occurrences of each type of event by the hour
   # 
   # @param parsed_log hash containing meta data for each event type 
-  # @return A hash of event types with number of occurrences for each hour that event took place
+  # @return result hash of event types with number of occurrences for each hour that event took place
   def events_by_hour(parsed_log)
     result = {}
     
@@ -108,9 +120,67 @@ class LogAnalyzer
     result
   end
 
+  # Finds the number of occurrences of each type of event by the day
+  # 
+  # @param parsed_log hash containing meta data for each event type 
+  # @return result hash of event types with number of occurrences for each day that event took place
   def events_by_day(parsed_log)
-
+    result = {}
+    
+    @event_types.each do |symbol|
+      parsed_log[symbol].select { |event| event}.each do |event|
+        date = event[:Date].split(" ")
+        m = @months.fetch(date[0])
+        month = m.to_i
+        day = date[1].to_i
+        date = Date.new(2025, month, day)
+        s_date = date.to_s
+        result[symbol] ||= {}
+        result[symbol][s_date] ||= 0
+        result[symbol][s_date] += 1
+      end
+    end
+    result
   end
 
+  # Finds the total volume of events by the day
+  # 
+  # @param parsed_log hash containing meta data for each event type
+  # @return result hash of event 
+  def daily_volume(parsed_log)
+    result = {}
 
+    @event_types.each do |symbol|
+      parsed_log[symbol].select { |event| event}.each do |event|
+        date = event[:Date].split(" ")
+        m = @months.fetch(date[0])
+        month = m.to_i
+        day = date[1].to_i
+        date = Date.new(2025, month, day)
+        s_date = date.to_s
+        result[s_date] ||= 0
+        result[s_date] += 1
+      end
+    end
+    result
+  end
+
+  # Finds successful vs failed logins by the hour 
+  #
+  # @param parsed_log hash containing meta data for each event type
+  # @return result hash of event 
+  def login_patterns(parsed_log)
+    result = {}
+    
+    @login_events.each do |symbol|
+      parsed_log[symbol].select { |event| event}.each do |event|
+        time = event[:Time].split(":")
+        hour = time[0].to_sym
+        result[symbol] ||= {}
+        result[symbol][hour] ||= 0
+        result[symbol][hour] += 1
+      end
+    end
+    result
+  end
 end
