@@ -19,12 +19,12 @@ describe "Analyze Log" do
   describe "events_by_hour" do
     it "counts how many times each event occurs by the hour" do
       result = log_analyzer.events_by_hour(log)
-      expect(result[:Auth_failure][:"10"]).to eq(10)
+      expect(result[:Auth_failure]["10"]).to eq(10)
     end
   end
 
   describe "events_by_day" do
-    xit "counts how many times each event occurs by the day" do
+    it "counts how many times each event occurs by the day" do
       result = log_analyzer.events_by_day(log)
       expect(result[:Sudo_command]["2025-04-03"]).to eq(21)
     end

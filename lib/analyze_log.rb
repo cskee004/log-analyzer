@@ -46,6 +46,7 @@ class LogAnalyzer
     @low_events  = [:Sudo_command]
     @login_events = [:Accepted_password, :Failed_password]
     @months = {"Jan" => "1", "Feb" => "2", "Mar" => "3", "Apr" => "4", "May" => "5", "Jun" => "6", "Jul" => "7", "Aug" => "8", "Sep" => "9", "Oct" => "10", "Nov" => "11", "Dec" => "12"}
+    @hours = {"00" => 0, "01" => 0, "02" => 0, "03" => 0, "04" => 0, "05" => 0, "06" => 0, "07" => 0, "08" => 0, "09" => 0, "10" => 0, "11" => 0, "12" => 0, "13" => 0, "14" => 0, "15" => 0, "16" => 0, "17" => 0, "18" => 0, "19" => 0, "20" => 0, "21" => 0, "22" => 0, "23" => 0}
     
   end
 
@@ -62,21 +63,12 @@ class LogAnalyzer
   # {event_type => {hour => count}}
 
   def plot_event_series(dataset, title)
-    plot = UnicodePlot.lineplot(0, 0, name: "", width: 40, height: 10)
+    plot = UnicodePlot.lineplot(0, 100, name: "", width: 100, height: 40)
 
     @event_types.each do |symbol|
-      dataset[symbol].select { |hour| hour }.each do |hour|
-        temp = dataset[symbol]
-        x_values = temp.keys
-        y_values = temp.values
-        binding.pry
-        line_title = symbol.to_s
-        
-        UnicodePlot.lineplot!(plot, x_values, y_values, name: line_title)
-        
-      end
+
     end
-    plot.render
+    
   end
 
   def plot_ip_aggregate(dataset)
@@ -111,17 +103,17 @@ class LogAnalyzer
   # @return result hash of event types with number of occurrences for each hour that event took place
   def events_by_hour(parsed_log)
     result = {}
-    
+
     @event_types.each do |symbol|
+      #result[symbol] = Marshal.load(Marshal.dump(@hours))
+      result[symbol] = @hours.clone
       parsed_log[symbol].select { |event| event}.each do |event|
         time = event[:Time].split(":")
-        hour = time[0]
-        result[symbol] ||= {}
-        result[symbol][hour] ||= 0
+        hour = time[0] 
         result[symbol][hour] += 1
       end
     end
-    plot_event_series(result, "Events by Hour")
+    #plot_event_series(result, "Events by Hour")
     result
   end
 
@@ -144,6 +136,7 @@ class LogAnalyzer
         result[symbol][s_date] ||= 0
         result[symbol][s_date] += 1
       end
+      puts result[symbol]
     end
     result
   end
