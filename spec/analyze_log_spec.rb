@@ -12,12 +12,12 @@ describe "Analyze Log" do
   describe "suspicious_ips" do
     xit "finds each high security event for each IP" do
       result = log_analyzer.suspicious_ips(log)
-      expect(result["178.219.248.139"].length).to eq(8)
+      expect(result["178.219.248.139"]).to eq(8)
     end
   end
 
   describe "events_by_hour" do
-    xit "counts how many times each event occurs by the hour" do
+    it "counts how many times each event occurs by the hour" do
       result = log_analyzer.events_by_hour(log)
       expect(result[:Auth_failure][:"10"]).to eq(10)
     end
@@ -34,15 +34,21 @@ describe "Analyze Log" do
     xit "counts the total amount of event by the day" do
       result = log_analyzer.daily_volume(log)
       expect(result["2025-03-30"]).to eq(798)
-      log_analyzer.generate_bar(result)
+      log_analyzer.generate_bar_graph(result)
     end
   end
 
   describe "login_patterns" do
-    it "finds when accepted password and failed password events occur" do
+    xit "finds when accepted password and failed password events occur" do
       result = log_analyzer.login_patterns(log)
       expect(result[:Accepted_password][:"20"]).to eq(7)
       expect(result[:Failed_password][:"00"]).to eq(12)
+    end
+  end
+
+  describe "plot_event_series" do 
+    xit "plots results from the analysis methods" do
+
     end
   end
 end

@@ -49,41 +49,44 @@ class LogAnalyzer
     
   end
 
-  def generate_bar(data)
-    x_values = data.keys
-    y_values = data.values
-    plot = UnicodePlot.barplot(x_values, y_values, title: "Bar").render
+  # suspicious ips
+  # {ip => {event0, event1, event2}}
+  # 
+  # events by hour
+  # {event_type => {hour => count}}
+  # 
+  # events by day
+  # {event_type => {date => count}}
+  # 
+  # login patterns
+  # {event_type => {hour => count}}
+
+  def plot_event_series(dataset, title)
+    plot = UnicodePlot.lineplot(0, 0, name: "", width: 40, height: 10)
+
+    @event_types.each do |symbol|
+      dataset[symbol].select { |hour| hour }.each do |hour|
+        temp = dataset[symbol]
+        x_values = temp.keys
+        y_values = temp.values
+        binding.pry
+        line_title = symbol.to_s
+        
+        UnicodePlot.lineplot!(plot, x_values, y_values, name: line_title)
+        
+      end
+    end
+    plot.render
+  end
+
+  def plot_ip_aggregate(dataset)
+    sorted = dataset.sort_by { |ip, count| -count}
+    s = sorted.to_h
+    x = s.keys[0,10]
+    y = s.values[0,10]
+    plot = UnicodePlot.barplot(x, y, title: "Top 10 IPs by High Security Event").render
   end
   
-  # Prints to console results sorted into severity type along with how many occurrences 
-  # 
-  # @param parsed_log hash containing meta data for each event type
-  def get_summary(parsed_log)
-    high_rows = []
-    med_rows = []
-    ops_rows = []
-    
-    high_rows << ["Error Flags", parsed_log[:Error].length]
-    high_rows << ["Authentication failures", parsed_log[:Auth_failure].length]
-    high_rows << ["Invalid users", parsed_log[:Invalid_user].length]
-    high_rows << ["Failed password attempts", parsed_log[:Failed_password].length]
-
-    med_rows << ["Disconnects", parsed_log[:Disconnect].length]
-    med_rows << ["Accepted publickey", parsed_log[:Accepted_publickey].length]
-    med_rows << ["Accepted password", parsed_log[:Accepted_password].length]
-    med_rows << ["Session Opens", parsed_log[:Session_opened].length]
-    med_rows << ["Session Closes", parsed_log[:Session_closed].length]
-
-    ops_rows << ["Sudo usage", parsed_log[:Sudo_command].length]
-    
-    high_table = Terminal::Table.new :title => "High Security Concerns" , :headings => ['Event Type', 'Occurrences'], :rows => high_rows
-    med_table = Terminal::Table.new :title => "Medium Security Concerns" , :headings => ['Event Type', 'Occurrences'], :rows => med_rows
-    ops_table = Terminal::Table.new :title => "Operational Monitoring" , :headings => ['Event Type', 'Occurrences'], :rows => ops_rows
-
-    puts high_table
-    puts med_table 
-    puts ops_table   
-  end
 
   # Collects unique IP addresses and their associated high security events
   #       
@@ -94,10 +97,11 @@ class LogAnalyzer
     
     @high_events.each do |symbol|
       parsed_log[symbol].select { |event| event }.each do |event|    
-        result[event[:Source_IP]] ||= [] # Set result[ip] to new empty array if nil or doesn't exist
-        result[event[:Source_IP]] << event # Add event to array
+        result[event[:Source_IP]] ||= 0 # Set result[ip] to new empty array if nil or doesn't exist
+        result[event[:Source_IP]] += 1 # removed << event
       end 
     end
+    plot_ip_aggregate(result)
     result
   end
 
@@ -117,6 +121,7 @@ class LogAnalyzer
         result[symbol][hour] += 1
       end
     end
+    plot_event_series(result, "Events by Hour")
     result
   end
 
@@ -183,4 +188,35 @@ class LogAnalyzer
     end
     result
   end
+
+  # Prints to console results sorted into severity type along with how many occurrences 
+  # 
+  # @param parsed_log hash containing meta data for each event type
+  def get_summary(parsed_log)
+    high_rows = []
+    med_rows = []
+    ops_rows = []
+    
+    high_rows << ["Error Flags", parsed_log[:Error].length]
+    high_rows << ["Authentication failures", parsed_log[:Auth_failure].length]
+    high_rows << ["Invalid users", parsed_log[:Invalid_user].length]
+    high_rows << ["Failed password attempts", parsed_log[:Failed_password].length]
+
+    med_rows << ["Disconnects", parsed_log[:Disconnect].length]
+    med_rows << ["Accepted publickey", parsed_log[:Accepted_publickey].length]
+    med_rows << ["Accepted password", parsed_log[:Accepted_password].length]
+    med_rows << ["Session Opens", parsed_log[:Session_opened].length]
+    med_rows << ["Session Closes", parsed_log[:Session_closed].length]
+
+    ops_rows << ["Sudo usage", parsed_log[:Sudo_command].length]
+    
+    high_table = Terminal::Table.new :title => "High Security Concerns" , :headings => ['Event Type', 'Occurrences'], :rows => high_rows
+    med_table = Terminal::Table.new :title => "Medium Security Concerns" , :headings => ['Event Type', 'Occurrences'], :rows => med_rows
+    ops_table = Terminal::Table.new :title => "Operational Monitoring" , :headings => ['Event Type', 'Occurrences'], :rows => ops_rows
+
+    puts high_table
+    puts med_table 
+    puts ops_table   
+  end
+
 end
