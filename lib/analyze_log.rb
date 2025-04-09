@@ -115,7 +115,7 @@ class LogAnalyzer
     @event_types.each do |symbol|
       parsed_log[symbol].select { |event| event}.each do |event|
         time = event[:Time].split(":")
-        hour = time[0].to_sym
+        hour = time[0]
         result[symbol] ||= {}
         result[symbol][hour] ||= 0
         result[symbol][hour] += 1
