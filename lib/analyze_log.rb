@@ -1,7 +1,6 @@
 require 'pry-byebug'
 require 'terminal-table'
 require_relative 'preprocess_log'
-require 'date'
 require 'unicode_plot'
 
 # LogAnalyzer Class
@@ -136,8 +135,9 @@ class LogAnalyzer
         result[symbol][s_date] ||= 0
         result[symbol][s_date] += 1
       end
-      puts result[symbol]
+      
     end
+    
     result
   end
 

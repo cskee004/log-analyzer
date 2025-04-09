@@ -1,4 +1,5 @@
 require 'pry-byebug'
+require 'date'
 
 # LogParser Class
 # This class is responsible for parsing Linux auth.log to identify security-related events such as
@@ -30,9 +31,26 @@ require 'pry-byebug'
 #
 class LogParser
   
+  def initialize 
+    @date_range = {}
+    @months = {"Jan" => "1", "Feb" => "2", "Mar" => "3", "Apr" => "4", "May" => "5", "Jun" => "6", "Jul" => "7", "Aug" => "8", "Sep" => "9", "Oct" => "10", "Nov" => "11", "Dec" => "12"}
+  end
+
+  def fix_date(log_date)
+    date = log_date.split(" ")
+    calendar_month = @months.fetch(date[0])
+    month = calendar_month.to_i
+    day = date[1].to_i
+    date_date = Date.new(2025, month, day)
+    s_date = date_date.to_s
+    
+    s_date
+  end
   
 
-
+  def get_date_range()
+    
+  end
   # Parse the given auth.log file
   # The data, time, and host are parsed before calling the appropriate method
   # 
