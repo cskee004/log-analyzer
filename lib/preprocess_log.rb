@@ -16,47 +16,32 @@ require 'date'
 #     event_type_0: [{event_0}, {event_1}]
 #     event_type_1: [{event_0}, {event_1}]
 #    }
+# - 'start_date' string : first recorded date in the given log
+# - 'end_date' string : last recorded date in the given log 
+# - 'date_range' array : holds the date range found in the given log
+# - 'months' hash : helper for converting 3 letter month abbreviations to numerical representations
 # 
 # Methods:
-# - 'read_log' : Parses the input log lines and calls the event type parser
-# - 'parse_error' : Parses lines that have the elevated flag 'error'
-# - 'parse_auth_failure' : Parses lines that contain 'authentication_failure' 
-# - 'parse_disconnect' : Parses lines that contain 'Disconnected'
-# - 'parse_session_open' : Parses lines that contain 'session open'
-# - 'parse_session_closed' : Parses lines that contain 'session closed'
-# - 'parse_sudo_command' : Parses lines that contain 'PWD' 'USER' 'COMMAND'
-# - 'parse_accept_event' : Parses lines that contain 'Accepted'
-# - 'parse_invalid_user' : Parses lines that contain 'Invalid user'
-# - 'parse_failed_password' : Parses lines that contain 'Failed password'
+# - 'sanitize_date' : normalizes dates
+# - 'set_date_range' : helper function to set the begin and end date from the given log
+# - 'get_date_range' : helper function to return date range array
+# - 'read_log' : parses the input log lines and calls the event type parser
+# - 'parse_error' : parses lines that have the flag 'error' event
+# - 'parse_auth_failure' : parses lines that contain 'authentication_failure' event 
+# - 'parse_disconnect' : parses lines that contain 'Disconnected' event
+# - 'parse_session_open' : parses lines that contain 'session open' event
+# - 'parse_session_closed' : parses lines that contain 'session closed' event
+# - 'parse_sudo_command' : parses lines that contain sudo_command usage 
+# - 'parse_accept_event' : parses lines that contain 'Accepted' event
+# - 'parse_invalid_user' : parses lines that contain 'Invalid user' event 
+# - 'parse_failed_password' : parses lines that contain 'Failed password' event
 #
 class LogParser
   
   def initialize 
-    @date_range = {}
-    @months = {"Jan" => "1", "Feb" => "2", "Mar" => "3", "Apr" => "4", "May" => "5", "Jun" => "6", "Jul" => "7", "Aug" => "8", "Sep" => "9", "Oct" => "10", "Nov" => "11", "Dec" => "12"}
-  end
+    @start_date = nil
+    @end_date = nil
 
-  def fix_date(log_date)
-    date = log_date.split(" ")
-    calendar_month = @months.fetch(date[0])
-    month = calendar_month.to_i
-    day = date[1].to_i
-    date_date = Date.new(2025, month, day)
-    s_date = date_date.to_s
-    
-    s_date
-  end
-  
-
-  def get_date_range()
-    
-  end
-  # Parse the given auth.log file
-  # The data, time, and host are parsed before calling the appropriate method
-  # 
-  # @param filename The location of the auth.log to be parsed
-  # @return A hash containing an individual event found in auth.log
-  def read_log(filename = "./data/auth.log")
     @parsed_log = 
     {
       Error: [],
@@ -70,33 +55,87 @@ class LogParser
       Invalid_user: [],
       Failed_password: []
     }
-    File.foreach(filename).with_index do |line, line_num|
-      date = line.match(/^[A-Z][a-z]{2}\s+\d{1,2}/)
-      time = line.match(/\d{2}\:\d{2}\:\d{2}/)
-      host = line.match(/\D{3}\d{2}\-\d{2}\-\d{2}-\d{3}/)
-      case line
-      when /error/
-        @parsed_log[:Error] << parse_error(line, line_num, "Error flag" ,date[0], time[0], host[0])
-      when /authentication failure/
-        @parsed_log[:Auth_failure] << parse_auth_failure(line, line_num,"Authentication failure" ,date[0], time[0], host[0])
-      when /Disconnected/
-        @parsed_log[:Disconnect] << parse_disconnect(line, line_num, "Disconnect", date[0], time[0], host[0])
-      when /session opened/
-        @parsed_log[:Session_opened] << parse_session_open(line, line_num, "Session opened",date[0], time[0], host[0])
-      when /session closed/
-        @parsed_log[:Session_closed] << parse_session_close(line, line_num, "Session closed" ,date[0], time[0], host[0])
-      when /(PWD)*(USER)*(COMMAND)/
-        @parsed_log[:Sudo_command] << parse_sudo_command(line, line_num, "Sudo command",date[0], time[0], host[0])
-      when /Accepted publickey/
-        @parsed_log[:Accepted_publickey] << parse_accept_event(line, line_num, "Accept publickey",date[0], time[0], host[0])
-      when /Accepted password/ 
-        @parsed_log[:Accepted_password] << parse_accept_event(line, line_num, "Accepted password", date[0], time[0], host[0])
-      when /Invalid user/
-        @parsed_log[:Invalid_user] << parse_invalid_user(line, line_num, "Invalid user",date[0], time[0], host[0])
-      when /Failed password/
-        @parsed_log[:Failed_password] << parse_failed_password(line, line_num, "Failed password",date[0], time[0], host[0])
+    @date_range = []
+    @months = {"Jan" => "1", "Feb" => "2", "Mar" => "3", "Apr" => "4", "May" => "5", "Jun" => "6", "Jul" => "7", "Aug" => "8", "Sep" => "9", "Oct" => "10", "Nov" => "11", "Dec" => "12"}
+  end
+
+  # Converts date into a normalized format
+  # 
+  # @param log_date - the given date 
+  # @returns s_date - the normalized date 
+  def sanitize_date(log_date)
+    date = log_date.split(" ")
+    calendar_month = @months.fetch(date[0])
+    month = calendar_month.to_i
+    day = date[1].to_i
+    date_date = Date.new(2025, month, day)
+    s_date = date_date.to_s
+    s_date
+  end
+  
+  # Sets a range of dates
+  # 
+  # @param first - the date from the first line of the given file
+  # @param last - the date from the last line of the given file
+  def set_date_range(first, last)
+    @date_range << sanitize_date(first)
+    @date_range << sanitize_date(last)
+  end
+
+  # Helper function to return date_range
+  # 
+  # @return date_range - an array containing a range of dates
+  def get_date_range()
+    @date_range
+  end
+
+  # Reads the given file line by line. Routes lines by parsed event type
+  # 
+  # @param filename - the location of the auth.log to be parsed
+  # @return parsed_log - a hash containing an individual event found in auth.log
+  def read_log(filename = "./data/auth.log")
+    if File.exist?(filename) && !File.zero?(filename) 
+      File.foreach(filename).with_index do |line, line_num|
+        
+        if @start_date == nil 
+          @start_date = line.match(/^[A-Z][a-z]{2}\s+\d{1,2}/)
+        end
+
+        date_stamp = line.match(/^[A-Z][a-z]{2}\s+\d{1,2}/)
+        date_string = sanitize_date(date_stamp[0])
+        time = line.match(/\d{2}\:\d{2}\:\d{2}/)
+        host = line.match(/\D{3}\d{2}\-\d{2}\-\d{2}-\d{3}/)
+        @end_date = line.match(/^[A-Z][a-z]{2}\s+\d{1,2}/)
+
+        case line
+        when /error/
+          @parsed_log[:Error] << parse_error(line, line_num, "Error flag" , date_string, time[0], host[0])
+        when /authentication failure/
+          @parsed_log[:Auth_failure] << parse_auth_failure(line, line_num,"Authentication failure" ,date_string, time[0], host[0])
+        when /Disconnected/
+          @parsed_log[:Disconnect] << parse_disconnect(line, line_num, "Disconnect", date_string, time[0], host[0])
+        when /session opened/
+          @parsed_log[:Session_opened] << parse_session_open(line, line_num, "Session opened",date_string, time[0], host[0])
+        when /session closed/
+          @parsed_log[:Session_closed] << parse_session_close(line, line_num, "Session closed" ,date_string, time[0], host[0])
+        when /(PWD)*(USER)*(COMMAND)/
+          @parsed_log[:Sudo_command] << parse_sudo_command(line, line_num, "Sudo command", date_string, time[0], host[0])
+        when /Accepted publickey/
+          @parsed_log[:Accepted_publickey] << parse_accept_event(line, line_num, "Accept publickey",date_string, time[0], host[0])
+        when /Accepted password/ 
+          @parsed_log[:Accepted_password] << parse_accept_event(line, line_num, "Accepted password", date_string, time[0], host[0])
+        when /Invalid user/
+          @parsed_log[:Invalid_user] << parse_invalid_user(line, line_num, "Invalid user",date_string, time[0], host[0])
+        when /Failed password/
+          @parsed_log[:Failed_password] << parse_failed_password(line, line_num, "Failed password",date_string, time[0], host[0])
+        end
       end
+
+    else
+      puts "File missing or empty"
     end
+
+    set_date_range(@start_date[0], @end_date[0])
     @parsed_log
   end
 
