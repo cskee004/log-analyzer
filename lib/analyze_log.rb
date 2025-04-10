@@ -31,7 +31,10 @@ require 'unicode_plot'
 #   - 'login_patterns' : Reports when users typically log in and when failures occur
 
 class LogAnalyzer
-  def initialize
+
+  def initialize(parser)
+    @parser = parser
+    @dates = {}
     @event_types = [
       :Error, :Auth_failure, 
       :Disconnect, :Session_opened, 
@@ -45,33 +48,45 @@ class LogAnalyzer
     @login_events = [:Accepted_password, :Failed_password]
     @months = {"Jan" => "1", "Feb" => "2", "Mar" => "3", "Apr" => "4", "May" => "5", "Jun" => "6", "Jul" => "7", "Aug" => "8", "Sep" => "9", "Oct" => "10", "Nov" => "11", "Dec" => "12"}
     @hours = {"00" => 0, "01" => 0, "02" => 0, "03" => 0, "04" => 0, "05" => 0, "06" => 0, "07" => 0, "08" => 0, "09" => 0, "10" => 0, "11" => 0, "12" => 0, "13" => 0, "14" => 0, "15" => 0, "16" => 0, "17" => 0, "18" => 0, "19" => 0, "20" => 0, "21" => 0, "22" => 0, "23" => 0}
-    
   end
 
-  # suspicious ips
-  # {ip => {event0, event1, event2}}
-  # 
-  # events by hour
-  # {event_type => {hour => count}}
-  # 
-  # events by day
-  # {event_type => {date => count}}
-  # 
-  # login patterns
-  # {event_type => {hour => count}}
-
-  def plot_event_series(dataset, title)
-    plot = UnicodePlot.lineplot(0, 100, name: "", width: 100, height: 40)
-
-    date_range = get_date_range
-    puts date_range
+  # Plots a bar graph for each event type with how many occurrences for each date in the dataset
+  #
+  # @param dataset - a hash containing {event_type => {date => count}}
+  def plot_day_series(dataset)
+    result = {}
+    dates = build_date_range # a hash containing a range of dates as keys with default values of 0
 
     @event_types.each do |symbol|
-
+      result[symbol] = dates.clone 
+      dataset[symbol].select { |event| event }.each do |event|
+        date = event[:Date]
+        result[symbol][date] += 1
+      end
     end
-    
+  
+    result.each do |event_type, date|
+      x_values = result[event_type].keys
+      y_values = result[event_type].values
+      plot = UnicodePlot.barplot(x_values, y_values, title: "#{event_type} Event by Date").render  
+    end
   end
 
+  # Plots a bar graph for each event type with how many occurrences for each hour in the dataset
+  # 
+  # @param dataset - a hash containing {event_type => {hour => count}}
+  def plot_hour_series(dataset)
+    puts dataset
+    dataset.each do |event_type, hour|
+      x_values = dataset[event_type].keys
+      y_values = dataset[event_type].values
+      plot = UnicodePlot.barplot(x_values, y_values, title: "#{event_type} Event by Hour").render
+    end
+  end
+
+  # Plots a bar graph for the top 10 IPs found to be associated with high security events
+  # 
+  # @param dataset - a hash containing {ip => {event0, event1, event2}}
   def plot_ip_aggregate(dataset)
     sorted = dataset.sort_by { |ip, count| -count}
     s = sorted.to_h
@@ -80,6 +95,19 @@ class LogAnalyzer
     plot = UnicodePlot.barplot(x, y, title: "Top 10 IPs by High Security Event").render
   end
   
+
+
+  def build_date_range()
+    result = {}
+    range = []
+
+    begin_date = Date.parse(@parser.date_range[0])
+    end_date = Date.parse(@parser.date_range[1])
+    begin_date.step(end_date) { |date| range << date.to_s }
+
+    result = range.to_h { |key| [key, 0] }
+    result
+  end
 
   # Collects unique IP addresses and their associated high security events
   #       
@@ -108,13 +136,13 @@ class LogAnalyzer
     @event_types.each do |symbol|
       #result[symbol] = Marshal.load(Marshal.dump(@hours))
       result[symbol] = @hours.clone
-      parsed_log[symbol].select { |event| event}.each do |event|
+      parsed_log[symbol].select { |event| event }.each do |event|
         time = event[:Time].split(":")
         hour = time[0] 
         result[symbol][hour] += 1
       end
     end
-    #plot_event_series(result, "Events by Hour")
+    plot_hour_series(result)
     result
   end
 
@@ -126,7 +154,7 @@ class LogAnalyzer
     result = {}
     
     @event_types.each do |symbol|
-      parsed_log[symbol].select { |event| event}.each do |event|
+      parsed_log[symbol].select { |event| event }.each do |event|
         date = event[:Date]
         result[symbol] ||= {}
         result[symbol][date] ||= 0
@@ -144,7 +172,7 @@ class LogAnalyzer
     result = {}
     
     @login_events.each do |symbol|
-      parsed_log[symbol].select { |event| event}.each do |event|
+      parsed_log[symbol].select { |event| event }.each do |event|
         time = event[:Time].split(":")
         hour = time[0].to_sym
         result[symbol] ||= {}

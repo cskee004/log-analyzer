@@ -37,11 +37,11 @@ require 'date'
 # - 'parse_failed_password' : parses lines that contain 'Failed password' event
 #
 class LogParser
-  
-  def initialize 
+  attr_reader :date_range
+
+  def initialize()
     @start_date = nil
     @end_date = nil
-
     @parsed_log = 
     {
       Error: [],

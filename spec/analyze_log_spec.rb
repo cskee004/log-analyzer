@@ -6,7 +6,7 @@ require "analyze_log.rb"
 
 describe "Analyze Log" do
   let(:log_parser) { LogParser.new }
-  let(:log_analyzer) { LogAnalyzer.new }
+  let(:log_analyzer) { LogAnalyzer.new(log_parser) }
   let(:log) { log_parser.read_log()}
   
   describe "suspicious_ips" do
@@ -38,9 +38,10 @@ describe "Analyze Log" do
     end
   end
 
-  describe "plot_event_series" do 
+  describe "plot_date_series" do 
     it "plots results from the analysis methods" do
-
+      log_analyzer.plot_day_series(log)
+      
     end
   end
 end
