@@ -10,7 +10,7 @@ describe "Analyze Log" do
   let(:log) { log_parser.read_log()}
   
   describe "suspicious_ips" do
-    xit "finds each high security event for each IP" do
+    it "finds each high security event for each IP" do
       result = log_analyzer.suspicious_ips(log)
       expect(result["178.219.248.139"]).to eq(8)
     end
@@ -30,16 +30,8 @@ describe "Analyze Log" do
     end
   end
 
-  describe "daily_volume" do
-    xit "counts the total amount of event by the day" do
-      result = log_analyzer.daily_volume(log)
-      expect(result["2025-03-30"]).to eq(798)
-      log_analyzer.generate_bar_graph(result)
-    end
-  end
-
   describe "login_patterns" do
-    xit "finds when accepted password and failed password events occur" do
+    it "finds when accepted password and failed password events occur" do
       result = log_analyzer.login_patterns(log)
       expect(result[:Accepted_password][:"20"]).to eq(7)
       expect(result[:Failed_password][:"00"]).to eq(12)
@@ -47,7 +39,7 @@ describe "Analyze Log" do
   end
 
   describe "plot_event_series" do 
-    xit "plots results from the analysis methods" do
+    it "plots results from the analysis methods" do
 
     end
   end

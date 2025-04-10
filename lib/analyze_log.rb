@@ -28,7 +28,6 @@ require 'unicode_plot'
 #   - 'suspicious_ips' : Rank IPs by number of high security concerns
 #   - 'events_by_hour' : Finds what event type happens during each hour of the day
 #   - 'events_by_day' : Finds what event type happens during each day
-#   - 'daily_volume' : Reports how busy the system is each day 
 #   - 'login_patterns' : Reports when users typically log in and when failures occur
 
 class LogAnalyzer
@@ -63,6 +62,9 @@ class LogAnalyzer
 
   def plot_event_series(dataset, title)
     plot = UnicodePlot.lineplot(0, 100, name: "", width: 100, height: 40)
+
+    date_range = get_date_range
+    puts date_range
 
     @event_types.each do |symbol|
 
@@ -125,39 +127,10 @@ class LogAnalyzer
     
     @event_types.each do |symbol|
       parsed_log[symbol].select { |event| event}.each do |event|
-        date = event[:Date].split(" ")
-        m = @months.fetch(date[0])
-        month = m.to_i
-        day = date[1].to_i
-        date = Date.new(2025, month, day)
-        s_date = date.to_s
+        date = event[:Date]
         result[symbol] ||= {}
-        result[symbol][s_date] ||= 0
-        result[symbol][s_date] += 1
-      end
-      
-    end
-    
-    result
-  end
-
-  # Finds the total volume of events by the day
-  # 
-  # @param parsed_log hash containing meta data for each event type
-  # @return result hash of event 
-  def daily_volume(parsed_log)
-    result = {}
-
-    @event_types.each do |symbol|
-      parsed_log[symbol].select { |event| event}.each do |event|
-        date = event[:Date].split(" ")
-        m = @months.fetch(date[0])
-        month = m.to_i
-        day = date[1].to_i
-        date = Date.new(2025, month, day)
-        s_date = date.to_s
-        result[s_date] ||= 0
-        result[s_date] += 1
+        result[symbol][date] ||= 0
+        result[symbol][date] += 1
       end
     end
     result
