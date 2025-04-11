@@ -54,3 +54,12 @@ color_scheme: dark
 #   - vendor/cache/
 #   - vendor/gems/
 #   - vendor/ruby/
+collections:
+  tests:
+    permalink: "/:collection/:path/"
+    output: true
+
+just_the_docs:
+  collections:
+    tests:
+      name: Tests
