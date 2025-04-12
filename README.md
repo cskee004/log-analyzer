@@ -20,3 +20,4 @@ The goal of this project is to provide a lightweight, scriptable tool for detect
 
 While the current version focuses on parsing and analyzing log files, future updates will include a persistent database and an interactive dashboard for exploring security events over time and across different systems.
 
+[![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
