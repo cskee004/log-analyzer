@@ -98,7 +98,7 @@ RSpec.configure do |config|
 =end
 RSpec.configure do |config|
   config.add_formatter 'progress'
-  config.add_formatter 'json', 'results/rspec_results.json'
+  config.add_formatter 'json', 'docs/results/tests/rspec_results.json'
 end
 
 end

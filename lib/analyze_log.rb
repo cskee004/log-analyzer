@@ -2,6 +2,7 @@ require 'pry-byebug'
 require 'terminal-table'
 require_relative 'preprocess_log'
 require 'unicode_plot'
+require 'json'
 
 # LogAnalyzer Class
 # This class is responsible for analyzing security related events found in parsed_log. This class makes the following assumptions...
@@ -32,15 +33,14 @@ require 'unicode_plot'
 # - 'hours' hash : helper for normalizing datasets that use hour based analysis 
 #
 # Methods:
-# - 'plot_day_series' : Creates a visual aid for the given dataset
-# - 'plot_time_series' : Creates a visual aid for the given dataset
-# - 'plot_ip_aggregate' : Creates a visual aid for the given dataset
-# - 'build_date_range' : Helper function for normalizing datasets that use date based analysis 
-# - 'get_summary' : Prints a table for each severity level (High, Medium, regular ops)
+# - 'plot_time_series' : Creates a bar graph where x-values represent the time unit(hour or date) and y-values represent event counts in the time unit 
+# - 'plot_ip_aggregate' : Creates a bar graph where x-values represent flagged ip addresses and y-values represent high security event counts
 # - 'suspicious_ips' : Rank top 10 IPs by number of high security concerns
 # - 'events_by_hour' : Finds what event type happens during each hour of the day
 # - 'events_by_date' : Finds what event type happens during each hour or date
 # - 'login_patterns' : Reports when users typically log in and when failures occur
+# - 'save_json' : Helper function to save the given dataset in json format
+# - 'save_graph' : Helper function to save the given plot object
 # - 'get_summary' : prints tables to the console that summarize the results from LogParser
 
 class LogAnalyzer
@@ -66,28 +66,21 @@ class LogAnalyzer
   #
   # @param dataset - a hash containing {event_type => {date => count}, event_type => ...}
   def plot_time_series(dataset, time_unit)
-    dataset.each do |event_type, date|
+    
+    dataset.each do |event_type, time|
+      save_json(dataset, time_unit)
       x_values = dataset[event_type].keys
       y_values = dataset[event_type].values
       
       case time_unit
       when /date/
         plot = UnicodePlot.barplot(x_values, y_values, title: "#{event_type} Event by Date")
-        output = StringIO.new
-        plot.render(output)
-        
-        file_path = "docs/results/graphs/#{event_type}_date.txt"
-        File.delete(file_path) if File.exist?(file_path)
-        File.open(file_path, "w") { |file| file.write(plot.to_s) }
+        save_graph(plot, event_type, time_unit)
       
       when /hour/
         plot = UnicodePlot.barplot(x_values, y_values, title: "#{event_type} Event by Hour")
-        output = StringIO.new
-        plot.render(output)
-        
-        file_path = "docs/results/graphs/#{event_type}_hour.txt"
-        File.delete(file_path) if File.exist?(file_path)
-        File.open(file_path, "w") { |file| file.write(plot.to_s) }
+        save_graph(plot, event_type, time_unit)
+
       end 
     end
   end
@@ -110,6 +103,7 @@ class LogAnalyzer
     file_path = "docs/results/graphs/sus_IPs.txt"
     File.delete(file_path) if File.exist?(file_path)
     File.open(file_path, "w") { |file| file.write(plot.to_s) }
+
   end
   
   # Collects unique IP addresses and their associated high security events
@@ -190,6 +184,30 @@ class LogAnalyzer
     end
     
     result
+  end
+
+  def save_json(dataset, time_unit)
+    
+    dataset.each do |event_type, time|
+      x_values = dataset[event_type].keys
+      y_values = dataset[event_type].values
+
+      data = { "event_type" => event_type, "#{time_unit}" => x_values, "values" => y_values }
+      
+      path = "docs/results/datasets/#{event_type}_#{time_unit}.json"
+      File.delete(path) if File.exist?(path)
+      File.open(path, "w")  { |file| file.write(data.to_json) } 
+    end
+    
+  end
+
+  def save_graph(plot, event_type, time_unit)
+    output = StringIO.new
+    plot.render(output)
+    file_path = "docs/results/graphs/#{event_type}_#{time_unit}.txt"
+    File.delete(file_path) if File.exist?(file_path)
+    File.open(file_path, "w") { |file| file.write(plot.to_s) }
+    
   end
 
   # Prints to console results sorted into severity type along with how many occurrences 
