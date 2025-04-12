@@ -1,5 +1,5 @@
-require "spec_helper"
-require "preprocess_log"
+require 'spec_helper'
+require 'preprocess_log'
 
 describe "Preprocess log" do
   log_parser = LogParser.new
