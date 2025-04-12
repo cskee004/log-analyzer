@@ -22,8 +22,9 @@ require 'date'
 # - 'months' hash : helper for converting 3 letter month abbreviations to numerical representations
 # 
 # Methods:
+# - 'set_date_range' : helper function to build dates hash 
 # - 'sanitize_date' : normalizes dates
-# - 'set_date_range' : helper function to set the begin and end date from the given log
+# - 'create_date_range' : creates a hash of dates keys with values of 0
 # - 'get_date_range' : helper function to return date range array
 # - 'read_log' : parses the input log lines and calls the event type parser
 # - 'parse_error' : parses lines that have the flag 'error' event
@@ -88,7 +89,7 @@ class LogParser
   # 
   # @param first Date obj - date from first entry in log
   # @param last Date obj - date from the last entry in log
-  # @returns hash of dates {event_type => {date => count}}
+  # @returns hash of dates {date => count}
   def create_date_range(first, last)
     range = []
 
@@ -104,7 +105,7 @@ class LogParser
   # 
   # @return dates - a hash of dates
   def get_date_range()
-    @dates
+    @dates.clone
   end
 
   # Reads the given file line by line. Routes lines by parsed event type

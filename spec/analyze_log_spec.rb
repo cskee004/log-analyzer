@@ -23,9 +23,9 @@ describe "Analyze Log" do
     end
   end
 
-  describe "events_by_day" do
-    it "counts how many times each event occurs by the day" do
-      result = log_analyzer.events_by_day(log)
+  describe "events_by_date" do
+    it "counts how many times each event occurs by the date" do
+      result = log_analyzer.events_by_date(log)
       expect(result[:Sudo_command]["2025-04-03"]).to eq(21)
     end
   end
@@ -38,10 +38,5 @@ describe "Analyze Log" do
     end
   end
 
-  describe "plot_date_series" do 
-    it "plots results from the analysis methods" do
-      log_analyzer.plot_day_series(log)
-      
-    end
-  end
+
 end

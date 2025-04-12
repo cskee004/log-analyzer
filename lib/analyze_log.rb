@@ -33,13 +33,13 @@ require 'unicode_plot'
 #
 # Methods:
 # - 'plot_day_series' : Creates a visual aid for the given dataset
-# - 'plot_hour_series' : Creates a visual aid for the given dataset
+# - 'plot_time_series' : Creates a visual aid for the given dataset
 # - 'plot_ip_aggregate' : Creates a visual aid for the given dataset
 # - 'build_date_range' : Helper function for normalizing datasets that use date based analysis 
 # - 'get_summary' : Prints a table for each severity level (High, Medium, regular ops)
 # - 'suspicious_ips' : Rank top 10 IPs by number of high security concerns
 # - 'events_by_hour' : Finds what event type happens during each hour of the day
-# - 'events_by_day' : Finds what event type happens during each day
+# - 'events_by_date' : Finds what event type happens during each hour or date
 # - 'login_patterns' : Reports when users typically log in and when failures occur
 # - 'get_summary' : prints tables to the console that summarize the results from LogParser
 
@@ -62,36 +62,20 @@ class LogAnalyzer
     @hours = {"00" => 0, "01" => 0, "02" => 0, "03" => 0, "04" => 0, "05" => 0, "06" => 0, "07" => 0, "08" => 0, "09" => 0, "10" => 0, "11" => 0, "12" => 0, "13" => 0, "14" => 0, "15" => 0, "16" => 0, "17" => 0, "18" => 0, "19" => 0, "20" => 0, "21" => 0, "22" => 0, "23" => 0}
   end
 
-  # Plots a bar graph for each event type with how many occurrences for each date in the dataset
+  # Plots a bar graph for each event type with how many occurrences for each day or date in the dataset
   #
   # @param dataset - a hash containing {event_type => {date => count}, event_type => ...}
-  def plot_day_series(dataset)
-    result = {}
-    dates = build_date_range # a hash containing a range of dates as keys with default values of 0
-
-    @event_types.each do |symbol|
-      result[symbol] = dates.clone 
-      dataset[symbol].select { |event| event }.each do |event|
-        date = event[:Date]
-        result[symbol][date] += 1
-      end
-    end
-  
-    result.each do |event_type, date|
-      x_values = result[event_type].keys
-      y_values = result[event_type].values
-      plot = UnicodePlot.barplot(x_values, y_values, title: "#{event_type} Event by Date").render  
-    end
-  end
-
-  # Plots a bar graph for each event type with how many occurrences for each hour in the dataset
-  # 
-  # @param dataset - a hash containing {event_type => {hour => count}, event_type => ...}
-  def plot_hour_series(dataset)
-    dataset.each do |event_type, hour|
+  def plot_time_series(dataset, time_unit)
+    dataset.each do |event_type, date|
       x_values = dataset[event_type].keys
       y_values = dataset[event_type].values
-      plot = UnicodePlot.barplot(x_values, y_values, title: "#{event_type} Event by Hour").render
+      case time_unit
+      when /date/
+        plot = UnicodePlot.barplot(x_values, y_values, title: "#{event_type} Event by Date").render 
+      when /hour/
+        plot = UnicodePlot.barplot(x_values, y_values, title: "#{event_type} Event by Hour").render
+      end
+       
     end
   end
 
@@ -107,24 +91,6 @@ class LogAnalyzer
     plot = UnicodePlot.barplot(x, y, title: "Top 10 IPs by High Security Event").render
   end
   
-
-  # Calls LogParser instance variable for a range of dates. The range of dates are then used to create a hash that can
-  # be used for any date based analysis.
-  # 
-  # @returns result - a hash of date keys in ascending order with values of 0 
-  # {"YYYY-MM-DD" => 0, "YYYY-MM-DD" => 0...}
-  def build_date_range()
-    result = {}
-    range = []
-
-    begin_date = Date.parse(@parser.date_range[0])
-    end_date = Date.parse(@parser.date_range[1])
-    begin_date.step(end_date) { |date| range << date.to_s }
-
-    result = range.to_h { |key| [key, 0] }
-    result
-  end
-
   # Collects unique IP addresses and their associated high security events
   #       
   # @param parsed_log hash containing meta data for each event type
@@ -152,7 +118,6 @@ class LogAnalyzer
     result = {}
 
     @event_types.each do |symbol|
-      #result[symbol] = Marshal.load(Marshal.dump(@hours))
       result[symbol] = @hours.clone
       parsed_log[symbol].select { |event| event }.each do |event|
         time = event[:Time].split(":")
@@ -160,7 +125,8 @@ class LogAnalyzer
         result[symbol][hour] += 1
       end
     end
-    plot_hour_series(result)
+    
+    plot_time_series(result, "hour")
     result
   end
 
@@ -169,17 +135,19 @@ class LogAnalyzer
   # @param parsed_log hash containing meta data for each event type 
   # @return result - a hash of event types with number of occurrences for each day that event took place
   # {event_type0 => {date => count, ...}, event_type1 => {date => count}, ...}
-  def events_by_day(parsed_log)
+
+  def events_by_date(parsed_log)
     result = {}
     
     @event_types.each do |symbol|
+      result[symbol] = @parser.get_date_range
       parsed_log[symbol].select { |event| event }.each do |event|
         date = event[:Date]
-        result[symbol] ||= {}
-        result[symbol][date] ||= 0
         result[symbol][date] += 1
       end
     end
+    
+    plot_time_series(result, "date")
     result
   end
 
@@ -193,14 +161,13 @@ class LogAnalyzer
     
     @login_events.each do |symbol|
       result[symbol] = @hours.clone
-      puts result[symbol].inspect
       parsed_log[symbol].select { |event| event }.each do |event|
         time = event[:Time].split(":")
         hour = time[0]
         result[symbol][hour] += 1
       end
     end
-    puts result.inspect
+    
     result
   end
 
