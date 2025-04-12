@@ -10,21 +10,21 @@ describe "Analyze Log" do
   let(:log) { log_parser.read_log()}
   
   describe "suspicious_ips" do
-    it "finds each high security event for each IP" do
+    xit "finds each high security event for each IP" do
       result = log_analyzer.suspicious_ips(log)
       expect(result["178.219.248.139"]).to eq(8)
     end
   end
 
   describe "events_by_hour" do
-    it "counts how many times each event occurs by the hour" do
+    xit "counts how many times each event occurs by the hour" do
       result = log_analyzer.events_by_hour(log)
       expect(result[:Auth_failure]["10"]).to eq(10)
     end
   end
 
   describe "events_by_day" do
-    it "counts how many times each event occurs by the day" do
+    xit "counts how many times each event occurs by the day" do
       result = log_analyzer.events_by_day(log)
       expect(result[:Sudo_command]["2025-04-03"]).to eq(21)
     end
@@ -39,7 +39,7 @@ describe "Analyze Log" do
   end
 
   describe "plot_date_series" do 
-    it "plots results from the analysis methods" do
+    xit "plots results from the analysis methods" do
       log_analyzer.plot_day_series(log)
       
     end

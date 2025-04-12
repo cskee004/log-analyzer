@@ -22,19 +22,31 @@ require 'unicode_plot'
 #   log_analyzer.get_summary(log)
 #
 # Attributes:
+# - 'parser' LogParser : instance 
+# - 'event_types' array : collection of event type symbols to control loops 
+# - 'high_events'array : collection of high security event symbols
+# - 'med_events' array : medium security symbols
+# - 'low_events' array : low security symbols
+# - 'login_events' array : more symbols 
+# - 'months' hash : helper for converting 3 letter month abbreviations to the months numerical representation
+# - 'hours' hash : helper for normalizing datasets that use hour based analysis 
 #
 # Methods:
-#   - 'get_summary' : Prints a table for each severity level (High, Medium, regular ops)
-#   - 'suspicious_ips' : Rank IPs by number of high security concerns
-#   - 'events_by_hour' : Finds what event type happens during each hour of the day
-#   - 'events_by_day' : Finds what event type happens during each day
-#   - 'login_patterns' : Reports when users typically log in and when failures occur
+# - 'plot_day_series' : Creates a visual aid for the given dataset
+# - 'plot_hour_series' : Creates a visual aid for the given dataset
+# - 'plot_ip_aggregate' : Creates a visual aid for the given dataset
+# - 'build_date_range' : Helper function for normalizing datasets that use date based analysis 
+# - 'get_summary' : Prints a table for each severity level (High, Medium, regular ops)
+# - 'suspicious_ips' : Rank top 10 IPs by number of high security concerns
+# - 'events_by_hour' : Finds what event type happens during each hour of the day
+# - 'events_by_day' : Finds what event type happens during each day
+# - 'login_patterns' : Reports when users typically log in and when failures occur
+# - 'get_summary' : prints tables to the console that summarize the results from LogParser
 
 class LogAnalyzer
 
   def initialize(parser)
     @parser = parser
-    @dates = {}
     @event_types = [
       :Error, :Auth_failure, 
       :Disconnect, :Session_opened, 
@@ -52,7 +64,7 @@ class LogAnalyzer
 
   # Plots a bar graph for each event type with how many occurrences for each date in the dataset
   #
-  # @param dataset - a hash containing {event_type => {date => count}}
+  # @param dataset - a hash containing {event_type => {date => count}, event_type => ...}
   def plot_day_series(dataset)
     result = {}
     dates = build_date_range # a hash containing a range of dates as keys with default values of 0
@@ -74,7 +86,7 @@ class LogAnalyzer
 
   # Plots a bar graph for each event type with how many occurrences for each hour in the dataset
   # 
-  # @param dataset - a hash containing {event_type => {hour => count}}
+  # @param dataset - a hash containing {event_type => {hour => count}, event_type => ...}
   def plot_hour_series(dataset)
     puts dataset
     dataset.each do |event_type, hour|
@@ -84,9 +96,10 @@ class LogAnalyzer
     end
   end
 
-  # Plots a bar graph for the top 10 IPs found to be associated with high security events
+  # Sorts IPs in descending order and then plots a bar graph for the top 10 IPs found to be associated with high security events
   # 
-  # @param dataset - a hash containing {ip => {event0, event1, event2}}
+  # @param dataset -  a hash containing IP as keys with hash values of events
+  # {ip0 => {event0, event1, event2}, ip1 => {event0, event1, event2}...}
   def plot_ip_aggregate(dataset)
     sorted = dataset.sort_by { |ip, count| -count}
     s = sorted.to_h
@@ -96,7 +109,11 @@ class LogAnalyzer
   end
   
 
-
+  # Calls LogParser instance variable for a range of dates. The range of dates are then used to create a hash that can
+  # be used for any date based analysis.
+  # 
+  # @returns result - a hash of date keys in ascending order with values of 0 
+  # {"YYYY-MM-DD" => 0, "YYYY-MM-DD" => 0...}
   def build_date_range()
     result = {}
     range = []
@@ -112,7 +129,8 @@ class LogAnalyzer
   # Collects unique IP addresses and their associated high security events
   #       
   # @param parsed_log hash containing meta data for each event type
-  # @return result hash of unique IP addresses with associated events 
+  # @return result - a hash containing IP as keys with hash values of events
+  # {ip0 => {event0, event1, event2, ...}, ip1 => {event0, event1, event2, ...}...}
   def suspicious_ips(parsed_log)
     result = {}
     
@@ -128,8 +146,9 @@ class LogAnalyzer
 
   # Finds the number of occurrences of each type of event by the hour
   # 
-  # @param parsed_log hash containing meta data for each event type 
-  # @return result hash of event types with number of occurrences for each hour that event took place
+  # @param parsed_log hash containing meta data for each event type
+  # @return result - a hash of event type keys 
+  # {event_type0 => {hour => count}, event_type1 => {hour => count}, ...}
   def events_by_hour(parsed_log)
     result = {}
 
@@ -149,7 +168,8 @@ class LogAnalyzer
   # Finds the number of occurrences of each type of event by the day
   # 
   # @param parsed_log hash containing meta data for each event type 
-  # @return result hash of event types with number of occurrences for each day that event took place
+  # @return result - a hash of event types with number of occurrences for each day that event took place
+  # {event_type0 => {date => count, ...}, event_type1 => {date => count}, ...}
   def events_by_day(parsed_log)
     result = {}
     
@@ -167,7 +187,8 @@ class LogAnalyzer
   # Finds successful vs failed logins by the hour 
   #
   # @param parsed_log hash containing meta data for each event type
-  # @return result hash of event 
+  # @return result - a hash of login events sorted by hour in the range of 00..23 with number of occurrences
+  # {Accepted_password => {hour => count, ...} Failed_password => {hour ==> count}}
   def login_patterns(parsed_log)
     result = {}
     
