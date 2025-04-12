@@ -55,14 +55,24 @@ class LogParser
       Invalid_user: [],
       Failed_password: []
     }
-    @date_range = []
+    @dates = {}
     @months = {"Jan" => "1", "Feb" => "2", "Mar" => "3", "Apr" => "4", "May" => "5", "Jun" => "6", "Jul" => "7", "Aug" => "8", "Sep" => "9", "Oct" => "10", "Nov" => "11", "Dec" => "12"}
   end
-
-  # Converts date into a normalized format
+  
+  # Calls sanitize_date on first and last and then passes to create_date_range
   # 
-  # @param log_date - the given date 
-  # @returns s_date - the normalized date 
+  # @param first string - the date from the first line of the given file
+  # @param last string - the date from the last line of the given file
+  def set_date_range(first, last)
+    first = sanitize_date(first)
+    last = sanitize_date(last)
+    create_date_range(first, last)
+  end
+
+  # Converts given date into a normalized format
+  # 
+  # @param log_date string - date 
+  # @returns s_date Date obj - date
   def sanitize_date(log_date)
     date = log_date.split(" ")
     calendar_month = @months.fetch(date[0])
@@ -73,20 +83,28 @@ class LogParser
     s_date
   end
   
-  # Sets a range of dates
+ 
+  # Creates a hash of dates in the range of first last inclusive.
   # 
-  # @param first - the date from the first line of the given file
-  # @param last - the date from the last line of the given file
-  def set_date_range(first, last)
-    @date_range << sanitize_date(first)
-    @date_range << sanitize_date(last)
+  # @param first Date obj - date from first entry in log
+  # @param last Date obj - date from the last entry in log
+  # @returns hash of dates {event_type => {date => count}}
+  def create_date_range(first, last)
+    range = []
+
+    begin_date = Date.parse(first)
+    end_date = Date.parse(last)
+    begin_date.step(end_date) { |date| range << date.to_s}
+
+    @dates = range.to_h { |date| [date, 0] }
+    @dates
   end
 
-  # Helper function to return date_range
+  # Helper function to return dates
   # 
-  # @return date_range - an array containing a range of dates
+  # @return dates - a hash of dates
   def get_date_range()
-    @date_range
+    @dates
   end
 
   # Reads the given file line by line. Routes lines by parsed event type
@@ -134,7 +152,6 @@ class LogParser
     else
       puts "File missing or empty"
     end
-
     set_date_range(@start_date[0], @end_date[0])
     @parsed_log
   end

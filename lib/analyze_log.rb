@@ -88,7 +88,6 @@ class LogAnalyzer
   # 
   # @param dataset - a hash containing {event_type => {hour => count}, event_type => ...}
   def plot_hour_series(dataset)
-    puts dataset
     dataset.each do |event_type, hour|
       x_values = dataset[event_type].keys
       y_values = dataset[event_type].values
@@ -194,12 +193,14 @@ class LogAnalyzer
     
     @login_events.each do |symbol|
       result[symbol] = @hours.clone
+      puts result[symbol].inspect
       parsed_log[symbol].select { |event| event }.each do |event|
         time = event[:Time].split(":")
-        
+        hour = time[0]
         result[symbol][hour] += 1
       end
     end
+    puts result.inspect
     result
   end
 
