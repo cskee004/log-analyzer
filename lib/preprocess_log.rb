@@ -104,7 +104,7 @@ class LogParser
   #
   # @param filename - the location of the auth.log to be parsed
   # @return parsed_log - a hash containing an individual event found in auth.log
-  # 
+  #
   def read_log(filename = "./data/auth.log")
     if File.exist?(filename) && !File.zero?(filename)
       File.foreach(filename).with_index do |line, line_num|
@@ -120,23 +120,31 @@ class LogParser
         when /error/
           @parsed_log[:Error] << parse_error(line, line_num, 'Error flag', date_string, time[0], host[0])
         when /authentication failure/
-          @parsed_log[:Auth_failure] << parse_auth_failure(line, line_num, 'Authentication failure', date_string, time[0], host[0])
+          @parsed_log[:Auth_failure] << parse_auth_failure(line, line_num, 'Authentication failure', date_string,
+                                                           time[0], host[0])
         when /Disconnected/
           @parsed_log[:Disconnect] << parse_disconnect(line, line_num, 'Disconnect', date_string, time[0], host[0])
         when /session opened/
-          @parsed_log[:Session_opened] << parse_session_open(line, line_num, 'Session opened', date_string, time[0], host[0])
+          @parsed_log[:Session_opened] << parse_session_open(line, line_num, 'Session opened', date_string, time[0],
+                                                             host[0])
         when /session closed/
-          @parsed_log[:Session_closed] << parse_session_close(line, line_num, 'Session closed', date_string, time[0], host[0])
+          @parsed_log[:Session_closed] << parse_session_close(line, line_num, 'Session closed', date_string, time[0],
+                                                              host[0])
         when /(PWD)*(USER)*(COMMAND)/
-          @parsed_log[:Sudo_command] << parse_sudo_command(line, line_num, 'Sudo command', date_string, time[0], host[0])
+          @parsed_log[:Sudo_command] << parse_sudo_command(line, line_num, 'Sudo command', date_string, time[0],
+                                                           host[0])
         when /Accepted publickey/
-          @parsed_log[:Accepted_publickey] << parse_accept_event(line, line_num, 'Accept publickey', date_string, time[0], host[0])
-        when /Accepted password/ 
-          @parsed_log[:Accepted_password] << parse_accept_event(line, line_num, 'Accepted password', date_string, time[0], host[0])
+          @parsed_log[:Accepted_publickey] << parse_accept_event(line, line_num, 'Accept publickey', date_string,
+                                                                 time[0], host[0])
+        when /Accepted password/
+          @parsed_log[:Accepted_password] << parse_accept_event(line, line_num, 'Accepted password', date_string,
+                                                                time[0], host[0])
         when /Invalid user/
-          @parsed_log[:Invalid_user] << parse_invalid_user(line, line_num, 'Invalid user', date_string, time[0], host[0])
+          @parsed_log[:Invalid_user] << parse_invalid_user(line, line_num, 'Invalid user', date_string, time[0],
+                                                           host[0])
         when /Failed password/
-          @parsed_log[:Failed_password] << parse_failed_password(line, line_num, 'Failed password', date_string, time[0], host[0])
+          @parsed_log[:Failed_password] << parse_failed_password(line, line_num, 'Failed password', date_string,
+                                                                 time[0], host[0])
         end
       end
 
@@ -309,7 +317,7 @@ class LogParser
   # @param host - string containing the ip of the host machine the event happened on
   #
   # @return error_hash with meta data from event
-  
+
   def parse_invalid_user(line, line_num, type, date, time, host)
     pid = line.match(/\[(\d+)\]/)
     user = line.match(/(\w+)(?=\s+from)/)

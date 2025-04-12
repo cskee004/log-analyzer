@@ -4,8 +4,6 @@ require_relative 'preprocess_log'
 require 'unicode_plot'
 require 'json'
 
-
-
 # LogAnalyzer Class
 # This class is responsible for analyzing security related events found in parsed_log. This class makes the
 #   following assumptions...
@@ -59,10 +57,10 @@ class LogAnalyzer
     @low_events  = %i[Sudo_command]
     @login_events = %i[Accepted_password Failed_password]
     @months = { 'Jan' => '1', 'Feb' => '2', 'Mar' => '3', 'Apr' => '4', 'May' => '5', 'Jun' => '6', 'Jul' => '7',
-                'Aug' => '8', 'Sep' => '9', 'Oct' => '10', 'Nov' => '11', 'Dec' => '12'}
+                'Aug' => '8', 'Sep' => '9', 'Oct' => '10', 'Nov' => '11', 'Dec' => '12' }
     @hours = {  '00' => 0, '01' => 0, '02' => 0, '03' => 0, '04' => 0, '05' => 0, '06' => 0, '07' => 0, '08' => 0,
                 '09' => 0, '10' => 0, '11' => 0, '12' => 0, '13' => 0, '14' => 0, '15' => 0, '16' => 0, '17' => 0,
-                '18' => 0, '19' => 0, '20' => 0, '21' => 0, '22' => 0, '23' => 0}
+                '18' => 0, '19' => 0, '20' => 0, '21' => 0, '22' => 0, '23' => 0 }
   end
 
   # Plots a bar graph for each event type with how many occurrences for each day or date in the dataset
@@ -94,8 +92,8 @@ class LogAnalyzer
   def plot_ip_aggregate(dataset)
     sorted = dataset.sort_by { |_ip, count| -count }
     s = sorted.to_h
-    x = s.keys[0,10]
-    y = s.values[0,10]
+    x = s.keys[0, 10]
+    y = s.values[0, 10]
     plot = UnicodePlot.barplot(x, y, title: 'Top 10 IPs by High Security Event')
     output = StringIO.new
     plot.render(output)
@@ -136,7 +134,7 @@ class LogAnalyzer
       result[symbol] = @hours.clone
       parsed_log[symbol].select { |event| event }.each do |event|
         time = event[:Time].split(':')
-        hour = time[0] 
+        hour = time[0]
         result[symbol][hour] += 1
       end
     end
@@ -146,7 +144,7 @@ class LogAnalyzer
 
   # Finds the number of occurrences of each type of event by the day
   #
-  # @param parsed_log hash containing meta data for each event type 
+  # @param parsed_log hash containing meta data for each event type
   # @return result - a hash of event types with number of occurrences for each day that event took place
   # {event_type0 => {date => count, ...}, event_type1 => {date => count}, ...}
 
@@ -181,11 +179,6 @@ class LogAnalyzer
     result
   end
 
-  #
-  #
-  #
-  #
-
   def save_json(dataset, time_unit)
     dataset.each_key do |event_type|
       x_values = dataset[event_type].keys
@@ -198,22 +191,15 @@ class LogAnalyzer
     end
   end
 
-  #
-  #
-  #
-  #
-  #
-
   def save_graph(plot, event_type, time_unit)
     output = StringIO.new
     plot.render(output)
     file_path = "docs/results/graphs/#{event_type}_#{time_unit}.txt"
     File.delete(file_path) if File.exist?(file_path)
     File.open(file_path, 'w') { |file| file.write(plot.to_s) }
-
   end
 
-  # Prints to console results sorted into severity type along with how many occurrences 
+  # Prints to console results sorted into severity type along with how many occurrences
   #
   # @param parsed_log hash containing meta data for each event type
   def get_summary(parsed_log)
@@ -235,11 +221,11 @@ class LogAnalyzer
     ops_rows << ['Sudo usage', parsed_log[:Sudo_command].length]
 
     high_table = Terminal::Table.new :title => 'High Security Concerns', :headings => ['Event Type', 'Occurrences'],
-    :rows => high_rows
+                                     :rows => high_rows
     med_table = Terminal::Table.new :title => 'Medium Security Concerns', :headings => ['Event Type', 'Occurrences'],
-    :rows => med_rows
+                                    :rows => med_rows
     ops_table = Terminal::Table.new :title => 'Operational Monitoring', :headings => ['Event Type', 'Occurrences'],
-    :rows => ops_rows
+                                    :rows => ops_rows
 
     puts high_table
     puts med_table

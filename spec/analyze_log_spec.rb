@@ -2,13 +2,11 @@ require "spec_helper"
 require "preprocess_log"
 require "analyze_log.rb"
 
-
-
 describe "Analyze Log" do
   let(:log_parser) { LogParser.new }
   let(:log_analyzer) { LogAnalyzer.new(log_parser) }
-  let(:log) { log_parser.read_log()}
-  
+  let(:log) { log_parser.read_log() }
+
   describe "suspicious_ips" do
     it "finds each high security event for each IP" do
       result = log_analyzer.suspicious_ips(log)
@@ -37,6 +35,4 @@ describe "Analyze Log" do
       expect(result[:Failed_password]["00"]).to eq(12)
     end
   end
-
-
 end
