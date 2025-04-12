@@ -69,13 +69,26 @@ class LogAnalyzer
     dataset.each do |event_type, date|
       x_values = dataset[event_type].keys
       y_values = dataset[event_type].values
+      
       case time_unit
       when /date/
-        plot = UnicodePlot.barplot(x_values, y_values, title: "#{event_type} Event by Date").render 
+        plot = UnicodePlot.barplot(x_values, y_values, title: "#{event_type} Event by Date")
+        output = StringIO.new
+        plot.render(output)
+        
+        file_path = "docs/results/graphs/#{event_type}_date.txt"
+        File.delete(file_path) if File.exist?(file_path)
+        File.open(file_path, "w") { |file| file.write(plot.to_s) }
+      
       when /hour/
-        plot = UnicodePlot.barplot(x_values, y_values, title: "#{event_type} Event by Hour").render
-      end
-       
+        plot = UnicodePlot.barplot(x_values, y_values, title: "#{event_type} Event by Hour")
+        output = StringIO.new
+        plot.render(output)
+        
+        file_path = "docs/results/graphs/#{event_type}_hour.txt"
+        File.delete(file_path) if File.exist?(file_path)
+        File.open(file_path, "w") { |file| file.write(plot.to_s) }
+      end 
     end
   end
 
@@ -84,11 +97,19 @@ class LogAnalyzer
   # @param dataset -  a hash containing IP as keys with hash values of events
   # {ip0 => {event0, event1, event2}, ip1 => {event0, event1, event2}...}
   def plot_ip_aggregate(dataset)
+    
     sorted = dataset.sort_by { |ip, count| -count}
     s = sorted.to_h
     x = s.keys[0,10]
     y = s.values[0,10]
-    plot = UnicodePlot.barplot(x, y, title: "Top 10 IPs by High Security Event").render
+    
+    plot = UnicodePlot.barplot(x, y, title: "Top 10 IPs by High Security Event")
+    output = StringIO.new
+    plot.render(output)
+
+    file_path = "docs/results/graphs/sus_IPs.txt"
+    File.delete(file_path) if File.exist?(file_path)
+    File.open(file_path, "w") { |file| file.write(plot.to_s) }
   end
   
   # Collects unique IP addresses and their associated high security events
