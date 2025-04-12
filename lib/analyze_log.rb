@@ -193,11 +193,10 @@ class LogAnalyzer
     result = {}
     
     @login_events.each do |symbol|
+      result[symbol] = @hours.clone
       parsed_log[symbol].select { |event| event }.each do |event|
         time = event[:Time].split(":")
-        hour = time[0].to_sym
-        result[symbol] ||= {}
-        result[symbol][hour] ||= 0
+        
         result[symbol][hour] += 1
       end
     end
