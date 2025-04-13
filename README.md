@@ -27,7 +27,15 @@ This project is both a personal learning tool and a practical log analysis pipel
 ```
 
 ### Features
-- Parse `auth.log` system logs for eight different event types
+- Parse `auth.log` system logs for:
+     - Error flags
+     - Authentication failures
+     - Invalid users
+     - Failed password
+     - Disconnects
+     - Accepted publickey/passwords
+     - Session open/closes
+     - Sudo usage
 - Basic event counting and grouping
 - Hourly and daily breakdown of events
 - Top 10 IP's connected to security events
@@ -47,7 +55,7 @@ bundle install
 ```
 ruby main.rb
 ```
-- Find results
+- Results saved to
 ```
 results/datasets/
 results/graphs/
@@ -58,7 +66,7 @@ results/graphs/
 ```
 bundle exec rspec
 ```
-- Test results
+- Results saved to
 ```
 results/tests/
 ```
