@@ -1,4 +1,3 @@
-require 'pry-byebug'
 require 'terminal-table'
 require_relative 'preprocess_log'
 require 'unicode_plot'
