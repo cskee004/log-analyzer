@@ -1,4 +1,4 @@
 .DS_Store
 /results/
 Gemfile.lock
-.rubocop.yml
+.rubocop*
