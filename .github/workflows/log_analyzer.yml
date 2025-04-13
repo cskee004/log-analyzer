@@ -10,7 +10,7 @@ jobs:
   analyze_logs:
     runs-on: ubuntu-latest
     steps:
-      
+
     - name: Checkout code
       uses: actions/checkout@v4
 
@@ -19,13 +19,24 @@ jobs:
       with:
         ruby-version: '3.2.7'
 
+    - name: Cache Ruby gems
+      uses: actions/cache@v4
+      with:
+        path: vendor/bundle
+        key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-gems-
+
     - name: Install dependencies
       run: |
+        bundle config set path 'vendor/bundle'
         bundle install
 
     - name: Install docs dependencies
       working-directory: docs
-      run: bundle install
+      run: |
+        bundle config set path 'vendor/bundle'
+        bundle install
 
     - name: Cleanup old results
       run: |
@@ -44,5 +55,5 @@ jobs:
         git config --global user.name "github-actions[bot]"
         git config --global user.email "github-actions[bot]@users.noreply.github.com"
         git add docs/results/
-        git commit -m "Update analysis graphs and test results [auto]"
+        git diff --cached --quiet || git commit -m "Update analysis graphs and test results [auto]"
         git push || echo "No changes to commit"
