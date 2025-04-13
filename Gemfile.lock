@@ -47,6 +47,8 @@ GEM
     json (2.10.2)
     kramdown (2.5.1)
       rexml (>= 3.3.9)
+    kramdown-parser-gfm (1.1.0)
+      kramdown (~> 2.0)
     liquid (4.0.4)
     listen (3.9.0)
       rb-fsevent (~> 0.10, >= 0.10.3)
@@ -103,6 +105,7 @@ DEPENDENCIES
   fileutils
   jekyll
   json
+  kramdown-parser-gfm
   rspec
   terminal-table
   unicode_plot
