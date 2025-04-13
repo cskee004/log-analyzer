@@ -1,22 +1,48 @@
-name: Log Analyzer
-on: 
+name: Analyze Logs and Publish Results
+
+on:
   push:
-    branches: [main]
+    branches:
+      - main
+  workflow_dispatch:
 
 jobs:
-  test:
+  analyze_logs:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v4
+      
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.2'
+    - name: Set up Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: '3.2.7'
 
-      - name: Install gems
-        run: bundle install
+    - name: Install dependencies
+      run: |
+        bundle install
 
-      - name: Run RSpec tests
-        run: bundle exec rspec 
+    - name: Install docs dependencies
+      working-directory: docs
+      run: bundle install
+
+    - name: Cleanup old results
+      run: |
+        rm -rf docs/results/graphs/*
+        rm -rf docs/results/datasets/*
+        rm -f docs/results/tests/rspec_results.json
+
+    - name: Run RSpec Tests
+      run: bundle exec rspec
+
+    - name: Run Log Analysis
+      run: bundle exec ruby main.rb
+
+    - name: Commit and push results
+      run: |
+        git config --global user.name "github-actions[bot]"
+        git config --global user.email "github-actions[bot]@users.noreply.github.com"
+        git add docs/results/
+        git commit -m "Update analysis graphs and test results [auto]"
+        git push || echo "No changes to commit"

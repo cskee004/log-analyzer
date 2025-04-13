@@ -220,7 +220,7 @@ describe 'Preprocess log' do
 
   describe 'get_date_range' do
     let(:log_parser) { LogParser.new }
-    it 'returns first and last date from log' do
+    it 'returns a range of dates from first to last date from log' do
       result = log_parser.get_date_range
       expected = {  '2025-03-27' => 0, '2025-03-28' => 0, '2025-03-29' => 0, '2025-03-30' => 0, '2025-03-31' => 0,
                     '2025-04-01' => 0, '2025-04-02' => 0, '2025-04-03' => 0, '2025-04-04' => 0, '2025-04-05' => 0,
