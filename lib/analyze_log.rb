@@ -1,4 +1,5 @@
 require 'terminal-table'
+require 'fileutils'
 require_relative 'preprocess_log'
 require 'unicode_plot'
 require 'json'
@@ -97,9 +98,12 @@ class LogAnalyzer
     output = StringIO.new
     plot.render(output)
 
-    file_path = 'docs/results/graphs/sus_IPs.txt'
-    File.delete(file_path) if File.exist?(file_path)
-    File.open(file_path, 'w') { |file| file.write(plot.to_s) }
+    path = 'docs/results/graphs/sus_IPs.txt'
+    dir = File.dirname(path)
+    FileUtils.mkdir_p(dir) unless File.exist?(dir)
+
+    File.delete(path) if File.exist?(path)
+    File.open(path, 'w') { |file| file.write(plot.to_s) }
   end
 
   # Collects unique IP addresses and their associated high security events
@@ -184,7 +188,11 @@ class LogAnalyzer
       y_values = dataset[event_type].values
 
       data = { 'event_type' => event_type, time_unit.to_s => x_values, 'values' => y_values }
+
       path = "docs/results/datasets/#{event_type}_#{time_unit}.json"
+      dir = File.dirname(path)
+      FileUtils.mkdir_p(dir) unless File.exist?(dir)
+
       File.delete(path) if File.exist?(path)
       File.open(path, 'w') { |file| file.write(data.to_json) }
     end
@@ -193,9 +201,13 @@ class LogAnalyzer
   def save_graph(plot, event_type, time_unit)
     output = StringIO.new
     plot.render(output)
-    file_path = "docs/results/graphs/#{event_type}_#{time_unit}.txt"
-    File.delete(file_path) if File.exist?(file_path)
-    File.open(file_path, 'w') { |file| file.write(plot.to_s) }
+
+    path = "docs/results/graphs/#{event_type}_#{time_unit}.txt"
+    dir = File.dirname(path)
+    FileUtils.mkdir_p(dir) unless File.exist?(dir)
+
+    File.delete(path) if File.exist?(path)
+    File.open(path, 'w') { |file| file.write(plot.to_s) }
   end
 
   # Prints to console results sorted into severity type along with how many occurrences

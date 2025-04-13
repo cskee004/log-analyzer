@@ -3,6 +3,7 @@ GEM
   specs:
     diff-lcs (1.6.1)
     enumerable-statistics (2.0.8)
+    fileutils (1.7.3)
     json (2.10.2)
     rspec (3.13.0)
       rspec-core (~> 3.13.0)
@@ -37,6 +38,7 @@ PLATFORMS
 
 DEPENDENCIES
   bundler
+  fileutils
   json
   rspec
   terminal-table
