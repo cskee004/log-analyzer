@@ -19,7 +19,7 @@ This project is both a personal learning tool and a practical log analysis pipel
 ### Project Structure
 ```
 |── data/            # Sample log files
-├── docs/            # Generated datasets, graphs, and testing reports
+├── docs/            # Generated datasets and graphs
 ├── lib/             # Parsing and analyze classes
 ├── main.rb/         # Program main driver
 ├── README.md/       # Project overview
@@ -73,5 +73,20 @@ results/tests/
 
 ### Sample Ouput
 
+```
+                      Top 10 IPs by High Security Event
+                  ┌                                        ┐ 
+    24.151.103.17 ┤■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■■ 157   
+   34.204.227.175 ┤■■■■■■■■■■■■■■■■■■■ 86                    
+     49.4.143.105 ┤■■■■■■■■■■■■■ 60                          
+   91.197.232.109 ┤■■■■■■■■■■■■■ 58                          
+   201.178.81.113 ┤■■■■■■■■■ 40                              
+   122.163.61.218 ┤■■■■■■■■ 38                               
+    181.26.186.35 ┤■■■■■■■■ 36                               
+    181.25.206.27 ┤■■■■ 16                                   
+    14.54.210.101 ┤■■■ 14                                    
+    85.245.107.41 ┤■■■ 13                                    
+                  └                                        ┘ 
+```
 
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
