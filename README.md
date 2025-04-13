@@ -10,14 +10,60 @@
 
 ### Description
 
-This Ruby script scans Linux system logs to detect key security-related events, including error flags, authentication failures, disconnections, session activity, sudo command usage, successful logins, invalid user attempts, and failed password entries.
+Log Analyzer is a Ruby-based tool thats designed to parse and analyze Linux system logs. It extracts key events, tracks time trends, and prepares that data for further visualization or reporting. 
 
-It analyzes these events to identify patterns such as failed login attempts, brute-force attacks, and other suspicious behavior. The results are then compiled into reports that summarize notable and potentially malicious activity across the system.
+### Project Purpose
 
-### Project Goal
+This project is both a personal learning tool and a practical log analysis pipeline. The goal is to simplify the process of examining Linux 'auth.log' files, highlight time based patterns, and generate structured data for further use. 
 
-The goal of this project is to provide a lightweight, scriptable tool for detecting and summarizing security-relevant activity on Linux systems. It supports system administrators and security analysts in quickly identifying threats such as unauthorized access attempts and suspicious behavior.
+### Project Structure
+```
+|── data/            # Sample log files
+├── docs/            # Generated datasets, graphs, and testing reports
+├── lib/             # Parsing and analyze classes
+├── main.rb/         # Program main driver
+├── README.md/       # Project overview
+└── spec/            # RSpec unit tests
+```
 
-While the current version focuses on parsing and analyzing log files, future updates will include a persistent database and an interactive dashboard for exploring security events over time and across different systems.
+### Features
+- Parse `auth.log` system logs for eight different event types
+- Basic event counting and grouping
+- Hourly and daily breakdown of events
+- Top 10 IP's connected to security events
+- Tested with RSpec for reliability
+
+### Usage
+- Clone the repo
+```
+git clone https://github.com/cskee004/log-analyzer.git
+cd log-analyzer
+```
+- Install dependencies
+```
+bundle install
+```
+- Run the analyzer
+```
+ruby main.rb
+```
+- Find results
+```
+results/datasets/
+results/graphs/
+```
+
+### Testing
+- Run the RSpec test suite
+```
+bundle exec rspec
+```
+- Test results
+```
+results/tests/
+```
+
+### Sample Ouput
+
 
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
