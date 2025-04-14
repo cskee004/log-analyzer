@@ -7,7 +7,7 @@ require 'date'
 #
 # Usage:
 #   log_parser = LogParser.new
-#   parsed_log = log_parser.read_log(path/to/file)
+#   parsed_log = log_parser.read_log('path/to/file')
 #
 # Attributes:
 # - 'parsed_log' Hash(Array(Hash)) : A Hash of event types with corresponding individual events
@@ -15,17 +15,15 @@ require 'date'
 #     event_type_0: [{event_0}, {event_1}]
 #     event_type_1: [{event_0}, {event_1}]
 #    }
-# - 'start_date' string : first recorded date in the given log
-# - 'end_date' string : last recorded date in the given log
 # - 'date_range' array : holds the date range found in the given log
 # - 'months' hash : helper for converting 3 letter month abbreviations to numerical representations
 #
 # Methods:
+# - 'read_log' : parses the input log lines
 # - 'set_date_range' : helper function to build dates hash
 # - 'sanitize_date' : normalizes dates
 # - 'create_date_range' : creates a hash of dates keys with values of 0
-# - 'get_date_range' : helper function to return date range array
-# - 'read_log' : parses the input log lines and calls the event type parser
+# - 'get_date_range' : helper function to return date range hash
 # - 'parse_error' : parses lines that have the flag 'error' event
 # - 'parse_auth_failure' : parses lines that contain 'authentication_failure' event
 # - 'parse_disconnect' : parses lines that contain 'Disconnected' event
@@ -35,7 +33,7 @@ require 'date'
 # - 'parse_accept_event' : parses lines that contain 'Accepted' event
 # - 'parse_invalid_user' : parses lines that contain 'Invalid user' event
 # - 'parse_failed_password' : parses lines that contain 'Failed password' event
-#
+
 class LogParser
   def initialize
     @parsed_log = { Error: [], Auth_failure: [], Disconnect: [], Session_opened: [], Session_closed: [],
@@ -105,8 +103,8 @@ class LogParser
 
   # Calls sanitize_date on first and last and then passes to create_date_range
   #
-  # @param first string - the date from the first line of the given file
-  # @param last string - the date from the last line of the given file
+  # @param first - a string date from the first line of the given file
+  # @param last - a string date from the last line of the given file
 
   def set_date_range(first, last)
     first = sanitize_date(first)
@@ -116,7 +114,7 @@ class LogParser
 
   # Converts given date into a normalized format
   #
-  # @param log_date string - date
+  # @param log_date - string date
   # @returns s_date Date obj - date
 
   def sanitize_date(log_date)
@@ -130,8 +128,8 @@ class LogParser
 
   # Creates a hash of dates in the range of first last inclusive.
   #
-  # @param first Date obj - date from first entry in log
-  # @param last Date obj - date from the last entry in log
+  # @param first - Date obj
+  # @param last - Date obj 
   # @returns hash of dates {date => count}
 
   def create_date_range(first, last)

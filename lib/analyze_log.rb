@@ -22,11 +22,11 @@ require 'json'
 # - Sudo commands: Sudo usage from non-admins could indicate insider threats or privilege abuse
 #
 # Usage:
-#   log_analyzer = LogAnalyzer.new
+#   log_analyzer = LogAnalyzer.new(log_parser)
 #   log_analyzer.get_summary(log)
 #
 # Attributes:
-# - 'parser' LogParser : instance
+# - 'parser' LogParser : instance variable
 # - 'event_types' array : collection of event type symbols to control loops
 # - 'high_events'array : collection of high security event symbols
 # - 'med_events' array : medium security symbols
@@ -47,6 +47,7 @@ require 'json'
 # - 'save_json' : Helper function to save the given dataset in json format
 # - 'save_graph' : Helper function to save the given plot object
 # - 'get_summary' : prints tables to the console that summarize the results from LogParser
+
 class LogAnalyzer
   def initialize(parser)
     @parser = parser
@@ -65,7 +66,7 @@ class LogAnalyzer
 
   # Plots a bar graph for each event type with how many occurrences for each day or date in the dataset
   #
-  # @param dataset - a hash containing {event_type => {date => count}, event_type => ...}
+  # @param dataset - a hash containing {event_type => {date || hour => count}, event_type => ...}
 
   def plot_time_series(dataset, time_unit)
     dataset.each_key do |event_type|
@@ -83,11 +84,11 @@ class LogAnalyzer
     end
   end
 
-  # Sorts IPs in descending order and then plots a bar graph for the top 10 IPs found to be associated with high
+  # Sorts IP addresses in descending order and then plots a bar graph for the top 10 IPs found to be associated with high
   # security events
   #
   # @param dataset -  a hash containing IP as keys with hash values of events
-  # {ip0 => {event0, event1, event2}, ip1 => {event0, event1, event2}...}
+  #                  {ip0 => {event0, event1, event2}, ip1 => {event0, event1, event2}...}
 
   def plot_ip_aggregate(dataset)
     sorted = dataset.sort_by { |_ip, count| -count }
@@ -110,14 +111,14 @@ class LogAnalyzer
   #
   # @param parsed_log hash containing meta data for each event type
   # @return result - a hash containing IP as keys with hash values of events
-  # {ip0 => {event0, event1, event2, ...}, ip1 => {event0, event1, event2, ...}...}
+  #                 {ip0 => {event0, event1, event2, ...}, ip1 => {event0, event1, event2, ...}...}
 
   def suspicious_ips(parsed_log)
     result = {}
     @high_events.each do |symbol|
       parsed_log[symbol].select { |event| event }.each do |event|
-        result[event[:Source_IP]] ||= 0 # Set result[ip] to new empty array if nil or doesn't exist
-        result[event[:Source_IP]] += 1 # removed << event
+        result[event[:Source_IP]] ||= 0
+        result[event[:Source_IP]] += 1
       end
     end
     plot_ip_aggregate(result)
@@ -128,7 +129,7 @@ class LogAnalyzer
   #
   # @param parsed_log hash containing meta data for each event type
   # @return result - a hash of event type keys
-  # {event_type0 => {hour => count}, event_type1 => {hour => count}, ...}
+  #                 {event_type0 => {hour => count}, event_type1 => {hour => count}, ...}
 
   def events_by_hour(parsed_log)
     result = {}
@@ -149,7 +150,7 @@ class LogAnalyzer
   #
   # @param parsed_log hash containing meta data for each event type
   # @return result - a hash of event types with number of occurrences for each day that event took place
-  # {event_type0 => {date => count, ...}, event_type1 => {date => count}, ...}
+  #                 {event_type0 => {date => count, ...}, event_type1 => {date => count}, ...}
 
   def events_by_date(parsed_log)
     result = {}
@@ -168,7 +169,8 @@ class LogAnalyzer
   #
   # @param parsed_log hash containing meta data for each event type
   # @return result - a hash of login events sorted by hour in the range of 00..23 with number of occurrences
-  # {Accepted_password => {hour => count, ...} Failed_password => {hour ==> count}}
+  #                 {Accepted_password => {hour => count, ...} Failed_password => {hour ==> count}}
+  
   def login_patterns(parsed_log)
     result = {}
     @login_events.each do |symbol|
@@ -182,6 +184,11 @@ class LogAnalyzer
     result
   end
 
+  # Helper function to convert the given hash into JSON
+  #
+  # @param dataset - a hash containing structured meta data 
+  # @param time_unit - hour or date
+  
   def save_json(dataset, time_unit)
     dataset.each_key do |event_type|
       x_values = dataset[event_type].keys
@@ -197,6 +204,12 @@ class LogAnalyzer
       File.open(path, 'w') { |file| file.write(data.to_json) }
     end
   end
+
+  # Helper function to save graphing result to a text document
+  # 
+  # @plot - graph
+  # @event_type - the security event
+  # @time_unit - hour or date
 
   def save_graph(plot, event_type, time_unit)
     output = StringIO.new
