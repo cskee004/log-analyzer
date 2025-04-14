@@ -6,7 +6,7 @@ def run_analyzer
   log = log_parser.read_log('./data/auth.log')
 
   log_analyzer = LogAnalyzer.new(log_parser)
-  log_analyzer.get_summary(log)
+  puts log_analyzer.get_summary(log)
   log_analyzer.suspicious_ips(log)
   log_analyzer.events_by_hour(log)
   log_analyzer.events_by_date(log)
