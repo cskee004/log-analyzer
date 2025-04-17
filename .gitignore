@@ -1,0 +1,46 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# Ignore bundler config.
+/.bundle
+
+# Ignore log files and temp files.
+log/*
+tmp/*
+!log/.keep
+!tmp/.keep
+
+# Ignore pid files, cache, and sockets.
+*.pid
+*.pid.lock
+/cache
+*.sqlite3
+*.sqlite3-journal
+
+# Ignore dotenv environment files.
+.env
+.env.*
+
+# Ignore uploaded files in development.
+storage/*
+!storage/.keep
+
+# Ignore master key for Rails credentials.
+config/master.key
+config/credentials/*.key
+
+# Ignore public system files (Active Storage).
+public/system/*
+public/uploads
+
+# Ignore node modules and yarn files.
+node_modules/
+yarn-error.log
+
+# Ignore byebug command history file.
+.byebug_history
+
+# Ignore RubyMine project files.
+.idea/
+
+# Ignore macOS system files.
+.DS_Store
