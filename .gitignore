@@ -44,3 +44,11 @@ yarn-error.log
 
 # Ignore macOS system files.
 .DS_Storeconfig/master.key
+
+/config/master.key
+
+.DS_Store
+app/.DS_Store
+config/.DS_Store
+lib/.DS_Store
+test/.DS_Store
