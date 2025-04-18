@@ -9,6 +9,15 @@ tmp/*
 !log/.keep
 !tmp/.keep
 
+# Rails log files
+/log/*.log
+
+# Bootsnap cache
+/tmp/cache/bootsnap/*
+
+# General tmp files
+/tmp/*
+
 # Ignore pid files, cache, and sockets.
 *.pid
 *.pid.lock
@@ -43,7 +52,7 @@ yarn-error.log
 .idea/
 
 # Ignore macOS system files.
-.DS_Storeconfig/master.key
+.DS_Store
 
 /config/master.key
 
