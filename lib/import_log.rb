@@ -1,4 +1,5 @@
 require_relative 'preprocess_log'
+require_relative 'analyze_log'
 
 # LogImporter Class
 #
@@ -9,38 +10,23 @@ require_relative 'preprocess_log'
 # Methods:
 # - 
 
-
 class LogImporter
-  def initialize(parser)
-    @parser = parser
-    @event_types = %i[Error Auth_failure Disconnect Session_opened Session_closed Sudo_command Accepted_publickey
-    Accepted_password Invalid_user Failed_password]
+  def initialize
+    @event_types = %i[error auth_failure disconnect session_opened session_closed sudo_command accepted_publickey
+    accepted_password invalid_user failed_password]
   end
 
-  
   def import_event(log)
     @event_types.each do |symbol|
+      event_batch = []
       log[symbol].select { |event| event }.each do |event|
-        export_event(event)
+        event_batch << event
       end
+      Event.insert_all(event_batch)
     end
-  end
-
-  def export_event(event)
-    new_event = Event.new(event_type: event[:Type], date: event[:Date], time: event[:Time], pid: event[:PID], message: event[:Message], 
-              user: event[:User], source_ip: event[:Source_IP], source_port: event[:Source_port], directory: event[:Directory],
-              command: event[:Command], key: event[:Key], host: event[:Host])
-    new_event.save
-    puts new_event.errors.full_messages
   end
 
   def clear_table
     Event.delete_all
   end
 end
-
-log_parser = LogParser.new
-log = log_parser.read_log('./data/auth-test.log')
-
-log_importer = LogImporter.new(log_parser)
-log_importer.import_event(log)

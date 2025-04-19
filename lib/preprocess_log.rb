@@ -36,9 +36,9 @@ require 'date'
 
 class LogParser
   def initialize
-    @parsed_log = { Error: [], Auth_failure: [], Disconnect: [], Session_opened: [], Session_closed: [],
-                    Sudo_command: [], Accepted_publickey: [], Accepted_password: [], Invalid_user: [],
-                    Failed_password: [] }
+    @parsed_log = { error: [], auth_failure: [], disconnect: [], session_opened: [], session_closed: [],
+                    sudo_command: [], accepted_publickey: [], accepted_password: [], invalid_user: [],
+                    failed_password: [] }
     @dates = {}
     @months = { 'Jan' => '1', 'Feb' => '2', 'Mar' => '3', 'Apr' => '4', 'May' => '5', 'Jun' => '6', 'Jul' => '7',
                 'Aug' => '8', 'Sep' => '9', 'Oct' => '10', 'Nov' => '11', 'Dec' => '12' }
@@ -64,32 +64,32 @@ class LogParser
 
         case line
         when /error/
-          @parsed_log[:Error] << parse_error(line, line_num, 'Error flag', date_string, time[0], host[0])
+          @parsed_log[:error] << parse_error(line, line_num.to_s, 'Error flag', date_string, time[0], host[0])
         when /authentication failure/
-          @parsed_log[:Auth_failure] << parse_auth_failure(line, line_num, 'Authentication failure', date_string,
+          @parsed_log[:auth_failure] << parse_auth_failure(line, line_num.to_s, 'Authentication failure', date_string,
                                                            time[0], host[0])
         when /Disconnected/
-          @parsed_log[:Disconnect] << parse_disconnect(line, line_num, 'Disconnect', date_string, time[0], host[0])
+          @parsed_log[:disconnect] << parse_disconnect(line, line_num.to_s, 'Disconnect', date_string, time[0], host[0])
         when /session opened/
-          @parsed_log[:Session_opened] << parse_session_open(line, line_num, 'Session opened', date_string, time[0],
+          @parsed_log[:session_opened] << parse_session_open(line, line_num.to_s, 'Session opened', date_string, time[0],
                                                              host[0])
         when /session closed/
-          @parsed_log[:Session_closed] << parse_session_close(line, line_num, 'Session closed', date_string, time[0],
+          @parsed_log[:session_closed] << parse_session_close(line, line_num.to_s, 'Session closed', date_string, time[0],
                                                               host[0])
         when /(PWD)*(USER)*(COMMAND)/
-          @parsed_log[:Sudo_command] << parse_sudo_command(line, line_num, 'Sudo command', date_string, time[0],
+          @parsed_log[:sudo_command] << parse_sudo_command(line, line_num.to_s, 'Sudo command', date_string, time[0],
                                                            host[0])
         when /Accepted publickey/
-          @parsed_log[:Accepted_publickey] << parse_accept_event(line, line_num, 'Accept publickey', date_string,
+          @parsed_log[:accepted_publickey] << parse_accept_event(line, line_num.to_s, 'Accept publickey', date_string,
                                                                  time[0], host[0])
         when /Accepted password/
-          @parsed_log[:Accepted_password] << parse_accept_event(line, line_num, 'Accepted password', date_string,
+          @parsed_log[:accepted_password] << parse_accept_event(line, line_num.to_s, 'Accepted password', date_string,
                                                                 time[0], host[0])
         when /Invalid user/
-          @parsed_log[:Invalid_user] << parse_invalid_user(line, line_num, 'Invalid user', date_string, time[0],
+          @parsed_log[:invalid_user] << parse_invalid_user(line, line_num.to_s, 'Invalid user', date_string, time[0],
                                                            host[0])
         when /Failed password/
-          @parsed_log[:Failed_password] << parse_failed_password(line, line_num, 'Failed password', date_string,
+          @parsed_log[:failed_password] << parse_failed_password(line, line_num.to_s, 'Failed password', date_string,
                                                                  time[0], host[0])
         end
       end
@@ -171,8 +171,8 @@ class LogParser
     src_port = port[1] if port
     m = message[0].rstrip if message
 
-    error_hash = {  Line_number: line_num, Type: type, Date: date, Time: time, Host: host, PID: pid_num, Message: m,
-                    User: user[0], Source_IP: src_ip[0], Source_port: src_port }
+    error_hash = {  line_number: line_num, event_type: type, date: date, time: time, host: host, pid: pid_num, message: m,
+                    user: user[0], source_ip: src_ip[0], source_port: src_port }
   end
 
   # Parse the given 'authentication failure' line and return a hash representation with keyword data extracted
@@ -192,7 +192,7 @@ class LogParser
     pid_num = pid[1] if pid
     m = message[0].rstrip() if message
 
-    auth_hash = { Line_number: line_num, Type: type, Date: date, Time: time, Host: host, PID: pid_num, Message: m }
+    auth_hash = { line_number: line_num, event_type: type, date: date, time: time, host: host, pid: pid_num, message: m }
   end
 
   # Parse the given 'Disconnected' line and return a hash representation with keyword data extracted
@@ -213,8 +213,8 @@ class LogParser
     pid_num = pid[1] if pid
     src_port = port[1] if port
 
-    disconnect_hash = { Line_number: line_num, Type: type, Date: date, Time: time, Host: host, PID: pid_num,
-                        Source_IP: src_ip[0], Source_port: src_port }
+    disconnect_hash = { line_number: line_num, event_type: type, date: date, time: time, host: host, pid: pid_num,
+                        source_ip: src_ip[0], source_port: src_port }
   end
 
   # Parse the given 'session opened' line and return a hash representation with keyword data extracted
@@ -232,7 +232,7 @@ class LogParser
     user = line.match(/(?<=user\s)(\w+)/)
     u = user[0] if user
 
-    session_opened_hash = { Line_number: line_num, Type: type, Date: date, Time: time, Host: host, User: u }
+    session_opened_hash = { line_number: line_num, event_type: type, date: date, time: time, host: host, user: u }
   end
 
   # Parse the given 'session closed' line and return a hash representation with keyword data extracted
@@ -249,7 +249,7 @@ class LogParser
     user = line.match(/(?<=user\s)(\w+)/)
     u = user[0] if user
 
-    session_closed_hash = { Line_number: line_num, Type: type, Date: date, Time: time, Host: host, User: u }
+    session_closed_hash = { line_number: line_num, event_type: type, date: date, time: time, host: host, user: u }
   end
 
   # Parse the given 'sudo command' line and return a hash representation with keyword data extracted
@@ -268,8 +268,8 @@ class LogParser
     user = line.match(/(?<=USER=)(.*?)(?=\s+\;)/)
     command = line.match(/(?<=COMMAND=)(.*)/)
 
-    sudo_command_hash = { Line_number: line_num, Type: type, Date: date, Time: time, Host: host, Directory: pwd[0],
-                          User: user[0], Command: command[0] }
+    sudo_command_hash = { line_number: line_num, event_type: type, date: date, time: time, host: host, directory: pwd[0],
+                          user: user[0], command: command[0] }
   end
 
   # Parse the given 'Accepted' line and return a hash representation with keyword data extracted
@@ -298,8 +298,8 @@ class LogParser
     fingerprint = key[1] if key
     msg = message[0] if message
 
-    accepted_hash = { Line_number: line_num, Type: type, Date: date, Time: time, Host: host, PID: pid_num, Message: msg,
-                      User: user_name, Source_IP: src_address, Source_port: src_port, Key: fingerprint }
+    accepted_hash = { line_number: line_num, event_type: type, date: date, time: time, host: host, pid: pid_num, message: msg,
+                      user: user_name, source_ip: src_address, source_port: src_port, key: fingerprint }
   end
 
   # Parse the given 'Invalid user' line and return a hash representation with keyword data extracted
@@ -319,8 +319,8 @@ class LogParser
     src_ip = line.match(/\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/)
     pid_num = pid[1] if pid
 
-    invalid_hash = {  Line_number: line_num, Type: type, Date: date, Time: time, Host: host, PID: pid_num,
-                      User: user[0], Source_IP: src_ip[0] }
+    invalid_hash = {  line_number: line_num, event_type: type, date: date, time: time, host: host, pid: pid_num,
+                      user: user[0], source_ip: src_ip[0] }
   end
 
   # Parse the given 'failed password' line and return a hash representation with keyword data extracted
@@ -342,7 +342,7 @@ class LogParser
     pid_num = pid[1] if pid
     src_port = port[1] if port
 
-    failed_hash = { Line_number: line_num, Type: type, Date: date, Time: time, Host: host, PID: pid_num,
-                    User: user[0], Source_IP: src_ip[0], Source_port: src_port }
+    failed_hash = { line_number: line_num, event_type: type, date: date, time: time, host: host, pid: pid_num,
+                    user: user[0], source_ip: src_ip[0], source_port: src_port }
   end
 end

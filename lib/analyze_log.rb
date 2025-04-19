@@ -1,6 +1,5 @@
 require 'terminal-table'
 require 'fileutils'
-require_relative 'preprocess_log'
 require 'unicode_plot'
 require 'json'
 
@@ -48,15 +47,14 @@ require 'json'
 # - 'save_graph' : Helper function to save the given plot object
 # - 'get_summary' : prints tables to the console that summarize the results from LogParser
 
-class LogAnalyzer
-  def initialize(parser)
-    @parser = parser
-    @event_types = %i[Error Auth_failure Disconnect Session_opened Session_closed Sudo_command Accepted_publickey
-                      Accepted_password Invalid_user Failed_password]
-    @high_events = %i[Error Invalid_user Failed_password]
-    @med_events  = %i[Disconnect Accepted_publickey Accepted_password Session_opened Session_closed]
-    @low_events  = %i[Sudo_command]
-    @login_events = %i[Accepted_password Failed_password]
+class LogFileAnalyzer
+  def initialize()
+    @event_types = %i[error auth_failure disconnect session_opened session_closed sudo_command accepted_publickey
+                      accepted_password invalid_user failed_password]
+    @high_events = %i[error invalid_user failed_password]
+    @med_events  = %i[disconnect accepted_publickey accepted_password session_opened session_closed]
+    @low_events  = %i[sudo_command]
+    @login_events = %i[accepted_password failed_password]
     @months = { 'Jan' => '1', 'Feb' => '2', 'Mar' => '3', 'Apr' => '4', 'May' => '5', 'Jun' => '6', 'Jul' => '7',
                 'Aug' => '8', 'Sep' => '9', 'Oct' => '10', 'Nov' => '11', 'Dec' => '12' }
     @hours = {  '00' => 0, '01' => 0, '02' => 0, '03' => 0, '04' => 0, '05' => 0, '06' => 0, '07' => 0, '08' => 0,
@@ -117,8 +115,8 @@ class LogAnalyzer
     result = {}
     @high_events.each do |symbol|
       parsed_log[symbol].select { |event| event }.each do |event|
-        result[event[:Source_IP]] ||= 0
-        result[event[:Source_IP]] += 1
+        result[event[:source_ip]] ||= 0
+        result[event[:source_ip]] += 1
       end
     end
     plot_ip_aggregate(result)
@@ -137,7 +135,7 @@ class LogAnalyzer
     @event_types.each do |symbol|
       result[symbol] = @hours.clone
       parsed_log[symbol].select { |event| event }.each do |event|
-        time = event[:Time].split(':')
+        time = event[:time].split(':')
         hour = time[0]
         result[symbol][hour] += 1
       end
@@ -157,7 +155,7 @@ class LogAnalyzer
     @event_types.each do |symbol|
       result[symbol] = @parser.get_date_range
       parsed_log[symbol].select { |event| event }.each do |event|
-        date = event[:Date]
+        date = event[:date]
         result[symbol][date] += 1
       end
     end
@@ -176,7 +174,7 @@ class LogAnalyzer
     @login_events.each do |symbol|
       result[symbol] = @hours.clone
       parsed_log[symbol].select { |event| event }.each do |event|
-        time = event[:Time].split(':')
+        time = event[:time].split(':')
         hour = time[0]
         result[symbol][hour] += 1
       end
@@ -231,18 +229,18 @@ class LogAnalyzer
     med_rows = []
     ops_rows = []
 
-    high_rows << ['Error Flags', parsed_log[:Error].length]
-    high_rows << ['Authentication failures', parsed_log[:Auth_failure].length]
-    high_rows << ['Invalid users', parsed_log[:Invalid_user].length]
-    high_rows << ['Failed password attempts', parsed_log[:Failed_password].length]
+    high_rows << ['Error Flags', parsed_log[:error].length]
+    high_rows << ['Authentication failures', parsed_log[:auth_failure].length]
+    high_rows << ['Invalid users', parsed_log[:invalid_user].length]
+    high_rows << ['Failed password attempts', parsed_log[:failed_password].length]
 
-    med_rows << ['Disconnects', parsed_log[:Disconnect].length]
-    med_rows << ['Accepted publickey', parsed_log[:Accepted_publickey].length]
-    med_rows << ['Accepted password', parsed_log[:Accepted_password].length]
-    med_rows << ['Session Opens', parsed_log[:Session_opened].length]
-    med_rows << ['Session Closes', parsed_log[:Session_closed].length]
+    med_rows << ['Disconnects', parsed_log[:disconnect].length]
+    med_rows << ['Accepted publickey', parsed_log[:accepted_publickey].length]
+    med_rows << ['Accepted password', parsed_log[:accepted_password].length]
+    med_rows << ['Session Opens', parsed_log[:session_opened].length]
+    med_rows << ['Session Closes', parsed_log[:session_closed].length]
 
-    ops_rows << ['Sudo usage', parsed_log[:Sudo_command].length]
+    ops_rows << ['Sudo usage', parsed_log[:sudo_command].length]
 
     high_table = Terminal::Table.new :title => 'High Security Concerns', :headings => ['Event Type', 'Occurrences'],
                                      :rows => high_rows
