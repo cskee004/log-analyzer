@@ -8,6 +8,9 @@
 
 - This project also uses [unicode_plot.rb](https://github.com/red-data-tools/unicode_plot.rb) by Kenta Murata, licensed under the MIT License.
 
+[![Main](https://img.shields.io/badge/branch-main-brightgreen)](https://github.com/cskee004/log-analyzer/tree/main)
+[![Development](https://img.shields.io/badge/branch-development-yellow)](https://github.com/cskee004/log-analyzer/tree/development)
+
 ***
 
 ### Description
@@ -185,9 +188,14 @@ results/tests/
 - [x] Parse `auth.log` files
 - [x] Event grouping by types and timestamps
 - [x] Normalizes raw log data into structured formats to support automated analysis and reporting
-- [ ] Project website
-- [ ] Integrate a Rails-based dashboard for data visualization
-- [ ] Add support for other log formats 
+- [ ] Integrate a Rails-based dashboard for data visualization (*In Progress*)
+- [ ] Add additional analysis features 
+    - [ ] User behaviour analysis
+    - [ ] Failed login and brute-force detection
+    - [ ] IP & host activity mapping
+    - [ ] Command and activity correlation
+    - [ ] Event frequency heatmaps
+- [ ] Expand support for additional log formats (e.g., secure.log, syslog, cloud audit logs) 
 
 ***
 
@@ -197,7 +205,5 @@ Chris Skeens |
 [LinkedIn](https://www.linkedin.com/in/christopher-skeens-846780248/)
 
 ***
-
-[![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
 
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
