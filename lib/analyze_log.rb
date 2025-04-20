@@ -48,7 +48,8 @@ require 'json'
 # - 'get_summary' : prints tables to the console that summarize the results from LogParser
 
 class LogFileAnalyzer
-  def initialize()
+  def initialize(parser)
+    @parser = parser
     @event_types = %i[error auth_failure disconnect session_opened session_closed sudo_command accepted_publickey
                       accepted_password invalid_user failed_password]
     @high_events = %i[error invalid_user failed_password]
@@ -119,6 +120,7 @@ class LogFileAnalyzer
         result[event[:source_ip]] += 1
       end
     end
+    puts result.inspect
     plot_ip_aggregate(result)
     result
   end
@@ -192,8 +194,7 @@ class LogFileAnalyzer
       x_values = dataset[event_type].keys
       y_values = dataset[event_type].values
 
-      data = { 'event_type' => event_type, time_unit.to_s => x_values, 'values' => y_values }
-
+      data = { time_unit.to_s => x_values, 'values' => y_values }
       path = "docs/results/datasets/#{event_type}_#{time_unit}.json"
       dir = File.dirname(path)
       FileUtils.mkdir_p(dir) unless File.exist?(dir)
