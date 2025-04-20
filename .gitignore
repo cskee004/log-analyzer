@@ -63,3 +63,5 @@ app/.DS_Store
 config/.DS_Store
 lib/.DS_Store
 test/.DS_Store
+/app/assets/builds/*
+!/app/assets/builds/.keep

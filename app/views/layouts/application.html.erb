@@ -18,11 +18,41 @@
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%# stylesheet_link_tag "tailwind", "inter-font", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "tailwind", "inter-font", "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
   <body>
-    <%= yield %>
+    <div class="container">
+      <div class="header">
+        <div class="top-header">
+          
+
+        </div>
+        <div class="bottom-header">
+
+        </div>
+      </div>
+      <div class="nav">
+        <div class="logo">
+
+        </div>
+        <div class="links">
+
+        </div>
+      </div>
+      <div class="dashboard">
+        <div class="dashboard-header">
+          <div class="upload"></div>
+          <div class="summary-view"></div>
+          <div class="graph-view"></div>
+          <div class="table-view"></div>
+        </div>
+        <div class="main-content">
+          <%= yield %>
+        </div>
+      </div>
+    </div>
   </body>
 </html>
