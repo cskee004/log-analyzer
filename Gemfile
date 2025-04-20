@@ -3,7 +3,7 @@ source "https://rubygems.org"
 gem 'terminal-table'
 gem 'unicode_plot'
 gem 'fileutils'
-gem "tailwindcss-rails", "~> 3.3.1"
+
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.0.2"
