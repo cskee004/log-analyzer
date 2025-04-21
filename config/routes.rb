@@ -1,7 +1,11 @@
 Rails.application.routes.draw do
+  
+  root "dashboard#dashboard"
+  get "upload", to: "dashboard/upload"
+  get "summary", to: "dashboard/summary"
+  get "graph", to: "dashboard/graph"
+  get "table", to: "dashboard/table"
 
-  root "dashboard#index"
-  get "dashboard/index"
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

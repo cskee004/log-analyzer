@@ -1,0 +1,9 @@
+/*
+Define default styling for HTML elements using an element selector, descendent select, or child selector
+*/
+body,
+html {
+   margin: 0;
+   font-family: "Roboto", sans-serif;
+   background-color: antiquewhite;
+}

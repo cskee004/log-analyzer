@@ -8,13 +8,6 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
- body,
- html {
-    margin: 0;
-    background-color: black;
-    color: aliceblue;
-    font-family: "Roboto", sans-serif;
- }
 
  .container {
     box-sizing: border-box;
