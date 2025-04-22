@@ -1,10 +1,9 @@
 Rails.application.routes.draw do
-  
-  root "dashboard#dashboard"
-  get "upload", to: "dashboard/upload"
-  get "summary", to: "dashboard/summary"
-  get "graph", to: "dashboard/graph"
-  get "table", to: "dashboard/table"
+  root "dashboard/index"
+  get "dashboard/upload"
+  get "dashboard/summary"
+  get "dashboard/graph"
+  get "dashboard/table"
 
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
