@@ -1,7 +1,5 @@
 ## Security Log Analyzer  
 
-### Branches
-
 [![Main](https://img.shields.io/badge/branch-main-brightgreen)](https://github.com/cskee004/log-analyzer/tree/main) 
 
 [![Development](https://img.shields.io/badge/branch-development-yellow)](https://github.com/cskee004/log-analyzer/tree/development) - Active feature development (latest work)
