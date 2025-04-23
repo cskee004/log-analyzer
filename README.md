@@ -1,7 +1,5 @@
 ## Security Log Analyzer  
 
-***
-
 ### Branches
 
 [![Main](https://img.shields.io/badge/branch-main-brightgreen)](https://github.com/cskee004/log-analyzer/tree/main) 
@@ -16,7 +14,7 @@
 
     - Modifications: [test-auth.log](https://github.com/cskee004/log-analyzer/blob/main/data/auth-test.log)
 
-- This project also uses [unicode_plot.rb](https://github.com/red-data-tools/unicode_plot.rb) by Kenta Murata, licensed under the MIT License.
+- This project uses [unicode_plot.rb](https://github.com/red-data-tools/unicode_plot.rb) by Kenta Murata.
 
 ***
 
