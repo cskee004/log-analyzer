@@ -18,29 +18,22 @@
     <link rel="apple-touch-icon" href="/icon.png">
 
     <%# Includes all stylesheet files in app/assets/stylesheets %>
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", "base", "layout", "module", "state", "theme" ,"data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
   <body>
-    <div class="container">
-      <div class="header">
-        <div class="logo">Logo</div>
+    <div id="container">
+      <div id="header">
+        <div id="logo">Security Log Analyzer</div>
       </div>
-        <div class="nav">Nav
-          <div class="links">Links</div>
+        <div id="sidebar">Nav
+          
         </div>
-      <div class="dashboard">dashboard
-        <div class="dashboard-tabs">
-          <div class="upload-tab"></div>
-          <div class="summary-tab"></div>
-          <div class="graph-tab"></div>
-          <div class="table-tab"></div>
-        </div>
-        <div class="main-content">
+        <div id="main">
           <%= yield %>
         </div>
-      </div>
+      
       <div class="footer">footer
 
       </div>
