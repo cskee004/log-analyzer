@@ -1,5 +1,5 @@
-require_relative 'preprocess_log'
-require_relative 'analyze_log'
+require_relative 'log_parser'
+require_relative 'log_file_analyzer'
 
 # LogImporter Class
 #
@@ -10,7 +10,7 @@ require_relative 'analyze_log'
 # Methods:
 # - 
 
-class LogImporter
+class LogImport
   def initialize
     @event_types = %i[error auth_failure disconnect session_opened session_closed sudo_command accepted_publickey
     accepted_password invalid_user failed_password]

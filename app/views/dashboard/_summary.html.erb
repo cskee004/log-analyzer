@@ -1,0 +1,12 @@
+<turbo-frame id='frame_panel'>
+    <h2>Upload Summary</h2>
+
+    <div id="events">
+        <% @events.each do |event| %>
+        <div>
+            <%= event.attribute_names %>
+        </div>
+        <% end %>
+    </div>
+    
+</turbo-frame>

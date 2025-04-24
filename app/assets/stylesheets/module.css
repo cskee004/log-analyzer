@@ -4,9 +4,19 @@ Navigation bars, carousels, dialogs, and widgets
 Modules live inside Layout components
 */
 
+.dashboard {
+    display: grid;
+    grid-template-rows: auto 1fr;
+}
+
 .nav-tabs {
     display: flex;
-    
     align-items: center;
     gap: 1rem;
 }
+
+.frame {
+    
+    
+}
+

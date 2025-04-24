@@ -230,6 +230,8 @@ class LogFileAnalyzer
     med_rows = []
     ops_rows = []
 
+    tables = []
+
     high_rows << ['Error Flags', parsed_log[:error].length]
     high_rows << ['Authentication failures', parsed_log[:auth_failure].length]
     high_rows << ['Invalid users', parsed_log[:invalid_user].length]
@@ -250,8 +252,14 @@ class LogFileAnalyzer
     ops_table = Terminal::Table.new :title => 'Operational Monitoring', :headings => ['Event Type', 'Occurrences'],
                                     :rows => ops_rows
 
-    puts high_table
-    puts med_table
-    puts ops_table
+    #puts high_table
+    #puts med_table
+    #puts ops_table
+
+    tables << high_table
+    tables << med_table
+    tables << ops_table
+
+    tables
   end
 end
