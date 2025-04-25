@@ -16,6 +16,11 @@
 
 ***
 
+### Requirements
+
+- Ruby 3.1 or higher
+- Rails 7.0 or higher
+
 ### Description
 
 Log Analyzer is a Ruby-based tool thats designed to parse and analyze Linux system logs. It extracts key events, tracks time trends, and prepares the data for further visualizations or reporting. 
