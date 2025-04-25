@@ -26,5 +26,3 @@ class DashboardControllerTest < ActiveSupport::TestCase
   end
 
 end
-
-#'text/plain'

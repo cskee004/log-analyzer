@@ -16,7 +16,7 @@ class Utility
     accepted_password invalid_user failed_password]
   end
 
-  def import_event(log)
+  def POST_events(log)
     @event_types.each do |symbol|
       event_batch = []
       log[symbol].select { |event| event }.each do |event|
@@ -26,7 +26,7 @@ class Utility
     end
   end
 
-  def clear_table
+  def DELETE_events
     Event.delete_all
   end
 
