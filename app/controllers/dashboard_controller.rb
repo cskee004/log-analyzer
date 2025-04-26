@@ -9,6 +9,7 @@ class DashboardController < ApplicationController
     results =  @log_utility.validate_file(@uploaded_file)
     if results.include?(false)
       puts results[1]
+      # Render modal on upload tab with results[1]
     end
     
     @log_parser = LogParser.new
@@ -16,9 +17,6 @@ class DashboardController < ApplicationController
 
     @log_file_analyzer = LogFileAnalyzer.new(@log_parser)
     @results = @log_file_analyzer.get_summary(@log)
-
-    puts @results
-    
 
     #render partial: 'summary', locals: { results: @results}
     

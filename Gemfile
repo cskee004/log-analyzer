@@ -4,6 +4,9 @@ gem 'terminal-table'
 gem 'unicode_plot'
 gem 'fileutils'
 
+gem 'groupdate'
+gem 'apexcharts'
+
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 8.0.2"
