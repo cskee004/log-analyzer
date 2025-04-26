@@ -225,41 +225,31 @@ class LogFileAnalyzer
   # Prints to console results sorted into severity type along with how many occurrences
   #
   # @param parsed_log hash containing meta data for each event type
+  # @return results - an array of arrays containing event types with corresponding totals found in parsed_log
+  #                   results[threat_level[event_type, count]...]
   def get_summary(parsed_log)
-    high_rows = []
-    med_rows = []
-    ops_rows = []
+    high_events = []
+    med_events = []
+    ops_events = []
+    results = []
 
-    tables = []
+    high_events << ['Error Flags', parsed_log[:error].length]
+    high_events << ['Authentication failures', parsed_log[:auth_failure].length]
+    high_events << ['Invalid users', parsed_log[:invalid_user].length]
+    high_events << ['Failed password attempts', parsed_log[:failed_password].length]
 
-    high_rows << ['Error Flags', parsed_log[:error].length]
-    high_rows << ['Authentication failures', parsed_log[:auth_failure].length]
-    high_rows << ['Invalid users', parsed_log[:invalid_user].length]
-    high_rows << ['Failed password attempts', parsed_log[:failed_password].length]
+    med_events << ['Disconnects', parsed_log[:disconnect].length]
+    med_events << ['Accepted publickey', parsed_log[:accepted_publickey].length]
+    med_events << ['Accepted password', parsed_log[:accepted_password].length]
+    med_events << ['Session Opens', parsed_log[:session_opened].length]
+    med_events << ['Session Closes', parsed_log[:session_closed].length]
 
-    med_rows << ['Disconnects', parsed_log[:disconnect].length]
-    med_rows << ['Accepted publickey', parsed_log[:accepted_publickey].length]
-    med_rows << ['Accepted password', parsed_log[:accepted_password].length]
-    med_rows << ['Session Opens', parsed_log[:session_opened].length]
-    med_rows << ['Session Closes', parsed_log[:session_closed].length]
+    ops_events << ['Sudo usage', parsed_log[:sudo_command].length]
 
-    ops_rows << ['Sudo usage', parsed_log[:sudo_command].length]
+    results << high_events
+    results << med_events
+    results << ops_events
 
-    high_table = Terminal::Table.new :title => 'High Security Concerns', :headings => ['Event Type', 'Occurrences'],
-                                     :rows => high_rows
-    med_table = Terminal::Table.new :title => 'Medium Security Concerns', :headings => ['Event Type', 'Occurrences'],
-                                    :rows => med_rows
-    ops_table = Terminal::Table.new :title => 'Operational Monitoring', :headings => ['Event Type', 'Occurrences'],
-                                    :rows => ops_rows
-
-    #puts high_table
-    #puts med_table
-    #puts ops_table
-
-    tables << high_table
-    tables << med_table
-    tables << ops_table
-
-    tables
+    results
   end
 end

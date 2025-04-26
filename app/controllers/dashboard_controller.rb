@@ -5,21 +5,22 @@ class DashboardController < ApplicationController
   def upload
     
     @uploaded_file = params[:log_file]
-    @log_import = Utility.new
-    results =  @log_import.validate_file(@uploaded_file)
+    @log_utility = LogUtility.new
+    results =  @log_utility.validate_file(@uploaded_file)
     if results.include?(false)
       puts results[1]
     end
     
-    #@log_parser = LogParser.new
-    #@log = @log_parser.read_log(@uploaded_file)
+    @log_parser = LogParser.new
+    @log = @log_parser.read_log(@uploaded_file)
 
-    #@log_analyzer = LogFileAnalyzer.new(@log_parser)
-    #@results = @log_analyzer.get_summary(@log)
+    @log_file_analyzer = LogFileAnalyzer.new(@log_parser)
+    @results = @log_file_analyzer.get_summary(@log)
 
-    #@events = Event.all
+    puts @results
+    
 
-    #render partial: 'summary', locals: { events: @events}
+    #render partial: 'summary', locals: { results: @results}
     
   end
 

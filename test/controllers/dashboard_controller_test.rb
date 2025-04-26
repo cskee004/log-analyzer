@@ -12,12 +12,12 @@ class DashboardControllerTest < ActiveSupport::TestCase
     big_file = fixture_file_upload('auth-test-size.log', 'application/octet-stream')
     correct_file = fixture_file_upload('auth-test.log', 'application/octet-stream')
 
-    log_import = LogImport.new
+    log_utility = Utility.new
 
-    f0 = log_import.validate_file(wrong_file_name)
-    f1 = log_import.validate_file(wrong_file_content)
-    f2 = log_import.validate_file(big_file)
-    f3 = log_import.validate_file(correct_file)
+    f0 = log_utility.validate_file(wrong_file_name)
+    f1 = log_utility.validate_file(wrong_file_content)
+    f2 = log_utility.validate_file(big_file)
+    f3 = log_utility.validate_file(correct_file)
 
     assert_equal [false, "Filename failed: wrong-type.txt"], f0
     assert_equal [false, "Content type failed: text/plain"], f1
