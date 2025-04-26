@@ -226,29 +226,31 @@ class LogFileAnalyzer
   #
   # @param parsed_log hash containing meta data for each event type
   # @return results - an array of hashes containing event types with corresponding totals found in parsed_log
-  #                   hash {event_type => count, event_type => count}
+  #                   results[high_events[{event_type => count}, {event_type => count}]
+  #                            med_events[{event_type => count}, ...]
+  #                          ]
   def get_summary(parsed_log)
     high_events = []
     med_events = []
     ops_events = []
     results = []
 
-    high_events << {'Error Flags' => parsed_log[:error].length}
-    high_events << {'Authentication failures' => parsed_log[:auth_failure].length}
-    high_events << {'Invalid users' => parsed_log[:invalid_user].length}
-    high_events << {'Failed password attempts'=> parsed_log[:failed_password].length}
+    high_events << {name: 'Error Flags', data: parsed_log[:error].length}
+    high_events << {name: 'Authentication failures', data: parsed_log[:auth_failure].length}
+    high_events << {name: 'Invalid users', data: parsed_log[:invalid_user].length}
+    high_events << {name: 'Failed password attempts', data: parsed_log[:failed_password].length}
     results << high_events
     
-    med_events << {'Disconnects' => parsed_log[:disconnect].length}
-    med_events << {'Accepted publickey' => parsed_log[:accepted_publickey].length}
-    med_events << {'Accepted password' => parsed_log[:accepted_password].length}
-    med_events << {'Session Opens' => parsed_log[:session_opened].length}
-    med_events << {'Session Closes' => parsed_log[:session_closed].length}
+    med_events << {name: 'Disconnects', data: parsed_log[:disconnect].length}
+    med_events << {name: 'Accepted publickey', data: parsed_log[:accepted_publickey].length}
+    med_events << {name: 'Accepted password', data: parsed_log[:accepted_password].length}
+    med_events << {name: 'Session Opens', data: parsed_log[:session_opened].length}
+    med_events << {name: 'Session Closes', data: parsed_log[:session_closed].length}
     results << med_events
 
-    ops_events << {'Sudo usage' => parsed_log[:sudo_command].length}
+    ops_events << {name: 'Sudo usage', data: parsed_log[:sudo_command].length}
     results << ops_events
-
+    
     results
   end
 end

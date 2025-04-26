@@ -18,7 +18,14 @@ class DashboardController < ApplicationController
     @log_file_analyzer = LogFileAnalyzer.new(@log_parser)
     @results = @log_file_analyzer.get_summary(@log)
 
-    #render partial: 'summary', locals: { results: @results}
+    @scaled_results = @results.map { | group | group.map { |event| { name: event[:name], data: event[:data] / 20.0}}}
+
+    # @results[0] + results[1] + results[2] = all_events
+    # @results[0] = high_events
+    # @results[1] = med_events
+    # @results[2] = ops_events
+
+    render partial: 'summary', locals: { results: @results, scaled_results: @scaled_results}
     
   end
 

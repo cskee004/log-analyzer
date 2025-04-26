@@ -1,12 +1,16 @@
 <turbo-frame id='frame_panel'>
     <h2>Upload Summary</h2>
-
-    <div id="results">
-        <% @results.each do |result| %>
-        <div>
-            <%= event.attribute_names %>
-        </div>
-        <% end %>
-    </div>
     
+    <div id="summary-all">
+        <%= radial_bar_chart((scaled_results[0] + scaled_results[1] + scaled_results[2]), legend: true) %>
+    </div>
+    <div id="summary-high">
+        
+    </div>
+    <div id="summary-med">
+        
+    </div>
+    <div id="summary-ops">
+        
+    </div>   
 </turbo-frame>

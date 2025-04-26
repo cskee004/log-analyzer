@@ -17,9 +17,14 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
     <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag "application", "base", "layout", "module", "state", "theme" ,"data-turbo-track": Rails.env.production? ? "reload" : ""%>
     <%= javascript_importmap_tags %>
+
+    
+
   </head>
 
   <body>
