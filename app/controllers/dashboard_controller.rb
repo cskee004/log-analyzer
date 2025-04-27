@@ -16,16 +16,23 @@ class DashboardController < ApplicationController
     @log = @log_parser.read_log(@uploaded_file)
 
     @log_file_analyzer = LogFileAnalyzer.new(@log_parser)
-    @results = @log_file_analyzer.get_summary(@log)
+    @result_summary = @log_file_analyzer.get_summary(@log)
+    
+    
+    @hour = @log_file_analyzer.events_by_hour(@log)
+    @result_hour = @log_utility.format_for_apexcharts(@hour)
 
-    @scaled_results = @results.map { | group | group.map { |event| { name: event[:name], data: event[:data] / 20.0}}}
+    @date = @log_file_analyzer.events_by_date(@log)
+    @result_date = @log_utility.format_for_apexcharts(@date)
 
-    # @results[0] + results[1] + results[2] = all_events
-    # @results[0] = high_events
-    # @results[1] = med_events
-    # @results[2] = ops_events
+    @ip = @log_file_analyzer.top_offenders(@log)
+    #@result_ip = @log_utility.format_for_apexcharts(@ip)
+    puts @ip.inspect
+   
+    @login = @log_file_analyzer.login_patterns(@log)
+    @result_login = @log_utility.format_for_apexcharts(@login)    
 
-    render partial: 'summary', locals: { results: @results, scaled_results: @scaled_results}
+    render partial: 'summary', locals: { result_summary: @result_summary, result_hour: @result_hour, result_date: @result_date,  result_login: @result_login, ip: @ip }
     
   end
 

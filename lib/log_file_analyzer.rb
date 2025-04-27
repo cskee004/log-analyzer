@@ -39,7 +39,7 @@ require 'json'
 #   event counts in the time unit
 # - 'plot_ip_aggregate' : Creates a bar graph where x-values represent flagged ip addresses and y-values represent high
 #   security event counts
-# - 'suspicious_ips' : Rank top 10 IPs by number of high security concerns
+# - 'top_offenders' : Rank top 10 IPs by number of high security concerns
 # - 'events_by_hour' : Finds what event type happens during each hour of the day
 # - 'events_by_date' : Finds what event type happens during each hour or date
 # - 'login_patterns' : Reports when users typically log in and when failures occur
@@ -106,13 +106,14 @@ class LogFileAnalyzer
     File.open(path, 'w') { |file| file.write(plot.to_s) }
   end
 
-  # Collects unique IP addresses and their associated high security events
+  # Collects unique IP addresses and their associated high security events. Results are then sorted 
+  # by number of high security events associated with the IP
   #
   # @param parsed_log hash containing meta data for each event type
-  # @return result - a hash containing IP as keys with hash values of events
-  #                 {ip0 => {event0, event1, event2, ...}, ip1 => {event0, event1, event2, ...}...}
+  # @return result - a hash containing IP as keys and counts for each associated high security event
+  #                 {ip0 => n, ip1 => n, ...}
 
-  def suspicious_ips(parsed_log)
+  def top_offenders(parsed_log)
     result = {}
     @high_events.each do |symbol|
       parsed_log[symbol].select { |event| event }.each do |event|
@@ -120,9 +121,9 @@ class LogFileAnalyzer
         result[event[:source_ip]] += 1
       end
     end
-    puts result.inspect
-    plot_ip_aggregate(result)
-    result
+    sorted = result.sort_by { |_ip, count| -count }
+    final_sorted = sorted.to_a.first(10).to_h
+    final_sorted
   end
 
   # Finds the number of occurrences of each type of event by the hour
@@ -142,7 +143,6 @@ class LogFileAnalyzer
         result[symbol][hour] += 1
       end
     end
-    plot_time_series(result, 'hour')
     result
   end
 
@@ -161,7 +161,6 @@ class LogFileAnalyzer
         result[symbol][date] += 1
       end
     end
-    plot_time_series(result, 'date')
     result
   end
 
@@ -222,35 +221,26 @@ class LogFileAnalyzer
     File.open(path, 'w') { |file| file.write(plot.to_s) }
   end
 
-  # Prints to console results sorted into severity type along with how many occurrences
+  # Counts each event type number of occurrences found in the parsed_log
   #
   # @param parsed_log hash containing meta data for each event type
   # @return results - an array of hashes containing event types with corresponding totals found in parsed_log
-  #                   results[high_events[{event_type => count}, {event_type => count}]
-  #                            med_events[{event_type => count}, ...]
-  #                          ]
+  #                   results[{name: event, data: {event => count}], ...]
+  #                            
   def get_summary(parsed_log)
-    high_events = []
-    med_events = []
-    ops_events = []
     results = []
 
-    high_events << {name: 'Error Flags', data: parsed_log[:error].length}
-    high_events << {name: 'Authentication failures', data: parsed_log[:auth_failure].length}
-    high_events << {name: 'Invalid users', data: parsed_log[:invalid_user].length}
-    high_events << {name: 'Failed password attempts', data: parsed_log[:failed_password].length}
-    results << high_events
-    
-    med_events << {name: 'Disconnects', data: parsed_log[:disconnect].length}
-    med_events << {name: 'Accepted publickey', data: parsed_log[:accepted_publickey].length}
-    med_events << {name: 'Accepted password', data: parsed_log[:accepted_password].length}
-    med_events << {name: 'Session Opens', data: parsed_log[:session_opened].length}
-    med_events << {name: 'Session Closes', data: parsed_log[:session_closed].length}
-    results << med_events
-
-    ops_events << {name: 'Sudo usage', data: parsed_log[:sudo_command].length}
-    results << ops_events
-    
+    results << {name: 'Error Flags', data: {'Error Flags' => parsed_log[:error].length}}
+    results << {name: 'Authentication failures', data: {'Authentication failures' => parsed_log[:auth_failure].length}}
+    results << {name: 'Invalid users', data: {'Invalid users' => parsed_log[:invalid_user].length}}
+    results << {name: 'Failed password attempts', data: {'Failed password attempts' => parsed_log[:failed_password].length}}
+    results << {name: 'Disconnects', data: {'Disconnects' => parsed_log[:disconnect].length}}
+    results << {name: 'Accepted publickey', data: {'Accepted Publickey' => parsed_log[:accepted_publickey].length}}
+    results << {name: 'Accepted password', data: {'Accepted password' => parsed_log[:accepted_password].length}}
+    results << {name: 'Session Opens', data: {'Session Opens' => parsed_log[:session_opened].length}}    
+    results << {name: 'Session Closes', data: {'Session Closes' => parsed_log[:session_closed].length}}
+    results << {name: 'Sudo usage', data: {'Sudo Usage' => parsed_log[:sudo_command].length}}
+  
     results
   end
 end
