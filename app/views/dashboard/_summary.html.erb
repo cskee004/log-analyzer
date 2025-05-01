@@ -1,17 +1,15 @@
 <turbo-frame id='frame_panel'>
-    <h2>Upload Summary</h2>
-    
-    <div id="summary-all">
-        <%= column_chart(result_summary, {width: 600, colors: light_contrasting_colors, title: 'Security Events by Number of Occurrences', xtitle: 'Event Type', ytitle: 'Count', theme: 'palette2', stacked: false}) %>
+    <div class="summary-list-modal">
+ 	    <header<h2>Upload Summary</h2></header>
+ 	    <ul>
+            <% result_summary.each  do |name| %>
+            <li>
+                <div><%= name[:data].keys.first %> : <%= name[:data].values.first %></div>
+            </li>
+            <% end %>
+        </ul>
     </div>
-    <div id="events_hour">
-        <%= bar_chart(result_hour, {height: 1000, colors: light_contrasting_colors, title: 'Events by Hour', xtitle: 'Hour', ytitle: 'Occurrences', theme: 'palette4', stacked: true}) %>
-    </div>
-    <div id="events_date">
-        <%= bar_chart(result_date, {height: 1000, colors: light_contrasting_colors, title: 'Events by Date', xtitle: 'Date', ytitle: 'Occurrences', theme: 'palette6', stacked: true}) %>
-    </div>
-    <div id="login_events">
-        <%= column_chart(result_login, {width: 1000, colors: light_contrasting_colors, title: 'Accepted Password vs. Failed Password', xtitle: 'Hour', ytitle: 'Count', theme: 'palette2', stacked: false}) %>
-    </div>
-    
+    <div id="summary-graph-modal">
+        <%= column_chart(result_summary, {width: 400, colors: light_contrasting_colors, title: 'Security Events by Number of Occurrences', xtitle: 'Event Type', ytitle: 'Count', theme: 'palette2', stacked: false}) %>
+    </div>    
 </turbo-frame>

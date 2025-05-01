@@ -39,9 +39,17 @@
           <%= yield %>
         </div>
       
-      <div class="footer">footer
+      <div id="footer">footer
 
       </div>
     
   </body>
+  <script>
+    document.addEventListener("turbo:frame-load", function(event) {
+      if (event.target.id === "frame_panel") {
+        document.getElementById('graph-button').disabled = false;
+        document.getElementById('table-button').disabled = false;
+      }
+    });
+</script>
 </html>

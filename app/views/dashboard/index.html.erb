@@ -1,10 +1,9 @@
 <div class="dashboard">
-    <div class="nav-tabs">
-        <button class="upload-tab">Upload</button>
-        <button class="summary-tab">Summary</button>
-        <button class="graph-tab">Graph</button>
-        <button class="table-tab">Table</button>
+    <div class="button-bar">
+        <%= button_to "View Graph", graph_dashboard_path, method: :get, form: { data: { turbo_frame: "frame_panel" } }, disabled: true, id: "graph-button" %>
+        <%= button_to "View Table", table_dashboard_path, method: :get, form: { data: { turbo_frame: "frame_panel" } }, disabled: true, id: "table-button" %>
     </div>
+
     <div class="frame">
         <turbo-frame id='frame_panel'>
             <%= render 'upload' %>

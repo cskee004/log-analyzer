@@ -1,5 +1,6 @@
 require_relative 'log_parser'
 require_relative 'log_file_analyzer'
+require 'date'
 
 # LogUtility Class
 # This class is responsible for anything data related for the web interface. 
@@ -24,6 +25,9 @@ class LogUtility
   def initialize
     @event_types = %i[error auth_failure disconnect session_opened session_closed sudo_command accepted_publickey
     accepted_password invalid_user failed_password]
+    @months = { 'Jan' => '1', 'Feb' => '2', 'Mar' => '3', 'Apr' => '4', 'May' => '5', 'Jun' => '6', 'Jul' => '7',
+    'Aug' => '8', 'Sep' => '9', 'Oct' => '10', 'Nov' => '11', 'Dec' => '12' }
+    @dates = {}
   end
 
   # Inserts by the event_type into the Event model
@@ -57,11 +61,11 @@ class LogUtility
       return [false, "Content type failed: #{uploaded_file.content_type}"]
     end
 
-    unless file.original_filename =~ filename
+    unless uploaded_file.original_filename =~ filename
       return [false, "Filename failed: #{uploaded_file.original_filename}"]
     end
   
-    if file.size >= max_size
+    if uploaded_file.size >= max_size
       return [false, "File size too big: #{uploaded_file.size} bytes"]
     end
 
@@ -79,4 +83,23 @@ class LogUtility
     end
     results
   end
+
+  # Creates a hash of dates in the range from first and last records from the Event model.
+  #
+  # @returns hash of dates {date => count}
+
+  def create_date_range()
+    log_first_date = Event.first.date
+    log_last_date = Event.last.date
+
+    range = []
+
+    begin_date = Date.parse(log_first_date)
+    end_date = Date.parse(log_last_date)
+    begin_date.step(end_date) { |date| range << date.to_s }
+
+    @dates = range.to_h { |date| [date, 0] }
+    @dates
+  end
+
 end
