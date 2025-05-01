@@ -14,12 +14,19 @@ require 'date'
 #   
 # Attributes:
 # - 'event_types' array : collection of event type symbols to control loops
+# - 'all' array : collection of event type strings for rebuilding logs from the event Model
+# - 'high' array : collection of high security event type strings
+# - 'med' array : collection of medium security event type strings
+# - 'ops' array : collection of operational event type strings
+# - 'months' hash : helper for converting 3 letter month abbreviations to numerical representations
 # 
 # Methods:
-# - 'POST_events' : Inserts batch of event type from the parsed log into the Events model. 
+# - 'POST_events' : Inserts batch of event type from the parsed log into the Event model. 
 # - 'DELETE_events' : Helper method to clear Events model
 # - 'validate_file' : Validates the upload file for extension, contents, and size.
 # - 'format_for_apexcharts' : Helper method to format the given dataset for plotting
+# - 'create_date_range' : creates a hash of key dates in the range of Event.first to Event.last inclusive with values initialized to 0
+# - 'rebuild_log' : Helper method to rebuild the parsed log from the Event model
 
 class LogUtility
   def initialize
@@ -106,6 +113,10 @@ class LogUtility
     @dates = range.to_h { |date| [date, 0] }
     @dates
   end
+
+  #
+  # @param 
+  # @returns 
 
   def rebuild_log(security_level)
     log = {}
