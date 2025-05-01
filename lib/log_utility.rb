@@ -23,8 +23,13 @@ require 'date'
 
 class LogUtility
   def initialize
-    @event_types = %i[error auth_failure disconnect session_opened session_closed sudo_command accepted_publickey
+    @event_types = %i[error_flag authentication_failure disconnect session_opened session_closed sudo_command accepted_publickey
     accepted_password invalid_user failed_password]
+    @all = ['Error flag', 'Authentication failure', 'Invalid user', 'Failed password', 'Disconnect', 'Accepted password', 
+            'Accepted publickey', 'Session opened', 'Session closed', 'Sudo command']
+    @high = ['Error flag', 'Authentication failure', 'Invalid user', 'Failed password']
+    @med = ['Disconnect', 'Accepted password', 'Accepted publickey', 'Session opened', 'Session closed']
+    @ops = ['Sudo command']
     @months = { 'Jan' => '1', 'Feb' => '2', 'Mar' => '3', 'Apr' => '4', 'May' => '5', 'Jun' => '6', 'Jul' => '7',
     'Aug' => '8', 'Sep' => '9', 'Oct' => '10', 'Nov' => '11', 'Dec' => '12' }
     @dates = {}
@@ -100,6 +105,31 @@ class LogUtility
 
     @dates = range.to_h { |date| [date, 0] }
     @dates
+  end
+
+  def rebuild_log(security_level)
+    log = {}
+    
+    case security_level
+    when 'all'
+      type = @all
+    when 'high'
+      type = @high 
+    when 'med'
+      type = @med
+    when 'ops'
+      type = @ops
+    end
+
+    Event.where(event_type: type).each do |event|
+      symbol = event.event_type.downcase.tr(' ', '_').to_sym
+      log[symbol] ||= []
+      hash = {  line_number: event[:line_number], event_type: event[:event_type], date: event[:date], time: event[:time], 
+                host: event[:host], pid: event[:pid], message: event[:message], user: event[:user], source_ip: event[:source_ip],  
+                source_port: event[:source_port], directory: event[:directory], command: event[:command], key: event[:key]}
+      log[symbol] << hash
+    end
+    log
   end
 
 end

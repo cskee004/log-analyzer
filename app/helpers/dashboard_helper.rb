@@ -8,7 +8,7 @@ module DashboardHelper
   end
   
   def event_types
-    %i[ error auth_failure disconnect session_opened session_closed sudo_command accepted_publickey
+    %i[error authentication_failure disconnect session_opened session_closed sudo_command accepted_publickey
         accepted_password invalid_user failed_password]
   end
 

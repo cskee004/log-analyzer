@@ -36,7 +36,7 @@ require 'date'
 
 class LogParser
   def initialize
-    @parsed_log = { error: [], auth_failure: [], disconnect: [], session_opened: [], session_closed: [],
+    @parsed_log = { error_flag: [], authentication_failure: [], disconnect: [], session_opened: [], session_closed: [],
                     sudo_command: [], accepted_publickey: [], accepted_password: [], invalid_user: [],
                     failed_password: [] }
     @dates = {}
@@ -64,9 +64,9 @@ class LogParser
 
         case line
         when /error/
-          @parsed_log[:error] << parse_error(line, line_num.to_s, 'Error flag', date_string, time[0], host[0])
+          @parsed_log[:error_flag] << parse_error(line, line_num.to_s, 'Error flag', date_string, time[0], host[0])
         when /authentication failure/
-          @parsed_log[:auth_failure] << parse_auth_failure(line, line_num.to_s, 'Authentication failure', date_string,
+          @parsed_log[:authentication_failure] << parse_auth_failure(line, line_num.to_s, 'Authentication failure', date_string,
                                                            time[0], host[0])
         when /Disconnected/
           @parsed_log[:disconnect] << parse_disconnect(line, line_num.to_s, 'Disconnect', date_string, time[0], host[0])

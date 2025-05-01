@@ -13,16 +13,13 @@ class DashboardController < ApplicationController
       # Render modal on upload tab with results[1]
     end
     
-    
     log_parser = LogParser.new
     parsed_log = log_parser.read_log(@uploaded_file)
-    puts parsed_log
     @log_utility.POST_events(parsed_log)
     
-    log_file_analyzer = LogFileAnalyzer.new(log_parser)
+    log_file_analyzer = LogFileAnalyzer.new
     @result_summary = log_file_analyzer.get_summary(parsed_log)
 
-    
     render partial: 'summary', locals: { result_summary: @result_summary }    
   end
 
@@ -32,13 +29,35 @@ class DashboardController < ApplicationController
 
   def graph
     @log_utility = LogUtility.new 
-    high = ['Error Flag', 'Authentication failure', 'Invalid user', 'Failed password']
-    med = ['Disconnect', 'accepted_password', 'Accepted publickey', 'Session opened', 'Session closed']
-    ops = ['Sudo command']
+    @log_file_analyzer = LogFileAnalyzer.new
     
-    dates = @log_utility.create_date_range()
+    dates = @log_utility.create_date_range
+    all_events_log = @log_utility.rebuild_log('all')
+    high_events_log = @log_utility.rebuild_log('high')
+    med_events_log = @log_utility.rebuild_log('med')
+    ops_event_log = @log_utility.rebuild_log('ops')
+
+    temp_top_ips = @log_file_analyzer.top_offenders(high_events_log)
+    @top_ips = @log_utility.format_for_apexcharts(temp_top_ips)
+
+    temp_high_date = @log_file_analyzer.events_by_date(high_events_log, dates)
+    @high_date = @log_utility.format_for_apexcharts(temp_high_date)
     
-    render partial: 'graph'
+    temp_high_hour = @log_file_analyzer.events_by_hour(high_events_log)
+    @high_hour = @log_utility.format_for_apexcharts(temp_high_hour)
+
+    temp_med_date = @log_file_analyzer.events_by_date(med_events_log, dates)
+    @med_date = @log_utility.format_for_apexcharts(temp_med_date)
+    
+    temp_med_hour = @log_file_analyzer.events_by_hour(med_events_log)
+    @med_hour = @log_utility.format_for_apexcharts(temp_med_hour)
+
+    temp_login = @log_file_analyzer.login_patterns(all_events_log)
+    @login = @log_utility.format_for_apexcharts(temp_login)
+    
+
+    render partial: 'graph', locals: {  top_ips: @top_ips, high_date: @high_date, high_hour: @high_hour,
+                                        med_date: @med_date, med_hour: @med_hour, login: @login }
   end
   
   def table

@@ -48,11 +48,10 @@ require 'json'
 # - 'get_summary' : prints tables to the console that summarize the results from LogParser
 
 class LogFileAnalyzer
-  def initialize(parser)
-    @parser = parser
-    @event_types = %i[error auth_failure disconnect session_opened session_closed sudo_command accepted_publickey
+  def initialize()
+    @event_types = %i[error_flag authentication_failure disconnect session_opened session_closed sudo_command accepted_publickey
                       accepted_password invalid_user failed_password]
-    @high_events = %i[error invalid_user failed_password]
+    @high_events = %i[error_flag invalid_user failed_password]
     @med_events  = %i[disconnect accepted_publickey accepted_password session_opened session_closed]
     @low_events  = %i[sudo_command]
     @login_events = %i[accepted_password failed_password]
@@ -116,6 +115,7 @@ class LogFileAnalyzer
   def top_offenders(parsed_log)
     result = {}
     @high_events.each do |symbol|
+      next unless parsed_log[symbol]
       parsed_log[symbol].select { |event| event }.each do |event|
         result[event[:source_ip]] ||= 0
         result[event[:source_ip]] += 1
@@ -136,6 +136,7 @@ class LogFileAnalyzer
     result = {}
 
     @event_types.each do |symbol|
+      next unless parsed_log[symbol] 
       result[symbol] = @hours.clone
       parsed_log[symbol].select { |event| event }.each do |event|
         time = event[:time].split(':')
@@ -152,10 +153,11 @@ class LogFileAnalyzer
   # @return result - a hash of event types with number of occurrences for each day that event took place
   #                 {event_type0 => {date => count, ...}, event_type1 => {date => count}, ...}
 
-  def events_by_date(parsed_log)
+  def events_by_date(parsed_log, date_range)
     result = {}
     @event_types.each do |symbol|
-      result[symbol] = @parser.get_date_range
+      next unless parsed_log[symbol]
+      result[symbol] = date_range
       parsed_log[symbol].select { |event| event }.each do |event|
         date = event[:date]
         result[symbol][date] += 1
@@ -173,6 +175,7 @@ class LogFileAnalyzer
   def login_patterns(parsed_log)
     result = {}
     @login_events.each do |symbol|
+      next unless parsed_log[symbol]
       result[symbol] = @hours.clone
       parsed_log[symbol].select { |event| event }.each do |event|
         time = event[:time].split(':')
@@ -230,8 +233,8 @@ class LogFileAnalyzer
   def get_summary(parsed_log)
     results = []
 
-    results << {name: 'Error Flags', data: {'Error Flags' => parsed_log[:error].length}}
-    results << {name: 'Authentication failures', data: {'Authentication failures' => parsed_log[:auth_failure].length}}
+    results << {name: 'Error Flags', data: {'Error Flags' => parsed_log[:error_flag].length}}
+    results << {name: 'Authentication failures', data: {'Authentication failures' => parsed_log[:authentication_failure].length}}
     results << {name: 'Invalid users', data: {'Invalid users' => parsed_log[:invalid_user].length}}
     results << {name: 'Failed password attempts', data: {'Failed password attempts' => parsed_log[:failed_password].length}}
     results << {name: 'Disconnects', data: {'Disconnects' => parsed_log[:disconnect].length}}
