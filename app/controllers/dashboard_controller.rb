@@ -19,6 +19,7 @@ class DashboardController < ApplicationController
     
     log_file_analyzer = LogFileAnalyzer.new
     @result_summary = log_file_analyzer.get_summary(parsed_log)
+    #@result_summary = @log_utility.rebuild_log('all')
 
     render partial: 'summary', locals: { result_summary: @result_summary }    
   end

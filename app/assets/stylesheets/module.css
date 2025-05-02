@@ -22,8 +22,6 @@ turbo-frame#frame_panel {
     padding: 20px;
     display: flex;
     flex-wrap: wrap;
-    
-      
     gap: 10rem;  
 }
 
@@ -36,10 +34,7 @@ turbo-frame#frame_panel {
 }
 
 .summary-list-modal {
-    border-style: solid;
     padding: 10px;
-    border-radius: 2px;
-    
 }
 
 

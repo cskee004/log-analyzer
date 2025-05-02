@@ -80,7 +80,7 @@ class LogParser
           @parsed_log[:sudo_command] << parse_sudo_command(line, line_num.to_s, 'Sudo command', date_string, time[0],
                                                            host[0])
         when /Accepted publickey/
-          @parsed_log[:accepted_publickey] << parse_accept_event(line, line_num.to_s, 'Accept publickey', date_string,
+          @parsed_log[:accepted_publickey] << parse_accept_event(line, line_num.to_s, 'Accepted publickey', date_string,
                                                                  time[0], host[0])
         when /Accepted password/
           @parsed_log[:accepted_password] << parse_accept_event(line, line_num.to_s, 'Accepted password', date_string,
