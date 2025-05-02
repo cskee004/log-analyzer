@@ -19,7 +19,6 @@ class DashboardController < ApplicationController
     
     log_file_analyzer = LogFileAnalyzer.new
     @result_summary = log_file_analyzer.get_summary(parsed_log)
-    #@result_summary = @log_utility.rebuild_log('all')
 
     render partial: 'summary', locals: { result_summary: @result_summary }    
   end
@@ -38,7 +37,7 @@ class DashboardController < ApplicationController
     @log_utility = LogUtility.new 
     @log_file_analyzer = LogFileAnalyzer.new
     
-    dates = @log_utility.create_date_range
+    date_range = @log_utility.create_date_range
     all_events_log = @log_utility.rebuild_log('all')
     high_events_log = @log_utility.rebuild_log('high')
     med_events_log = @log_utility.rebuild_log('med')
@@ -46,13 +45,13 @@ class DashboardController < ApplicationController
     temp_top_ips = @log_file_analyzer.top_offenders(high_events_log)
     @top_ips = @log_utility.format_for_apexcharts(temp_top_ips)
 
-    temp_high_date = @log_file_analyzer.events_by_date(high_events_log, dates)
+    temp_high_date = @log_file_analyzer.events_by_date(high_events_log, date_range)
     @high_date = @log_utility.format_for_apexcharts(temp_high_date)
     
     temp_high_hour = @log_file_analyzer.events_by_hour(high_events_log)
     @high_hour = @log_utility.format_for_apexcharts(temp_high_hour)
 
-    temp_med_date = @log_file_analyzer.events_by_date(med_events_log, dates)
+    temp_med_date = @log_file_analyzer.events_by_date(med_events_log, date_range)
     @med_date = @log_utility.format_for_apexcharts(temp_med_date)
     
     temp_med_hour = @log_file_analyzer.events_by_hour(med_events_log)
@@ -66,8 +65,10 @@ class DashboardController < ApplicationController
                                         med_date: @med_date, med_hour: @med_hour, login: @login }
   end
   
-  def table
-    render partial: 'table'
+  def reset
+    LogUtility.new.DELETE_events
+    redirect_to root_path, notice: 'Dashboard has been reset.'
   end
+  
 
 end

@@ -2,9 +2,9 @@
   <div>
     <label for="chart-selector">Choose a chart:</label>
     <%= form_with url: graph_dashboard_path, method: :get, data: { turbo_frame: "selected-graph" }, local: true do |f| %>
-      <%= f.select :chart, [["Top IPs", "top_ips"], ["High Security Events: Hourly", "high_hour"], ["High Security Events: Daily", "high_date"],
-                            ["Medium Security Events: Hourly", "med_hour"], ["Medium Security Events: Daily", "med_date"],
-                            ["Successful / Failed Logins", "logins"]   ], { selected: params[:chart] }, onchange: "this.form.requestSubmit()" %>
+      <%= f.select :chart, [["Top 10 Flagged IPs", "top_ips"], ["High Security Events : Hourly", "high_hour"], ["High Security Events : Daily", "high_date"],
+                            ["Medium Security Events : Hourly", "med_hour"], ["Medium Security Events : Daily", "med_date"],
+                            ["Successful vs Failed Logins", "logins"]   ], { selected: params[:chart] }, onchange: "this.form.requestSubmit()" %>
     <% end %>
   </div>
 

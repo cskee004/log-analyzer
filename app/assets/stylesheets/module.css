@@ -1,13 +1,7 @@
-/*
-Each module designed to be a standalone component
-Navigation bars, carousels, dialogs, and widgets
-Modules live inside Layout components
-*/
-
 .dashboard {
     display: grid;
     grid-template-rows: auto 1fr;
-    min-height: 500px;
+    min-height: 500px; 
 }
 
 div.button-bar {
@@ -17,24 +11,26 @@ div.button-bar {
 }
 
 turbo-frame#frame_panel {
-    border-style: solid;
-    border-color: blue;
-    padding: 20px;
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    margin-right: 1.5rem;
     display: flex;
     flex-wrap: wrap;
-    gap: 10rem;  
-}
-
-.upload-modal {
-    border-style: solid;
-    padding: 20px;
-    border-radius: 2px;
-    border-color: black;
-    
+    gap: 1rem;
 }
 
 .summary-list-modal {
     padding: 10px;
 }
 
-
+.reset-link {
+    display: block;
+    margin-top: 1rem;
+}
+  
+#logo {
+    padding-left: 1rem; 
+}
+  

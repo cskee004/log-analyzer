@@ -1,15 +1,10 @@
-/*
-Define styling for header, footer, or nav
-How each item relates to each other
-Use element + ID selectors
-*/
-
 div#container {
-   box-sizing: border-box;
-   display: grid;
-   grid-template-columns: 1fr 5fr;
-   grid-template-rows: 1fr 8fr .50fr;
-   height: 100vh;
+  margin: 10px;
+  box-sizing: border-box;
+  display: grid;
+  grid-template-columns: minmax(60px, 90px) 1fr;
+  grid-template-rows: auto 1fr auto;
+  height: 100vh;
  }
 
  div#header {
@@ -18,7 +13,6 @@ div#container {
   display: flex;
   justify-content: flex-start;
   align-items: center;
-    
  }
 
  div#nav {
@@ -30,8 +24,12 @@ div#container {
  div#main {
   grid-column: 2 / 3;
   grid-row: 2 / 3;
+  padding: 1rem;
+  overflow-y: auto;
  }
 
  div#footer {
   min-height: 50px;
- }
+  grid-column: 1 / 3;
+  grid-row: 3 / 4;
+}

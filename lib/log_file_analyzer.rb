@@ -157,7 +157,7 @@ class LogFileAnalyzer
     result = {}
     @event_types.each do |symbol|
       next unless parsed_log[symbol]
-      result[symbol] = date_range
+      result[symbol] = date_range.dup
       parsed_log[symbol].select { |event| event }.each do |event|
         date = event[:date]
         result[symbol][date] += 1
