@@ -7,24 +7,5 @@ module DashboardHelper
     ["#ECF0F1", "#E67E22", "#F39C12", "#BDC3C7", "#F5B041", "#9B59B6", "#1ABC9C", "#DFF9FB", "#FF6347", "#FAD02E"]
   end
   
-  def event_types
-    %i[error authentication_failure disconnect session_opened session_closed sudo_command accepted_publickey
-        accepted_password invalid_user failed_password]
-  end
-
-  def high_events
-    %i[error invalid_user failed_password]
-  end
-
-  def med_events
-    %i[disconnect accepted_publickey accepted_password session_opened session_closed]
-  end
-
-  def op_events
-    %i[sudo_command]
-  end
-
-  def login_events
-    %i[accepted_password failed_password]
-  end
+  
 end

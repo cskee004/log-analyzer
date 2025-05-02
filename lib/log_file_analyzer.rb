@@ -233,16 +233,16 @@ class LogFileAnalyzer
   def get_summary(parsed_log)
     results = []
 
-    results << {name: 'Error Flags', data: {'Error Flags' => parsed_log[:error_flag].length}}
-    results << {name: 'Authentication failures', data: {'Authentication failures' => parsed_log[:authentication_failure].length}}
-    results << {name: 'Invalid users', data: {'Invalid users' => parsed_log[:invalid_user].length}}
-    results << {name: 'Failed password attempts', data: {'Failed password attempts' => parsed_log[:failed_password].length}}
-    results << {name: 'Disconnects', data: {'Disconnects' => parsed_log[:disconnect].length}}
-    results << {name: 'Accepted publickey', data: {'Accepted Publickey' => parsed_log[:accepted_publickey].length}}
-    results << {name: 'Accepted password', data: {'Accepted password' => parsed_log[:accepted_password].length}}
-    results << {name: 'Session Opens', data: {'Session Opens' => parsed_log[:session_opened].length}}    
-    results << {name: 'Session Closes', data: {'Session Closes' => parsed_log[:session_closed].length}}
-    results << {name: 'Sudo usage', data: {'Sudo Usage' => parsed_log[:sudo_command].length}}
+    results << {name: 'Error Flags', data: {'Error Flags' => parsed_log.fetch(:error_flag, []).length}}
+    results << {name: 'Authentication failures', data: {'Authentication failures' => parsed_log.fetch(:authentication_failure, []).length}}
+    results << {name: 'Invalid users', data: {'Invalid users' => parsed_log.fetch(:invalid_user, []).length}}
+    results << {name: 'Failed password attempts', data: {'Failed password attempts' => parsed_log.fetch(:failed_password, []).length}}
+    results << {name: 'Disconnects', data: {'Disconnects' => parsed_log.fetch(:disconnect, []).length}}
+    results << {name: 'Accepted publickey', data: {'Accepted Publickey' => parsed_log.fetch(:accepted_publickey, []).length}}
+    results << {name: 'Accepted password', data: {'Accepted password' => parsed_log.fetch(:accepted_password, []).length}}
+    results << {name: 'Session Opens', data: {'Session Opens' => parsed_log.fetch(:session_opened, []).length}}
+    results << {name: 'Session Closes', data: {'Session Closes' => parsed_log.fetch(:session_closed, []).length}}
+    results << {name: 'Sudo usage', data: {'Sudo Usage' => parsed_log.fetch(:sudo_command, []).length}}
   
     results
   end

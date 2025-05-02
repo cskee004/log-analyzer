@@ -1,7 +1,8 @@
 <div class="dashboard">
     <div class="button-bar">
-        <%= button_to "View Graph", graph_dashboard_path, method: :get, form: { data: { turbo_frame: "frame_panel" } }, disabled: true, id: "graph-button" %>
-        <%= button_to "View Table", table_dashboard_path, method: :get, form: { data: { turbo_frame: "frame_panel" } }, disabled: true, id: "table-button" %>
+        <%= button_to "Summary", summary_dashboard_path, method: :get, form: { data: { turbo_frame: "frame_panel" } }, disabled: true, id: "summary-button" %>
+        <%= button_to "Graphs", graph_dashboard_path, method: :get, form: { data: { turbo_frame: "frame_panel" } }, disabled: true, id: "graph-button" %>
+        <%= button_to "Tables", table_dashboard_path, method: :get, form: { data: { turbo_frame: "frame_panel" } }, disabled: true, id: "table-button" %>
     </div>
 
     <div class="frame">

@@ -1,4 +1,16 @@
-    <div id="events_date">
-        <%= column_chart(high_date, {height: 800, colors: light_contrasting_colors, title: 'High Security Events by Date', xtitle: 'Date', ytitle: 'Occurrences', theme: 'palette6', stacked: true}) %>
-        <%= column_chart(med_date, {height: 800, colors: light_contrasting_colors, title: 'Medium Security Events by Date', xtitle: 'Hour', ytitle: 'Occurrences', theme: 'palette4', stacked: true}) %>
-    </div>
+<turbo-frame id="frame_panel">
+  <div>
+    <label for="chart-selector">Choose a chart:</label>
+    <%= form_with url: graph_dashboard_path, method: :get, data: { turbo_frame: "selected-graph" }, local: true do |f| %>
+      <%= f.select :chart, [["Top IPs", "top_ips"], ["High Security Events: Hourly", "high_hour"], ["High Security Events: Daily", "high_date"],
+                            ["Medium Security Events: Hourly", "med_hour"], ["Medium Security Events: Daily", "med_date"],
+                            ["Successful / Failed Logins", "logins"]   ], { selected: params[:chart] }, onchange: "this.form.requestSubmit()" %>
+    <% end %>
+  </div>
+
+  <turbo-frame id="selected-graph">
+    <%= render partial: "dashboard/graphs/#{params[:chart] || 'top_ips'}", locals: 
+    {   top_ips: top_ips, high_date: high_date, high_hour: high_hour,
+        med_date: med_date, med_hour: med_hour, login: login } %>
+  </turbo-frame>
+</turbo-frame>

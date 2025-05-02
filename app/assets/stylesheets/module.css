@@ -17,11 +17,13 @@ div.button-bar {
 }
 
 turbo-frame#frame_panel {
-    min-height: 500px;
+    border-style: solid;
+    border-color: blue;
+    padding: 20px;
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-start;
-    align-items: center;  
+    
+      
     gap: 10rem;  
 }
 
@@ -37,7 +39,7 @@ turbo-frame#frame_panel {
     border-style: solid;
     padding: 10px;
     border-radius: 2px;
-    border-color: black;
+    
 }
 
 

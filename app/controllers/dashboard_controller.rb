@@ -24,7 +24,13 @@ class DashboardController < ApplicationController
   end
 
   def summary
-    render partial: 'summary'
+    @log_utility = LogUtility.new 
+    @log_file_analyzer = LogFileAnalyzer.new
+    
+    all_events_log = @log_utility.rebuild_log('all')
+    @result_summary = @log_file_analyzer.get_summary(all_events_log)
+
+    render partial: 'summary', locals: { result_summary: @result_summary }
   end
 
   def graph
@@ -35,7 +41,6 @@ class DashboardController < ApplicationController
     all_events_log = @log_utility.rebuild_log('all')
     high_events_log = @log_utility.rebuild_log('high')
     med_events_log = @log_utility.rebuild_log('med')
-    ops_event_log = @log_utility.rebuild_log('ops')
 
     temp_top_ips = @log_file_analyzer.top_offenders(high_events_log)
     @top_ips = @log_utility.format_for_apexcharts(temp_top_ips)
