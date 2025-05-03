@@ -61,6 +61,8 @@ group :development, :test do
   gem 'guard-livereload', require: false
 
   gem 'rspec-rails'
+
+  gem "rails-controller-testing"
 end
 
 group :development do

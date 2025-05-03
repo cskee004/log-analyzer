@@ -13,7 +13,6 @@ describe 'Log utility' do
   let(:log_utility) { LogUtility.new }
   let(:log) { log_parser.read_log }
 
-
   describe 'POST_events' do
     it 'inserts the parsed results into the Event model' do
       log_utility.POST_events(log)
@@ -34,7 +33,7 @@ describe 'Log utility' do
   end
 
   describe 'validate_file' do
-    it 'returns an array containing the bool and message from the validator' do
+    it 'returns an array containing the bool and message from the uploaded file validator' do
       file_content = Rack::Test::UploadedFile.new(Rails.root.join('spec/fixtures/wrong-type.txt'), 'text/plain')
       file_big = Rack::Test::UploadedFile.new(Rails.root.join('spec/fixtures/auth-test-size.log'), 'application/octet-stream')
       file_empty = Rack::Test::UploadedFile.new(Rails.root.join('spec/fixtures/auth-test-empty.log'),'application/octet-stream')
