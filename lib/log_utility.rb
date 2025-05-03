@@ -68,6 +68,8 @@ class LogUtility
     allowed_types = ['application/octet-stream']
     max_size = 2 * 1024 * 1024
     filename = /^auth.*log$/
+
+    puts uploaded_file.size
     
     unless allowed_types.include?(uploaded_file.content_type)
       return [false, "Content type failed: #{uploaded_file.content_type}"]
@@ -79,6 +81,10 @@ class LogUtility
   
     if uploaded_file.size >= max_size
       return [false, "File size too big: #{uploaded_file.size} bytes"]
+    end
+
+    if uploaded_file.size == 0
+      return [false, "File empty: #{uploaded_file.size} bytes"]
     end
 
     [true, "All checks passed"]

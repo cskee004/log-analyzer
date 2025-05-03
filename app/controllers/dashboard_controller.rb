@@ -8,9 +8,10 @@ class DashboardController < ApplicationController
     @log_utility = LogUtility.new
     @log_utility.DELETE_events
     results =  @log_utility.validate_file(@uploaded_file)
+    
     if results.include?(false)
-      puts results[1]
-      # Render modal on upload tab with results[1]
+      render partial: 'upload_error', locals: { message: results[1], disable_buttons: true }
+      return
     end
     
     log_parser = LogParser.new
@@ -69,6 +70,5 @@ class DashboardController < ApplicationController
     LogUtility.new.DELETE_events
     redirect_to root_path, notice: 'Dashboard has been reset.'
   end
-  
 
 end
