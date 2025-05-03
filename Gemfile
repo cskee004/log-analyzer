@@ -59,6 +59,8 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   gem 'guard-livereload', require: false
+
+  gem 'rspec-rails'
 end
 
 group :development do
