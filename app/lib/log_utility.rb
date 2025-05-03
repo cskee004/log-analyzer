@@ -26,7 +26,8 @@ require 'date'
 # - 'validate_file' : Validates the upload file for extension, contents, and size.
 # - 'format_for_apexcharts' : Helper method to format the given dataset for plotting
 # - 'create_date_range' : creates a hash of key dates in the range of Event.first to Event.last inclusive with values initialized to 0
-# - 'rebuild_log' : Helper method to rebuild the parsed log from the Event model
+# - 'rebuild_log' : Helper method to build a log that is identical to the one used to populate the model. This is needed
+#                   so that the methods in log_file_analyzer can be reused for the Rails version of this application.
 
 class LogUtility
   def initialize
@@ -45,7 +46,7 @@ class LogUtility
   # Inserts by the event_type into the Event model
   #
   # @param parsed_log hash containing meta data for each event type
-  # 
+  
   def POST_events(parsed_log)
     @event_types.each do |symbol|
       event_batch = []
@@ -64,29 +65,23 @@ class LogUtility
   # 
   # @params uploaded_file - the users submitted file 
   # @returns array - boolean value and a response message 
+  
   def validate_file(uploaded_file)
     allowed_types = ['application/octet-stream']
     max_size = 2 * 1024 * 1024
     filename = /^auth.*log$/
-
-    puts uploaded_file.size
-    
     unless allowed_types.include?(uploaded_file.content_type)
       return [false, "Content type failed: #{uploaded_file.content_type}"]
     end
-
     unless uploaded_file.original_filename =~ filename
       return [false, "Filename failed: #{uploaded_file.original_filename}"]
     end
-  
     if uploaded_file.size >= max_size
       return [false, "File size too big: #{uploaded_file.size} bytes"]
     end
-
     if uploaded_file.size == 0
       return [false, "File empty: #{uploaded_file.size} bytes"]
     end
-
     [true, "All checks passed"]
   end
 
@@ -94,6 +89,7 @@ class LogUtility
   # 
   # @param data_hash - a hash returned from one of the log_file_analyzer methods
   # @return results - an array containing series name and data
+  
   def format_for_apexcharts(data_hash)
     results = []
     data_hash.each do |key, value|
@@ -109,24 +105,21 @@ class LogUtility
   def create_date_range()
     log_first_date = Event.first.date
     log_last_date = Event.last.date
-
     range = []
-
     begin_date = Date.parse(log_first_date)
     end_date = Date.parse(log_last_date)
     begin_date.step(end_date) { |date| range << date.to_s }
-
     @dates = range.to_h { |date| [date, 0] }
     @dates
   end
 
-  #
-  # @param 
-  # @returns 
+  # Helper method to rebuild the original log from the Event model. 
+  # 
+  # @param security_level - a string representing the requested security level events
+  # @returns log - a hash containing event meta data 
 
   def rebuild_log(security_level)
     log = {}
-    
     case security_level
     when 'all'
       type = @all
@@ -137,7 +130,6 @@ class LogUtility
     when 'ops'
       type = @ops
     end
-
     Event.where(event_type: type).each do |event|
       symbol = event.event_type.downcase.tr(' ', '_').to_sym
       log[symbol] ||= []

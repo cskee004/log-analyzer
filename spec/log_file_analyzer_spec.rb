@@ -17,14 +17,14 @@ describe 'Analyze Log' do
   end
 
   describe 'events_by_hour' do
-    it 'counts how many times each event occurs by the hour' do
+    it 'returns how many times each event occurs by the hour' do
       result = log_file_analyzer.events_by_hour(log)
       expect(result[:authentication_failure]['10']).to eq(10)
     end
   end
 
   describe 'events_by_date' do
-    it 'counts how many times each event occurs by the date' do
+    it 'returns how many times each event occurs by the date' do
       date_range = {"2025-03-27"=>0, "2025-03-28"=>0, "2025-03-29"=>0, "2025-03-30"=>0,
                     "2025-03-31"=>0, "2025-04-01"=>0, "2025-04-02"=>0, "2025-04-03"=>0, 
                     "2025-04-04"=>0, "2025-04-05"=>0, "2025-04-06"=>0, "2025-04-07"=>0, 
