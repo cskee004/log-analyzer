@@ -3,7 +3,7 @@ require_relative 'log_file_analyzer'
 require 'date'
 
 # LogUtility Class
-# This class is responsible for anything data related for the web interface. 
+# This class is responsible for data validation, data creation , and data transformations. 
 # 
 # Usage:
 #   log_utility = LogUtility.new
@@ -26,7 +26,7 @@ require 'date'
 # - 'validate_file' : Validates the upload file for extension, contents, and size.
 # - 'format_for_apexcharts' : Helper method to format the given dataset for plotting
 # - 'create_date_range' : creates a hash of key dates in the range of Event.first to Event.last inclusive with values initialized to 0
-# - 'rebuild_log' : Helper method to build a log that is identical to the one used to populate the model. This is needed
+# - 'rebuild_log' : Builds a log that is identical to the one used to populate the model. This is needed
 #                   so that the methods in log_file_analyzer can be reused for the Rails version of this application.
 
 class LogUtility
@@ -85,7 +85,7 @@ class LogUtility
     [true, "All checks passed"]
   end
 
-  # Formats the given data_hash so it can be used with apexcharts
+  # Transforms the given data_hash so it can be used with apexcharts
   # 
   # @param data_hash - a hash returned from one of the log_file_analyzer methods
   # @return results - an array containing series name and data
