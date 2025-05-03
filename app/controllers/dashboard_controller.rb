@@ -39,6 +39,7 @@ class DashboardController < ApplicationController
     @log_file_analyzer = LogFileAnalyzer.new
     
     date_range = @log_utility.create_date_range
+    puts date_range.inspect
     all_events_log = @log_utility.rebuild_log('all')
     high_events_log = @log_utility.rebuild_log('high')
     med_events_log = @log_utility.rebuild_log('med')
@@ -58,12 +59,15 @@ class DashboardController < ApplicationController
     temp_med_hour = @log_file_analyzer.events_by_hour(med_events_log)
     @med_hour = @log_utility.format_for_apexcharts(temp_med_hour)
 
-    temp_login = @log_file_analyzer.login_patterns(all_events_log)
-    @login = @log_utility.format_for_apexcharts(temp_login)
+    temp_login_hour = @log_file_analyzer.login_patterns_hour(all_events_log)
+    temp_login_date = @log_file_analyzer.login_patterns_date(all_events_log, date_range)
+    @logins_hour = @log_utility.format_for_apexcharts(temp_login_hour)
+    @logins_date = @log_utility.format_for_apexcharts(temp_login_date)
     
 
     render partial: 'graph', locals: {  top_ips: @top_ips, high_date: @high_date, high_hour: @high_hour,
-                                        med_date: @med_date, med_hour: @med_hour, login: @login }
+                                        med_date: @med_date, med_hour: @med_hour, logins_hour: @logins_hour, 
+                                        logins_date: @logins_date }
   end
   
   def reset

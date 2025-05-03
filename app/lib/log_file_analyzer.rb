@@ -172,7 +172,7 @@ class LogFileAnalyzer
   # @return result - a hash of login events sorted by hour in the range of 00..23 with number of occurrences
   #                 {Accepted_password => {hour => count, ...} Failed_password => {hour ==> count}}
   
-  def login_patterns(parsed_log)
+  def login_patterns_hour(parsed_log)
     result = {}
     @login_events.each do |symbol|
       next unless parsed_log[symbol]
@@ -186,7 +186,25 @@ class LogFileAnalyzer
     result
   end
 
-  # Helper function to convert the given hash into JSON
+  # Finds successful vs failed logins by the date
+  #
+  # @param parsed_log hash containing meta data for each event type
+  # @return result - a hash of login events sorted by the given date range
+  #                 {Accepted_password => {date => count, ...} Failed_password => {date ==> count}}
+  
+  def login_patterns_date(parsed_log, date_range)
+    result = {}
+    @login_events.each do |symbol|
+      next unless parsed_log[symbol]
+      result[symbol] = date_range.dup
+      parsed_log[symbol].select { |event| event }.each do |event|
+        date = event[:date]
+        result[symbol][date] += 1
+      end
+    end
+    result
+  end
+  # Helper method to convert the given hash into JSON
   #
   # @param dataset - a hash containing structured meta data 
   # @param time_unit - hour or date
@@ -206,7 +224,7 @@ class LogFileAnalyzer
     end
   end
 
-  # Helper function to save graphing result to a text document
+  # Helper method to save unicode plot result to a text document
   # 
   # @plot - graph
   # @event_type - the security event
