@@ -1,5 +1,5 @@
 ## Security Log Analyzer 
-[![Legacy Version](https://img.shields.io/badge/branch-legacy-purple)](https://github.com/cskee004/log-analyzer/tree/legacy-script-version)
+[![Legacy Version](https://img.shields.io/badge/branch-legacy-blue)](https://github.com/cskee004/log-analyzer/tree/legacy-script-version)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
 
 ### Acknowledgements
