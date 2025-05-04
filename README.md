@@ -117,17 +117,17 @@ Test coverage includes:
 
 ### Screenshots
 
-<td><img src="https://github.com/cskee004/log-analyzer/docs/screenshots/upload" alt="App Screenshot" width="400"></td>
+<td><img src="https://github.com/cskee004/log-analyzer/blob/main/docs/screenshots/upload.jpg" alt="App Screenshot" width="400"></td>
 #### Upload
 
-<td><img src="https://github.com/cskee004/log-analyzer/docs/screenshots/summary" alt="App Screenshot" width="400"></td>
+<td><img src="https://github.com/cskee004/log-analyzer/blob/main/docs/screenshots/summary.jpg" alt="App Screenshot" width="400"></td>
 #### Summary Page 
 
-<td><img src="https://github.com/cskee004/log-analyzer/docs/screenshots/graphs" alt="App Screenshot" width="400"></td>
+<td><img src="https://github.com/cskee004/log-analyzer/blob/main/docs/screenshots/graphs.jpg" alt="App Screenshot" width="400"></td>
 #### Graph Page
 
-<td><img src="https://github.com/cskee004/log-analyzer/docs/screenshots/select-graph" alt="App Screenshot" width="400"></td>
-#### Choose Graph
+<td><img src="https://github.com/cskee004/log-analyzer/blob/main/docs/screenshots/choose-graph.jpg" alt="App Screenshot" width="400"></td>
+#### Choose a Chart
 
 ---
 
