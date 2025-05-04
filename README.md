@@ -1,13 +1,5 @@
 ## Security Log Analyzer 
 
-### Acknowledgements
-
-* Thank you to the [Elastic team](https://github.com/elastic/examples/tree/master/Machine%20Learning/Security%20Analytics%20Recipes/suspicious_login_activity) for providing the dataset used in this project.
-
-  * Modifications: [test-auth.log](https://github.com/cskee004/log-analyzer/blob/main/data/auth-test.log)
-
----
-
 ### Requirements
 
 * Ruby 3.1 or higher
@@ -134,7 +126,29 @@ Test coverage includes:
     - [ ] IP & host activity mapping
     - [ ] Command and activity correlation
     - [ ] Event frequency heatmaps
-- [ ] Expand support for additional log formats (e.g., secure.log, syslog, cloud audit logs) 
+- [ ] Expand support for additional log formats (e.g., secure.log, syslog, cloud audit logs)
+
+---
+
+### Acknowledgements
+
+* Thank you to the [Elastic team](https://github.com/elastic/examples/tree/master/Machine%20Learning/Security%20Analytics%20Recipes/suspicious_login_activity) for providing the dataset used in this project.
+
+  * Modifications: [test-auth.log](https://github.com/cskee004/log-analyzer/blob/main/data/auth-test.log)
+
+---
+
+### Contributing 
+
+Contributing, feedback, and ideas are welcome.
+
+This project is primarily a personal learning tool and showcare, but feel free to fork it, open issues, or suggest improvements. 
+
+If you'd like to contribute:
+1. Fork the repo
+2. Create a new branch
+3. Make your changes
+4. Open a pull request describing your changes
 
 ---
 
@@ -145,6 +159,3 @@ Test coverage includes:
 [![ApexCharts.RB - v0.2.0](https://img.shields.io/badge/ApexCharts.RB-v0.2.0-orange)](https://github.com/styd/apexcharts.rb) (Very cool!)
 
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
-
-
-
