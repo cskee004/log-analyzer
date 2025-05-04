@@ -3,15 +3,15 @@ require_relative 'log_file_analyzer'
 require 'date'
 
 # LogUtility Class
-# This class is responsible for data validation, data creation , and data transformations. 
-# 
+# This class is responsible for data validation, data creation , and data transformations.
+#
 # Usage:
 #   log_utility = LogUtility.new
 #   results =  log_utility.validate_file(auth.log)
 #   log_utility.POST_events(results)
 #   data = log_file_analyzer.events_by_hour(results)
 #   log_utility.format_for_apexcharts(data)
-#   
+#
 # Attributes:
 # - 'event_types' array : collection of event type symbols to control loops
 # - 'all' array : collection of event type strings for rebuilding logs from the event Model
@@ -19,34 +19,34 @@ require 'date'
 # - 'med' array : collection of medium security event type strings
 # - 'ops' array : collection of operational event type strings
 # - 'months' hash : helper for converting 3 letter month abbreviations to numerical representations
-# 
+#
 # Methods:
-# - 'POST_events' : Inserts batch of event type from the parsed log into the Event model. 
+# - 'POST_events' : Inserts batch of event type from the parsed log into the Event model.
 # - 'DELETE_events' : Helper method to clear Events model
 # - 'validate_file' : Validates the upload file for extension, contents, and size.
 # - 'format_for_apexcharts' : Helper method to format the given dataset for plotting
-# - 'create_date_range' : creates a hash of key dates in the range of Event.first to Event.last inclusive with values initialized to 0
+# - 'create_date_range' : creates a hash of key dates in the range of Event.first to Event.last inclusive with values
+#                         initialized to 0
 # - 'rebuild_log' : Builds a log that is identical to the one used to populate the model. This is needed
-#                   so that the methods in log_file_analyzer can be reused for the Rails version of this application.
-
+#                   so that the methods in log_file_analyzer can be reused for the Rails version of this application
 class LogUtility
   def initialize
-    @event_types = %i[error_flag authentication_failure disconnect session_opened session_closed sudo_command accepted_publickey
-    accepted_password invalid_user failed_password]
-    @all = ['Error flag', 'Authentication failure', 'Invalid user', 'Failed password', 'Disconnect', 'Accepted password', 
+    @event_types = %i[error_flag authentication_failure disconnect session_opened session_closed sudo_command 
+                      accepted_publickey accepted_password invalid_user failed_password]
+    @all = ['Error flag', 'Authentication failure', 'Invalid user', 'Failed password', 'Disconnect', 'Accepted password',
             'Accepted publickey', 'Session opened', 'Session closed', 'Sudo command']
     @high = ['Error flag', 'Authentication failure', 'Invalid user', 'Failed password']
     @med = ['Disconnect', 'Accepted password', 'Accepted publickey', 'Session opened', 'Session closed']
     @ops = ['Sudo command']
     @months = { 'Jan' => '1', 'Feb' => '2', 'Mar' => '3', 'Apr' => '4', 'May' => '5', 'Jun' => '6', 'Jul' => '7',
-    'Aug' => '8', 'Sep' => '9', 'Oct' => '10', 'Nov' => '11', 'Dec' => '12' }
+                'Aug' => '8', 'Sep' => '9', 'Oct' => '10', 'Nov' => '11', 'Dec' => '12' }
     @dates = {}
   end
 
   # Inserts by the event_type into the Event model
   #
   # @param parsed_log hash containing meta data for each event type
-  
+
   def POST_events(parsed_log)
     @event_types.each do |symbol|
       event_batch = []
@@ -61,11 +61,11 @@ class LogUtility
     Event.delete_all
   end
 
-  # Ensures the uploaded file is valid before the parsing process. 
-  # 
-  # @params uploaded_file - the users submitted file 
-  # @returns array - boolean value and a response message 
-  
+  # Ensures the uploaded file is valid before the parsing process.
+  #
+  # @params uploaded_file - the users submitted file
+  # @returns array - boolean value and a response message
+
   def validate_file(uploaded_file)
     allowed_types = ['application/octet-stream']
     max_size = 2 * 1024 * 1024
@@ -82,18 +82,19 @@ class LogUtility
     if uploaded_file.size == 0
       return [false, "File empty: #{uploaded_file.size} bytes"]
     end
+
     [true, "All checks passed"]
   end
 
   # Transforms the given data_hash so it can be used with apexcharts
-  # 
+  #
   # @param data_hash - a hash returned from one of the log_file_analyzer methods
   # @return results - an array containing series name and data
-  
+
   def format_for_apexcharts(data_hash)
     results = []
     data_hash.each do |key, value|
-      results << {name: key.to_s, data: value}
+      results << { name: key.to_s, data: value }
     end
     results
   end
@@ -113,10 +114,10 @@ class LogUtility
     @dates
   end
 
-  # Helper method to rebuild the original log from the Event model. 
-  # 
+  # Helper method to rebuild the original log from the Event model.
+  #
   # @param security_level - a string representing the requested security level events
-  # @returns log - a hash containing event meta data 
+  # @returns log - a hash containing event meta data
 
   def rebuild_log(security_level)
     log = {}
@@ -124,7 +125,7 @@ class LogUtility
     when 'all'
       type = @all
     when 'high'
-      type = @high 
+      type = @high
     when 'med'
       type = @med
     when 'ops'
@@ -133,12 +134,11 @@ class LogUtility
     Event.where(event_type: type).each do |event|
       symbol = event.event_type.downcase.tr(' ', '_').to_sym
       log[symbol] ||= []
-      hash = {  line_number: event[:line_number], event_type: event[:event_type], date: event[:date], time: event[:time], 
-                host: event[:host], pid: event[:pid], message: event[:message], user: event[:user], source_ip: event[:source_ip],  
-                source_port: event[:source_port], directory: event[:directory], command: event[:command], key: event[:key]}
+      hash = {  line_number: event[:line_number], event_type: event[:event_type], date: event[:date], time: event[:time],
+                host: event[:host], pid: event[:pid], message: event[:message], user: event[:user], source_ip: event[:source_ip],
+                source_port: event[:source_port], directory: event[:directory], command: event[:command], key: event[:key] }
       log[symbol] << hash
     end
     log
   end
-
 end

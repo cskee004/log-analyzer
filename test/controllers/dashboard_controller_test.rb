@@ -1,11 +1,7 @@
 require "test_helper"
 include ActionDispatch::TestProcess
 
-
-
 class DashboardControllerTest < ActiveSupport::TestCase
-  
-
   test "should validate the uploaded file" do
     wrong_file_name = fixture_file_upload('wrong-type.txt', 'application/octet-stream')
     wrong_file_content = fixture_file_upload('auth-test.log', 'text/plain')
@@ -24,5 +20,4 @@ class DashboardControllerTest < ActiveSupport::TestCase
     assert_equal [false, "File size too big: 2097152 bytes"], f2
     assert_equal [true, "All checks passed"], f3
   end
-
 end

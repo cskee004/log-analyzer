@@ -105,7 +105,7 @@ class LogFileAnalyzer
     File.open(path, 'w') { |file| file.write(plot.to_s) }
   end
 
-  # Collects unique IP addresses and their associated high security events. Results are then sorted 
+  # Collects unique IP addresses and their associated high security events. Results are then sorted
   # by number of high security events associated with the IP
   #
   # @param parsed_log hash containing meta data for each event type
@@ -116,6 +116,7 @@ class LogFileAnalyzer
     result = {}
     @high_events.each do |symbol|
       next unless parsed_log[symbol]
+
       parsed_log[symbol].select { |event| event }.each do |event|
         result[event[:source_ip]] ||= 0
         result[event[:source_ip]] += 1
@@ -136,7 +137,8 @@ class LogFileAnalyzer
     result = {}
 
     @event_types.each do |symbol|
-      next unless parsed_log[symbol] 
+      next unless parsed_log[symbol]
+
       result[symbol] = @hours.clone
       parsed_log[symbol].select { |event| event }.each do |event|
         time = event[:time].split(':')
@@ -157,6 +159,7 @@ class LogFileAnalyzer
     result = {}
     @event_types.each do |symbol|
       next unless parsed_log[symbol]
+
       result[symbol] = date_range.dup
       parsed_log[symbol].select { |event| event }.each do |event|
         date = event[:date]
@@ -171,11 +174,12 @@ class LogFileAnalyzer
   # @param parsed_log hash containing meta data for each event type
   # @return result - a hash of login events sorted by hour in the range of 00..23 with number of occurrences
   #                 {Accepted_password => {hour => count, ...} Failed_password => {hour ==> count}}
-  
+
   def login_patterns_hour(parsed_log)
     result = {}
     @login_events.each do |symbol|
       next unless parsed_log[symbol]
+
       result[symbol] = @hours.clone
       parsed_log[symbol].select { |event| event }.each do |event|
         time = event[:time].split(':')
@@ -191,11 +195,12 @@ class LogFileAnalyzer
   # @param parsed_log hash containing meta data for each event type
   # @return result - a hash of login events sorted by the given date range
   #                 {Accepted_password => {date => count, ...} Failed_password => {date ==> count}}
-  
+
   def login_patterns_date(parsed_log, date_range)
     result = {}
     @login_events.each do |symbol|
       next unless parsed_log[symbol]
+
       result[symbol] = date_range.dup
       parsed_log[symbol].select { |event| event }.each do |event|
         date = event[:date]
@@ -206,9 +211,9 @@ class LogFileAnalyzer
   end
   # Helper method to convert the given hash into JSON
   #
-  # @param dataset - a hash containing structured meta data 
+  # @param dataset - a hash containing structured meta data
   # @param time_unit - hour or date
-  
+
   def save_json(dataset, time_unit)
     dataset.each_key do |event_type|
       x_values = dataset[event_type].keys
@@ -225,7 +230,7 @@ class LogFileAnalyzer
   end
 
   # Helper method to save unicode plot result to a text document
-  # 
+  #
   # @plot - graph
   # @event_type - the security event
   # @time_unit - hour or date
@@ -247,21 +252,25 @@ class LogFileAnalyzer
   # @param parsed_log hash containing meta data for each event type
   # @return results - an array of hashes containing event types with corresponding totals found in parsed_log
   #                   results[{name: event, data: {event => count}], ...]
-  #                            
+  #
   def get_summary(parsed_log)
     results = []
 
-    results << {name: 'Error flags', data: {'Error flags' => parsed_log.fetch(:error_flag, []).length}}
-    results << {name: 'Authentication failures', data: {'Authentication failures' => parsed_log.fetch(:authentication_failure, []).length}}
-    results << {name: 'Invalid users', data: {'Invalid users' => parsed_log.fetch(:invalid_user, []).length}}
-    results << {name: 'Failed password attempts', data: {'Failed password attempts' => parsed_log.fetch(:failed_password, []).length}}
-    results << {name: 'Disconnects', data: {'Disconnects' => parsed_log.fetch(:disconnect, []).length}}
-    results << {name: 'Accepted publickey', data: {'Accepted publickey' => parsed_log.fetch(:accepted_publickey, []).length}}
-    results << {name: 'Accepted password', data: {'Accepted password' => parsed_log.fetch(:accepted_password, []).length}}
-    results << {name: 'Session opens', data: {'Session opens' => parsed_log.fetch(:session_opened, []).length}}
-    results << {name: 'Session closes', data: {'Session closes' => parsed_log.fetch(:session_closed, []).length}}
-    results << {name: 'Sudo usage', data: {'Sudo usage' => parsed_log.fetch(:sudo_command, []).length}}
-  
+    results << { name: 'Error flags', data: { 'Error flags' => parsed_log.fetch(:error_flag, []).length } }
+    results << { name: 'Authentication failures',
+                 data: { 'Authentication failures' => parsed_log.fetch(:authentication_failure, []).length } }
+    results << { name: 'Invalid users', data: { 'Invalid users' => parsed_log.fetch(:invalid_user, []).length } }
+    results << { name: 'Failed password attempts',
+                 data: { 'Failed password attempts' => parsed_log.fetch(:failed_password, []).length } }
+    results << { name: 'Disconnects', data: { 'Disconnects' => parsed_log.fetch(:disconnect, []).length } }
+    results << { name: 'Accepted publickey',
+                 data: { 'Accepted publickey' => parsed_log.fetch(:accepted_publickey, []).length } }
+    results << { name: 'Accepted password',
+                 data: { 'Accepted password' => parsed_log.fetch(:accepted_password, []).length } }
+    results << { name: 'Session opens', data: { 'Session opens' => parsed_log.fetch(:session_opened, []).length } }
+    results << { name: 'Session closes', data: { 'Session closes' => parsed_log.fetch(:session_closed, []).length } }
+    results << { name: 'Sudo usage', data: { 'Sudo usage' => parsed_log.fetch(:sudo_command, []).length } }
+
     results
   end
 end

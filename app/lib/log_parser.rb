@@ -67,7 +67,7 @@ class LogParser
           @parsed_log[:error_flag] << parse_error(line, line_num.to_s, 'Error flag', date_string, time[0], host[0])
         when /authentication failure/
           @parsed_log[:authentication_failure] << parse_auth_failure(line, line_num.to_s, 'Authentication failure', date_string,
-                                                           time[0], host[0])
+                                                                     time[0], host[0])
         when /Disconnected/
           @parsed_log[:disconnect] << parse_disconnect(line, line_num.to_s, 'Disconnect', date_string, time[0], host[0])
         when /session opened/
@@ -129,7 +129,7 @@ class LogParser
   # Creates a hash of dates in the range of first last inclusive.
   #
   # @param first - Date obj
-  # @param last - Date obj 
+  # @param last - Date obj
   # @returns hash of dates {date => count}
 
   def create_date_range(first, last)
@@ -192,7 +192,8 @@ class LogParser
     pid_num = pid[1] if pid
     m = message[0].rstrip() if message
 
-    auth_hash = { line_number: line_num, event_type: type, date: date, time: time, host: host, pid: pid_num, message: m }
+    auth_hash = { line_number: line_num, event_type: type, date: date, time: time, host: host, pid: pid_num,
+                  message: m }
   end
 
   # Parse the given 'Disconnected' line and return a hash representation with keyword data extracted

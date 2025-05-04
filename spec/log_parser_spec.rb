@@ -1,7 +1,6 @@
 require 'spec_helper'
 require_relative '../app/lib/log_parser'
 
-
 describe 'Preprocess log' do
   log_parser = LogParser.new
 
@@ -154,8 +153,8 @@ describe 'Preprocess log' do
   describe 'parse_invalid_user' do
     let(:log_parser) { LogParser.new }
     it 'returns a hash of meta data for an invalid user event' do
-      result = log_parser.parse_invalid_user( invalid_user, 3741, 'Invalid user', 'Mar 31', '06:34:36',
-                                              'ip-10-77-20-248')
+      result = log_parser.parse_invalid_user(invalid_user, 3741, 'Invalid user', 'Mar 31', '06:34:36',
+                                             'ip-10-77-20-248')
       expected =
         {
           line_number: 3741,
