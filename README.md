@@ -1,5 +1,5 @@
 ## Security Log Analyzer 
-[![Legacy Version](https://img.shields.io/badge/branch-legacy-blue)](https://github.com/cskee004/log-analyzer/tree/legacy-script-version)
+[![Legacy Version](https://img.shields.io/badge/branch-legacy-yellow)](https://github.com/cskee004/log-analyzer/tree/legacy-script-version)
 
 [![ApexCharts.RB - v0.2.0](https://img.shields.io/badge/ApexCharts.RB-v0.2.0-orange)](https://github.com/styd/apexcharts.rb) (Very cool!)
 
@@ -151,4 +151,4 @@ Test coverage includes:
 
 ### Author
 
-Chris Skeens | [LinkedIn](https://www.linkedin.com/in/christopher-skeens-846780248/)
+[![Chris Skeens - LinkedIn](https://img.shields.io/badge/Chris_Skeens-LinkedIn-blue)](https://www.linkedin.com/in/christopher-skeens-846780248/)
