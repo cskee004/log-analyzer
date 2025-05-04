@@ -151,4 +151,4 @@ Test coverage includes:
 
 ### Author
 
-Chris Skeens | ![LinkedIn](https://www.linkedin.com/in/christopher-skeens-846780248/)
+Chris Skeens | [LinkedIn](https://www.linkedin.com/in/christopher-skeens-846780248/)
