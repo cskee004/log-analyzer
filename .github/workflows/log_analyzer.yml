@@ -3,7 +3,7 @@ name: Analyze Logs and Publish Results
 on:
   push:
     branches:
-      - main
+      - legacy-script-version
   workflow_dispatch:
 
 jobs:
