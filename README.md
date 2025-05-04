@@ -145,17 +145,4 @@ Test coverage includes:
 
 ### Author
 
-Chris Skeens | 
-[LinkedIn](https://www.linkedin.com/in/christopher-skeens-846780248/)
-
-***
-
-[![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
-=======
----
-
-### Author
-
-Chris Skeens
-[LinkedIn](https://www.linkedin.com/in/christopher-skeens-846780248/)
->>>>>>> development
+Chris Skeens | ![LinkedIn](https://www.linkedin.com/in/christopher-skeens-846780248/)
