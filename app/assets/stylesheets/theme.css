@@ -1,0 +1,124 @@
+div#container {
+    background-color: #f5f7fa;  
+    color: #1f2937;
+}
+
+turbo-frame#frame_panel {
+    background-color: #f9fafb;
+    border: 1px solid #d1d5db;
+}
+
+.upload-modal {
+    background-color: #f9fafb;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    padding: 1.5rem;
+    color: #111827;
+  }
+
+.reset-link {
+    color: #e11d48;
+    font-weight: bold;
+    text-decoration: none;
+}
+
+#logo {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: #1f2937;
+    letter-spacing: 1px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+}
+
+.button-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+  
+.button-bar form {
+    display: inline;
+}
+  
+.button-bar input[type="submit"] {
+    background-color: #e2e8f0;
+    color: #1f2937;
+    border: 1px solid #cbd5e0;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+  
+.button-bar input[type="submit"]:hover:not(:disabled) {
+    background-color: #cbd5e0;
+}
+  
+.button-bar input[type="submit"]:disabled {
+    background-color: #f1f5f9;
+    color: #9ca3af;
+    border-color: #e5e7eb;
+    cursor: not-allowed;
+}
+  
+.button-bar {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+  
+.button-bar form {
+    display: inline;
+}
+  
+.button-bar form input[type="submit"] {
+    background-color: #e2e8f0;
+    color: #1f2937;
+    border: 1px solid #cbd5e0;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+  
+.button-bar form input[type="submit"]:hover:not(:disabled) {
+    background-color: #cbd5e0;
+}
+  
+.button-bar form input[type="submit"]:disabled {
+    background-color: #f1f5f9;
+    color: #9ca3af;
+    border-color: #e5e7eb;
+    cursor: not-allowed;
+}
+  
+#summary-button, #graph-button {
+    background-color: #e2e8f0;
+    color: #1f2937;
+    border: 1px solid #cbd5e0;
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+#summary-button:hover, #graph-button:hover {
+    background-color: #cbd5e0;
+}
+
+#summary-button:disabled, #graph-button:disabled {
+    background-color: #f1f5f9;
+    color: #9ca3af;
+    border-color: #e5e7eb;
+    cursor: not-allowed;
+}
+
+  

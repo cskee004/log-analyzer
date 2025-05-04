@@ -1,5 +1,7 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
+reference/
+
 # Ignore bundler config.
 /.bundle
 
@@ -8,6 +10,15 @@ log/*
 tmp/*
 !log/.keep
 !tmp/.keep
+
+# Rails log files
+/log/*.log
+
+# Bootsnap cache
+/tmp/cache/bootsnap/*
+
+# General tmp files
+/tmp/*
 
 # Ignore pid files, cache, and sockets.
 *.pid
@@ -52,3 +63,5 @@ app/.DS_Store
 config/.DS_Store
 lib/.DS_Store
 test/.DS_Store
+/app/assets/builds/*
+!/app/assets/builds/.keep

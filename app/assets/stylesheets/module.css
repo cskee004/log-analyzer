@@ -1,0 +1,36 @@
+.dashboard {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    min-height: 500px; 
+}
+
+div.button-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+turbo-frame#frame_panel {
+    max-width: 100%;
+    overflow-x: auto;
+    padding: 1.5rem;
+    margin-top: 1.5rem;
+    margin-right: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.summary-list-modal {
+    padding: 10px;
+}
+
+.reset-link {
+    display: block;
+    margin-top: 1rem;
+}
+  
+#logo {
+    padding-left: 1rem; 
+}
+  
