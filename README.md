@@ -1,6 +1,7 @@
 ## Security Log Analyzer 
 [![Legacy Version](https://img.shields.io/badge/branch-legacy-blue)](https://github.com/cskee004/log-analyzer/tree/legacy-script-version)
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
+[![ApexCharts.RB - v0.2.0](https://img.shields.io/badge/ApexCharts.RB-v0.2.0-orange)](https://github.com/styd/apexcharts.rb) <---- Very cool!
 
 ### Acknowledgements
 
