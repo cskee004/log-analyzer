@@ -1,4 +1,3 @@
-# SQLite for development and test
 default: &default
   adapter: sqlite3
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
@@ -12,9 +11,9 @@ test:
   <<: *default
   database: storage/test.sqlite3
 
-# PostgreSQL for production
 production:
   adapter: postgresql
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
   url: <%= ENV['DATABASE_URL'] %>
+  timeout: 5000
