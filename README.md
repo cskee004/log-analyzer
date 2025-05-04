@@ -117,17 +117,13 @@ Test coverage includes:
 
 ### Screenshots
 
-<td><img src="https://github.com/cskee004/log-analyzer/blob/main/docs/screenshots/upload.jpg" alt="App Screenshot" width="400"></td>
-#### Upload
+<td><img src="https://github.com/cskee004/log-analyzer/blob/main/docs/screenshots/upload.jpg" title="Upload" alt="App Screenshot" width="800"></td>
 
-<td><img src="https://github.com/cskee004/log-analyzer/blob/main/docs/screenshots/summary.jpg" alt="App Screenshot" width="400"></td>
-#### Summary Page 
+<td><img src="https://github.com/cskee004/log-analyzer/blob/main/docs/screenshots/summary.jpg" title="Summary Page" alt="App Screenshot" width="800"></td>
 
-<td><img src="https://github.com/cskee004/log-analyzer/blob/main/docs/screenshots/graphs.jpg" alt="App Screenshot" width="400"></td>
-#### Graph Page
+<td><img src="https://github.com/cskee004/log-analyzer/blob/main/docs/screenshots/graphs.jpg" title="Graph page" ="App Screenshot" width="800"></td>
 
-<td><img src="https://github.com/cskee004/log-analyzer/blob/main/docs/screenshots/choose-graph.jpg" alt="App Screenshot" width="400"></td>
-#### Choose a Chart
+<td><img src="https://github.com/cskee004/log-analyzer/blob/main/docs/screenshots/choose-graph.jpg" alt="Chart Selection" width="800"></td>
 
 ---
 
@@ -136,11 +132,7 @@ Test coverage includes:
 - [x] Parse `auth.log` files
 - [x] Event grouping by types and timestamps
 - [x] Normalizes raw log data into structured formats to support automated analysis and reporting
-<<<<<<< HEAD
-- [ ] Integrate a Rails-based dashboard for data visualization (*In Progress*)
-=======
 - [x] Integrate a Rails-based dashboard for data visualization
->>>>>>> development
 - [ ] Add additional analysis features 
     - [ ] User behaviour analysis
     - [ ] Failed login and brute-force detection
@@ -149,7 +141,6 @@ Test coverage includes:
     - [ ] Event frequency heatmaps
 - [ ] Expand support for additional log formats (e.g., secure.log, syslog, cloud audit logs) 
 
-<<<<<<< HEAD
 ***
 
 ### Author
