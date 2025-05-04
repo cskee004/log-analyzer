@@ -2,6 +2,9 @@
 
 reference/
 
+docs/results/datasets/
+docs/results/graphs/
+
 # Ignore bundler config.
 /.bundle
 
