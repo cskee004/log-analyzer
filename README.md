@@ -128,9 +128,22 @@ Test coverage includes:
 
 <td><img src="https://github.com/cskee004/log-analyzer/docs/screenshots/select-graph" alt="App Screenshot" width="400"></td>
 #### Choose Graph
+
 ---
 
 ### Roadmap
+
+- [x] Parse `auth.log` files
+- [x] Event grouping by types and timestamps
+- [x] Normalizes raw log data into structured formats to support automated analysis and reporting
+- [x] Integrate a Rails-based dashboard for data visualization
+- [ ] Add additional analysis features 
+    - [ ] User behaviour analysis
+    - [ ] Failed login and brute-force detection
+    - [ ] IP & host activity mapping
+    - [ ] Command and activity correlation
+    - [ ] Event frequency heatmaps
+- [ ] Expand support for additional log formats (e.g., secure.log, syslog, cloud audit logs) 
 
 ---
 
