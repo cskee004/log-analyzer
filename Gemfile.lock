@@ -417,10 +417,6 @@ GEM
     unicode-emoji (4.0.4)
     unicode_plot (0.0.5)
       enumerable-statistics (>= 2.0.1)
-<<<<<<< HEAD
-
-PLATFORMS
-=======
     uri (1.0.3)
     useragent (0.16.11)
     web-console (4.2.1)
@@ -439,34 +435,16 @@ PLATFORMS
 
 PLATFORMS
   aarch64-linux
->>>>>>> development
   aarch64-linux-gnu
   aarch64-linux-musl
   arm-linux-gnu
   arm-linux-musl
-<<<<<<< HEAD
-  arm64-darwin
-  x86_64-darwin
-=======
   arm64-darwin-24
   x86_64-linux
->>>>>>> development
   x86_64-linux-gnu
   x86_64-linux-musl
 
 DEPENDENCIES
-<<<<<<< HEAD
-  bundler
-  fileutils
-  json
-  kramdown-parser-gfm
-  rspec
-  terminal-table
-  unicode_plot
-
-RUBY VERSION
-   ruby 3.2.7p253
-=======
   apexcharts
   bootsnap
   brakeman
@@ -497,7 +475,6 @@ RUBY VERSION
   tzinfo-data
   unicode_plot
   web-console
->>>>>>> development
 
 BUNDLED WITH
    2.6.7
