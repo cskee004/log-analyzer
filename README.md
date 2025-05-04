@@ -8,7 +8,7 @@
 
 [![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
 
-[![Legacy Version](https://img.shields.io/badge/branch-development-purple)](https://github.com/cskee004/log-analyzer/tree/legacy-script-version)
+[![Legacy Version](https://img.shields.io/badge/branch-legacy-script-purple)](https://github.com/cskee004/log-analyzer/tree/legacy-script-version)
 
 ---
 
