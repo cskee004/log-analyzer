@@ -17,7 +17,7 @@
 
 ### Description
 
-Log Analyzer is a Ruby on Rails application that parses and analyzes Linux system logs (auth.log). It extracts key security events, summarizes event patterns by date/hour, and visualizes the data through a dashboard interface.
+Log Analyzer is a Ruby on Rails application that parses and analyzes Linux system logs (auth.log). It extracts key security events, summarizes event patterns by date and hour, and visualizes the data through a dashboard interface.
 
 This project is part of a personal portfolio and demonstrates experience with Ruby, Rails, log analysis, data visualization, and security-focused software design.
 
@@ -112,13 +112,13 @@ Test coverage includes:
 
 ### Screenshots
 
-<td><img src="https://github.com/cskee004/log-analyzer/blob/main/docs/screenshots/upload.jpg" title="Upload" alt="App Screenshot" width="800"></td>
+<img src="https://github.com/cskee004/log-analyzer/blob/main/docs/screenshots/upload.jpg" title="Upload" alt="Upload page sample" width="800">
 
-<td><img src="https://github.com/cskee004/log-analyzer/blob/main/docs/screenshots/summary.jpg" title="Summary Page" alt="App Screenshot" width="800"></td>
+<img src="https://github.com/cskee004/log-analyzer/blob/main/docs/screenshots/summary.jpg" title="Summary Page" alt="Summary page sample" width="800">
 
-<td><img src="https://github.com/cskee004/log-analyzer/blob/main/docs/screenshots/graphs.jpg" title="Graph page" ="App Screenshot" width="800"></td>
+<img src="https://github.com/cskee004/log-analyzer/blob/main/docs/screenshots/graphs.jpg" title="Graph page" ="Graph page sample" width="800">
 
-<td><img src="https://github.com/cskee004/log-analyzer/blob/main/docs/screenshots/choose-graph.jpg" alt="Chart Selection" width="800"></td>
+<img src="https://github.com/cskee004/log-analyzer/blob/main/docs/screenshots/choose-graph.jpg" alt="Choose graph sample" width="800">
 
 ---
 
