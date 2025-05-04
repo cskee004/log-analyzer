@@ -115,8 +115,19 @@ Test coverage includes:
 
 ---
 
-### Sample Output
+### Screenshots
 
+<td><img src="https://github.com/cskee004/log-analyzer/docs/screenshots/upload" alt="App Screenshot" width="400"></td>
+#### Upload
+
+<td><img src="https://github.com/cskee004/log-analyzer/docs/screenshots/summary" alt="App Screenshot" width="400"></td>
+#### Summary Page 
+
+<td><img src="https://github.com/cskee004/log-analyzer/docs/screenshots/graphs" alt="App Screenshot" width="400"></td>
+#### Graph Page
+
+<td><img src="https://github.com/cskee004/log-analyzer/docs/screenshots/select-graph" alt="App Screenshot" width="400"></td>
+#### Choose Graph
 ---
 
 ### Roadmap
