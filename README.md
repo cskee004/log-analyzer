@@ -136,9 +136,7 @@ Test coverage includes:
     - [ ] Event frequency heatmaps
 - [ ] Expand support for additional log formats (e.g., secure.log, syslog, cloud audit logs) 
 
-***
-
-### Author
+---
 
 [![Chris Skeens - LinkedIn](https://img.shields.io/badge/Chris_Skeens-LinkedIn-blue)](https://www.linkedin.com/in/christopher-skeens-846780248/)
 
