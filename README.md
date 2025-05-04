@@ -95,6 +95,7 @@ Visit `http://localhost:3000` to use the web interface.
 
 1. Navigate to the dashboard homepage
 2. Upload a Linux `auth.log` file using the form
+   - Different test files for use are located in './data`
 3. View summary statistics and graphs from parsed results
 
 ---
