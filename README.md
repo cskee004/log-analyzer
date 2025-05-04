@@ -1,4 +1,6 @@
-## Security Log Analyzer
+## Security Log Analyzer 
+[![Legacy Version](https://img.shields.io/badge/branch-legacy-purple)](https://github.com/cskee004/log-analyzer/tree/legacy-script-version)
+[![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
 
 ### Acknowledgements
 
@@ -6,9 +8,9 @@
 
   * Modifications: [test-auth.log](https://github.com/cskee004/log-analyzer/blob/main/data/auth-test.log)
 
-[![Ruby Style Guide](https://img.shields.io/badge/code_style-rubocop-brightgreen.svg)](https://github.com/rubocop/rubocop)
 
-[![Legacy Version](https://img.shields.io/badge/branch-legacy-purple)](https://github.com/cskee004/log-analyzer/tree/legacy-script-version)
+
+
 
 ---
 
