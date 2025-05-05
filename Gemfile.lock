@@ -317,6 +317,8 @@ GEM
     rspec-expectations (3.13.4)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
+    rspec-github (3.0.0)
+      rspec-core (~> 3.0)
     rspec-mocks (3.13.3)
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.13.0)
@@ -463,6 +465,7 @@ DEPENDENCIES
   puma (>= 5.0)
   rails (~> 8.0.2)
   rails-controller-testing
+  rspec-github
   rspec-rails
   rubocop-rails-omakase
   selenium-webdriver
