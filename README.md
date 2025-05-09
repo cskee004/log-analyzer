@@ -120,6 +120,7 @@ Test coverage includes:
 - [x] Event grouping by types and timestamps
 - [x] Normalizes raw log data into structured formats to support automated analysis and reporting
 - [x] Integrate a Rails-based dashboard for data visualization
+- [ ] Move from in-memory processing to database-backed analysis (In progress)
 - [ ] Add additional analysis features 
     - [ ] User behaviour analysis
     - [ ] Failed login and brute-force detection
@@ -153,6 +154,8 @@ If you'd like to contribute:
 ---
 
 [![Chris Skeens - LinkedIn](https://img.shields.io/badge/Chris_Skeens-LinkedIn-blue)](https://www.linkedin.com/in/christopher-skeens-846780248/)
+
+[![Development](https://img.shields.io/badge/branch-development-red)](https://github.com/cskee004/log-analyzer/tree/development) (Unstable but latest work)
 
 [![Legacy Version](https://img.shields.io/badge/branch-legacy-yellow)](https://github.com/cskee004/log-analyzer/tree/legacy-script-version)
 
