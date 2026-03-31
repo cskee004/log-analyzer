@@ -65,7 +65,7 @@ group :development, :test do
 
   gem "rails-controller-testing"
 
-  gem "sqlite3", ">= 2.1", platforms: :ruby
+  gem "sqlite3", ">= 2.1"
 
   gem 'rspec-github', require: false
 

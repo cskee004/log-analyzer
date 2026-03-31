@@ -6,10 +6,12 @@ default: &default
 development:
   <<: *default
   database: storage/development.sqlite3
+  timeout: 5000
 
 test:
   <<: *default
   database: storage/test.sqlite3
+  timeout: 5000
 
 production:
   adapter: postgresql
