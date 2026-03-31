@@ -1,5 +1,6 @@
 require_relative 'log_parser'
 require_relative 'log_file_analyzer'
+require_relative 'event_types'
 require 'date'
 
 # LogUtility Class
@@ -31,13 +32,6 @@ require 'date'
 #                   so that the methods in log_file_analyzer can be reused for the Rails version of this application
 class LogUtility
   def initialize
-    @event_types = %i[error_flag authentication_failure disconnect session_opened session_closed sudo_command 
-                      accepted_publickey accepted_password invalid_user failed_password]
-    @all = ['Error flag', 'Authentication failure', 'Invalid user', 'Failed password', 'Disconnect', 'Accepted password',
-            'Accepted publickey', 'Session opened', 'Session closed', 'Sudo command']
-    @high = ['Error flag', 'Authentication failure', 'Invalid user', 'Failed password']
-    @med = ['Disconnect', 'Accepted password', 'Accepted publickey', 'Session opened', 'Session closed']
-    @ops = ['Sudo command']
     @months = { 'Jan' => '1', 'Feb' => '2', 'Mar' => '3', 'Apr' => '4', 'May' => '5', 'Jun' => '6', 'Jul' => '7',
                 'Aug' => '8', 'Sep' => '9', 'Oct' => '10', 'Nov' => '11', 'Dec' => '12' }
     @dates = {}
@@ -48,7 +42,7 @@ class LogUtility
   # @param parsed_log hash containing meta data for each event type
 
   def POST_events(parsed_log)
-    @event_types.each do |symbol|
+    EventTypes::ALL.each do |symbol|
       event_batch = []
       parsed_log[symbol].select { |event| event }.each do |event|
         event_batch << event
@@ -121,16 +115,13 @@ class LogUtility
 
   def rebuild_log(security_level)
     log = {}
-    case security_level
-    when 'all'
-      type = @all
-    when 'high'
-      type = @high
-    when 'med'
-      type = @med
-    when 'ops'
-      type = @ops
-    end
+    symbols = case security_level
+              when 'all'  then EventTypes::ALL
+              when 'high' then EventTypes::HIGH_SECURITY
+              when 'med'  then EventTypes::MEDIUM
+              when 'ops'  then EventTypes::OPS
+              end
+    type = symbols.map { |s| s.to_s.tr('_', ' ').sub(/\A(.)/) { $1.upcase } }
     Event.where(event_type: type).each do |event|
       symbol = event.event_type.downcase.tr(' ', '_').to_sym
       log[symbol] ||= []

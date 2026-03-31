@@ -2,6 +2,7 @@ require 'terminal-table'
 require 'fileutils'
 require 'unicode_plot'
 require 'json'
+require_relative 'event_types'
 
 # LogAnalyzer Class
 # This class is responsible for analyzing security related events found in parsed_log. This class makes the
@@ -49,12 +50,6 @@ require 'json'
 
 class LogFileAnalyzer
   def initialize()
-    @event_types = %i[error_flag authentication_failure disconnect session_opened session_closed sudo_command accepted_publickey
-                      accepted_password invalid_user failed_password]
-    @high_events = %i[error_flag invalid_user failed_password]
-    @med_events  = %i[disconnect accepted_publickey accepted_password session_opened session_closed]
-    @low_events  = %i[sudo_command]
-    @login_events = %i[accepted_password failed_password]
     @months = { 'Jan' => '1', 'Feb' => '2', 'Mar' => '3', 'Apr' => '4', 'May' => '5', 'Jun' => '6', 'Jul' => '7',
                 'Aug' => '8', 'Sep' => '9', 'Oct' => '10', 'Nov' => '11', 'Dec' => '12' }
     @hours = {  '00' => 0, '01' => 0, '02' => 0, '03' => 0, '04' => 0, '05' => 0, '06' => 0, '07' => 0, '08' => 0,
@@ -114,7 +109,7 @@ class LogFileAnalyzer
 
   def top_offenders(parsed_log)
     result = {}
-    @high_events.each do |symbol|
+    EventTypes::HIGH.each do |symbol|
       next unless parsed_log[symbol]
 
       parsed_log[symbol].select { |event| event }.each do |event|
@@ -136,7 +131,7 @@ class LogFileAnalyzer
   def events_by_hour(parsed_log)
     result = {}
 
-    @event_types.each do |symbol|
+    EventTypes::ALL.each do |symbol|
       next unless parsed_log[symbol]
 
       result[symbol] = @hours.clone
@@ -157,7 +152,7 @@ class LogFileAnalyzer
 
   def events_by_date(parsed_log, date_range)
     result = {}
-    @event_types.each do |symbol|
+    EventTypes::ALL.each do |symbol|
       next unless parsed_log[symbol]
 
       result[symbol] = date_range.dup
@@ -177,7 +172,7 @@ class LogFileAnalyzer
 
   def login_patterns_hour(parsed_log)
     result = {}
-    @login_events.each do |symbol|
+    EventTypes::LOGIN.each do |symbol|
       next unless parsed_log[symbol]
 
       result[symbol] = @hours.clone
@@ -198,7 +193,7 @@ class LogFileAnalyzer
 
   def login_patterns_date(parsed_log, date_range)
     result = {}
-    @login_events.each do |symbol|
+    EventTypes::LOGIN.each do |symbol|
       next unless parsed_log[symbol]
 
       result[symbol] = date_range.dup
