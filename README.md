@@ -1,46 +1,52 @@
-## Security Log Analyzer 
+## Security Log Analyzer & Agent Observability Platform
 
 ### Requirements
 
-* Ruby 3.1 or higher
-* Rails 7.0 or higher
+* Ruby 3.2 or higher
+* Rails 8.0 or higher
 
 ---
 
 ### Description
 
-Log Analyzer is a Ruby on Rails application that parses and analyzes Linux system logs (auth.log). It extracts key security events, summarizes event patterns by date and hour, and visualizes the data through a dashboard interface.
+This project started as a Ruby on Rails application that parses and analyzes Linux system logs (`auth.log`). It extracts key security events, summarizes event patterns by date and hour, and visualizes the data through a dashboard interface.
 
-This project is part of a personal portfolio and demonstrates experience with Ruby, Rails, log analysis, data visualization, and security-focused software design.
+The project is now evolving into an **Agent Observability Platform** — a control plane for monitoring autonomous AI agents. The existing log analysis features remain in place while new agent telemetry features are being built alongside them.
+
+This project is part of a personal portfolio and demonstrates experience with Ruby, Rails, log analysis, data visualization, OpenTelemetry-inspired design, and security-focused software engineering.
 
 ---
 
 ### Project Purpose
 
-Security Log Analyzer began as a command-line log parser and evolved into a Rails-based interactive dashboard. The goal is to simplify security event tracking, highlight time-based patterns, and build a flexible tool that can evolve with new analysis features. It demonstrates practical Ruby/Rails skills, automated testing, and event-driven design for system security.
+Security Log Analyzer began as a command-line log parser and evolved into a Rails-based interactive dashboard. It is now expanding further into agent observability — modeling agent behavior using a **Trace → Span** structure inspired by OpenTelemetry, with a simulator for generating synthetic agent telemetry without requiring real agents.
 
 ---
 
 ### Project Structure
 
 ```
-├── app              # Rails MVC components
-├── config           # Environment settings
-├── db               # Database setup and schema
-├── spec             # RSpec test files
-├── data             # Test log files
+├── app
+│   ├── lib              # Service layer (LogParser, LogUtility, LogFileAnalyzer, Trace/Span services)
+│   └── ...              # Rails MVC components
+├── config               # Environment settings
+├── db                   # Database setup and schema
+├── simulator            # Synthetic agent telemetry generator
+├── spec                 # RSpec test files
+├── data                 # Test log files
 ```
 
 ---
 
 ### Features
 
+#### Security Log Analysis
 * Upload and parse `auth.log` system logs
 * Detect and classify key event types:
   * Error flags
   * Authentication failures
   * Invalid users
-  * Failed password
+  * Failed password attempts
   * Disconnects
   * Accepted publickey/passwords
   * Session open/closes
@@ -50,15 +56,28 @@ Security Log Analyzer began as a command-line log parser and evolved into a Rail
 * Top IPs triggering high-severity events
 * Graphs powered by ApexCharts
 * Modular design (LogParser, LogUtility, LogFileAnalyzer)
-* RSpec test suite
+
+#### Agent Telemetry *(in progress)*
+* Trace → Span data model inspired by OpenTelemetry
+* Canonical span types: `agent_run_started`, `model_call`, `model_response`, `tool_call`, `tool_result`, `decision`, `error`, `run_completed`
+* Synthetic telemetry simulator for generating realistic agent traces without live agents
+* JSON telemetry output matching the span field structure
 
 ---
 
 ### Dev Notes
-- Parsing logic lives in `LogParser` and `LogUtility`
-- Analysis is performed by `LogFileAnalyzer`
+
+#### Log Analyzer
+- Parsing logic lives in `LogParser` and `LogUtility` (`app/lib/`)
+- Analysis is performed by `LogFileAnalyzer` (`app/lib/`)
 - Controller: `DashboardController`
 - Partial views handle AJAX-based updates for summary and graphs
+
+#### Agent Telemetry
+- Data model: **Trace** (one complete agent run) → **Spans** (individual steps within a trace)
+- New service classes live in `app/lib/` following existing conventions
+- Simulator components live in `simulator/`: `agent_simulator`, `trace_generator`, `span_generator`
+- New DB tables: `traces`, `spans`
 
 ---
 
@@ -99,6 +118,7 @@ Test coverage includes:
 
 * Unit tests for parsing, utility, and analysis classes
 * Controller specs for upload, summary, and graph actions
+* Simulator specs use fixed seeds for deterministic span sequences
 
 ---
 
@@ -116,18 +136,18 @@ Test coverage includes:
 
 ### Roadmap
 
+#### Log Analyzer
 - [x] Parse `auth.log` files
 - [x] Event grouping by types and timestamps
-- [x] Normalizes raw log data into structured formats to support automated analysis and reporting
-- [x] Integrate a Rails-based dashboard for data visualization
-- [ ] Move from in-memory processing to database-backed analysis (In progress)
-- [ ] Add additional analysis features 
-    - [ ] User behaviour analysis
-    - [ ] Failed login and brute-force detection
-    - [ ] IP & host activity mapping
-    - [ ] Command and activity correlation
-    - [ ] Event frequency heatmaps
-- [ ] Expand support for additional log formats (e.g., secure.log, syslog, cloud audit logs)
+- [x] Normalize raw log data into structured formats
+- [x] Rails dashboard with ApexCharts visualizations
+- [x] Database-backed event storage and analysis
+
+#### Agent Observability Platform
+- [ ] `traces` and `spans` database tables and models
+- [ ] Agent telemetry simulator (`trace_generator`, `span_generator`, `agent_simulator`)
+- [ ] Agent observability dashboard (trace viewer, span timeline)
+- [ ] Ingestion API for real agent telemetry
 
 ---
 
@@ -139,11 +159,11 @@ Test coverage includes:
 
 ---
 
-### Contributing 
+### Contributing
 
 Contributing, feedback, and ideas are welcome.
 
-This project is primarily a personal learning tool and showcare, but feel free to fork it, open issues, or suggest improvements. 
+This project is primarily a personal learning tool and showcase, but feel free to fork it, open issues, or suggest improvements.
 
 If you'd like to contribute:
 1. Fork the repo
