@@ -57,4 +57,27 @@ describe 'Analyze Log' do
       expect(result[:failed_password]['2025-03-30']).to eq(173)
     end
   end
+
+  describe 'get_summary' do
+    it 'returns one entry per event type in EventTypes::ALL' do
+      result = log_file_analyzer.get_summary({})
+      expect(result.length).to eq(EventTypes::ALL.length)
+    end
+
+    it 'returns entries with labels matching EventTypes::LABELS in ALL order' do
+      result = log_file_analyzer.get_summary({})
+      expect(result.map { |r| r[:name] }).to eq(EventTypes::ALL.map { |t| EventTypes::LABELS[t] })
+    end
+
+    it 'counts zero for event types absent from parsed_log' do
+      result = log_file_analyzer.get_summary({})
+      expect(result.all? { |r| r[:data].values.first == 0 }).to be true
+    end
+
+    it 'returns the correct count for a present event type' do
+      result = log_file_analyzer.get_summary({ sudo_command: ['a', 'b', 'c'] })
+      sudo_entry = result.find { |r| r[:name] == 'Sudo usage' }
+      expect(sudo_entry[:data]['Sudo usage']).to eq(3)
+    end
+  end
 end

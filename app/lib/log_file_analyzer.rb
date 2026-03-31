@@ -249,23 +249,10 @@ class LogFileAnalyzer
   #                   results[{name: event, data: {event => count}], ...]
   #
   def get_summary(parsed_log)
-    results = []
-
-    results << { name: 'Error flags', data: { 'Error flags' => parsed_log.fetch(:error_flag, []).length } }
-    results << { name: 'Authentication failures',
-                 data: { 'Authentication failures' => parsed_log.fetch(:authentication_failure, []).length } }
-    results << { name: 'Invalid users', data: { 'Invalid users' => parsed_log.fetch(:invalid_user, []).length } }
-    results << { name: 'Failed password attempts',
-                 data: { 'Failed password attempts' => parsed_log.fetch(:failed_password, []).length } }
-    results << { name: 'Disconnects', data: { 'Disconnects' => parsed_log.fetch(:disconnect, []).length } }
-    results << { name: 'Accepted publickey',
-                 data: { 'Accepted publickey' => parsed_log.fetch(:accepted_publickey, []).length } }
-    results << { name: 'Accepted password',
-                 data: { 'Accepted password' => parsed_log.fetch(:accepted_password, []).length } }
-    results << { name: 'Session opens', data: { 'Session opens' => parsed_log.fetch(:session_opened, []).length } }
-    results << { name: 'Session closes', data: { 'Session closes' => parsed_log.fetch(:session_closed, []).length } }
-    results << { name: 'Sudo usage', data: { 'Sudo usage' => parsed_log.fetch(:sudo_command, []).length } }
-
-    results
+    EventTypes::ALL.map do |event_type|
+      label = EventTypes::LABELS[event_type]
+      count = parsed_log.fetch(event_type, []).length
+      { name: label, data: { label => count } }
+    end
   end
 end

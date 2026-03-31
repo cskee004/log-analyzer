@@ -12,4 +12,17 @@ module EventTypes
   MEDIUM        = %i[disconnect accepted_publickey accepted_password session_opened session_closed].freeze
   OPS           = %i[sudo_command].freeze
   LOGIN         = %i[accepted_password failed_password].freeze
+
+  LABELS = {
+    error_flag:             'Error flags',
+    authentication_failure: 'Authentication failures',
+    disconnect:             'Disconnects',
+    session_opened:         'Session opens',
+    session_closed:         'Session closes',
+    sudo_command:           'Sudo usage',
+    accepted_publickey:     'Accepted publickey',
+    accepted_password:      'Accepted password',
+    invalid_user:           'Invalid users',
+    failed_password:        'Failed password attempts'
+  }.freeze
 end
