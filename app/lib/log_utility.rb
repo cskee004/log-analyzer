@@ -125,9 +125,7 @@ class LogUtility
     Event.where(event_type: type).each do |event|
       symbol = event.event_type.downcase.tr(' ', '_').to_sym
       log[symbol] ||= []
-      hash = {  line_number: event[:line_number], event_type: event[:event_type], date: event[:date], time: event[:time],
-                host: event[:host], pid: event[:pid], message: event[:message], user: event[:user], source_ip: event[:source_ip],
-                source_port: event[:source_port], directory: event[:directory], command: event[:command], key: event[:key] }
+      hash = event.attributes.symbolize_keys.except(:id, :created_at, :updated_at)
       log[symbol] << hash
     end
     log
