@@ -1,4 +1,6 @@
 class DashboardController < ApplicationController
+  ALLOWED_CHARTS = %w[top_ips high_hour high_date med_hour med_date logins_hour logins_date].freeze
+
   def index
   end
 
@@ -63,7 +65,9 @@ class DashboardController < ApplicationController
     @logins_hour = @log_utility.format_for_apexcharts(temp_login_hour)
     @logins_date = @log_utility.format_for_apexcharts(temp_login_date)
 
-    render partial: 'graph', locals: {  top_ips: @top_ips, high_date: @high_date, high_hour: @high_hour,
+    chart = ALLOWED_CHARTS.include?(params[:chart]) ? params[:chart] : 'top_ips'
+
+    render partial: 'graph', locals: {  chart: chart, top_ips: @top_ips, high_date: @high_date, high_hour: @high_hour,
                                         med_date: @med_date, med_hour: @med_hour, logins_hour: @logins_hour,
                                         logins_date: @logins_date }
   end

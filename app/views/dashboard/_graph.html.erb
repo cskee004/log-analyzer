@@ -9,7 +9,7 @@
   </div>
 
   <turbo-frame id="selected-graph">
-    <%= render partial: "dashboard/graphs/#{params[:chart] || 'top_ips'}", locals: 
+    <%= render partial: "dashboard/graphs/#{chart}", locals:
     {   top_ips: top_ips, high_date: high_date, high_hour: high_hour,
         med_date: med_date, med_hour: med_hour, logins_hour: logins_hour, 
         logins_date: logins_date } %>
