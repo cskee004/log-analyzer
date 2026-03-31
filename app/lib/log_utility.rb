@@ -31,6 +31,13 @@ require 'date'
 # - 'rebuild_log' : Builds a log that is identical to the one used to populate the model. This is needed
 #                   so that the methods in log_file_analyzer can be reused for the Rails version of this application
 class LogUtility
+  SECURITY_LEVEL_FILTERS = {
+    'all'  => EventTypes::ALL,
+    'high' => EventTypes::HIGH_SECURITY,
+    'med'  => EventTypes::MEDIUM,
+    'ops'  => EventTypes::OPS
+  }.freeze
+
   def initialize
     @months = { 'Jan' => '1', 'Feb' => '2', 'Mar' => '3', 'Apr' => '4', 'May' => '5', 'Jun' => '6', 'Jul' => '7',
                 'Aug' => '8', 'Sep' => '9', 'Oct' => '10', 'Nov' => '11', 'Dec' => '12' }
@@ -115,12 +122,7 @@ class LogUtility
 
   def rebuild_log(security_level)
     log = {}
-    symbols = case security_level
-              when 'all'  then EventTypes::ALL
-              when 'high' then EventTypes::HIGH_SECURITY
-              when 'med'  then EventTypes::MEDIUM
-              when 'ops'  then EventTypes::OPS
-              end
+    symbols = SECURITY_LEVEL_FILTERS[security_level]
     type = symbols.map { |s| s.to_s.tr('_', ' ').sub(/\A(.)/) { $1.upcase } }
     Event.where(event_type: type).each do |event|
       symbol = event.event_type.downcase.tr(' ', '_').to_sym
