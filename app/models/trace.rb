@@ -6,6 +6,9 @@ class Trace < ApplicationRecord
 
   enum :status, { in_progress: 0, success: 1, error: 2 }
 
+  has_many :spans, foreign_key: :trace_id, primary_key: :trace_id,
+                   inverse_of: :trace, dependent: :destroy
+
   validates :trace_id,   presence: true, uniqueness: true, length: { is: 16 }
   validates :agent_id,   presence: true, inclusion: { in: AGENT_TYPES }
   validates :task_name,  presence: true

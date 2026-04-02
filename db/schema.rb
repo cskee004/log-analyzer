@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_02_180359) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_02_181853) do
   create_table "events", force: :cascade do |t|
     t.string "event_type", null: false
     t.string "date"
@@ -29,6 +29,22 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_02_180359) do
     t.string "line_number"
   end
 
+  create_table "spans", force: :cascade do |t|
+    t.string "trace_id", null: false
+    t.string "span_id", null: false
+    t.string "parent_span_id"
+    t.string "span_type", null: false
+    t.datetime "timestamp", null: false
+    t.string "agent_id", null: false
+    t.json "metadata", default: {}, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["agent_id"], name: "index_spans_on_agent_id"
+    t.index ["span_type"], name: "index_spans_on_span_type"
+    t.index ["trace_id", "span_id"], name: "index_spans_on_trace_id_and_span_id", unique: true
+    t.index ["trace_id"], name: "index_spans_on_trace_id"
+  end
+
   create_table "traces", force: :cascade do |t|
     t.string "trace_id", null: false
     t.string "agent_id", null: false
@@ -42,4 +58,6 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_02_180359) do
     t.index ["status"], name: "index_traces_on_status"
     t.index ["trace_id"], name: "index_traces_on_trace_id", unique: true
   end
+
+  add_foreign_key "spans", "traces", primary_key: "trace_id"
 end
