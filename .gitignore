@@ -10,6 +10,7 @@ instructions/
 examples/
 
 CLAUDE.md
+settings.local.json
 
 # Ignore bundler config.
 /.bundle
@@ -38,7 +39,7 @@ tmp/*
 
 # Ignore dotenv environment files.
 .env
-.env.*
+
 
 # Ignore uploaded files in development.
 storage/*

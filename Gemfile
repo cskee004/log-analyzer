@@ -67,8 +67,6 @@ group :development, :test do
 
   gem "sqlite3", ">= 2.1"
 
-  gem 'rspec-github', require: false
-
 end
 
 group :development do
