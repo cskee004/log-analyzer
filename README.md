@@ -17,23 +17,18 @@ This project is part of a personal portfolio and demonstrates experience with Ru
 
 ---
 
-### Project Purpose
-
-Security Log Analyzer began as a command-line log parser and evolved into a Rails-based interactive dashboard. It is now expanding further into agent observability — modeling agent behavior using a **Trace → Span** structure inspired by OpenTelemetry, with a simulator for generating synthetic agent telemetry without requiring real agents.
-
----
-
 ### Project Structure
 
 ```
 ├── app
-│   ├── lib              # Service layer (LogParser, LogUtility, LogFileAnalyzer, Trace/Span services)
-│   └── ...              # Rails MVC components
-├── config               # Environment settings
-├── db                   # Database setup and schema
-├── simulator            # Synthetic agent telemetry generator
-├── spec                 # RSpec test files
-├── data                 # Test log files
+│   ├── controllers/api/v1   # Telemetry API (auth, keys, telemetry)
+│   ├── lib                  # Service layer (LogParser, LogUtility, LogFileAnalyzer, TelemetryIngester)
+│   └── ...                  # Rails MVC components
+├── config                   # Environment settings
+├── db                       # Database setup and schema
+├── simulator                # Synthetic agent telemetry generator
+├── spec                     # RSpec test files
+├── data                     # Test log files
 ```
 
 ---
@@ -57,11 +52,12 @@ Security Log Analyzer began as a command-line log parser and evolved into a Rail
 * Graphs powered by ApexCharts
 * Modular design (LogParser, LogUtility, LogFileAnalyzer)
 
-#### Agent Telemetry *(in progress)*
+#### Agent Observability Platform
 * Trace → Span data model inspired by OpenTelemetry
 * Canonical span types: `agent_run_started`, `model_call`, `model_response`, `tool_call`, `tool_result`, `decision`, `error`, `run_completed`
 * Synthetic telemetry simulator for generating realistic agent traces without live agents
-* JSON telemetry output matching the span field structure
+* REST API for agent registration and telemetry ingestion (see [API](#api))
+* Database-backed `traces` and `spans` tables with referential integrity
 
 ---
 
@@ -75,9 +71,9 @@ Security Log Analyzer began as a command-line log parser and evolved into a Rail
 
 #### Agent Telemetry
 - Data model: **Trace** (one complete agent run) → **Spans** (individual steps within a trace)
-- New service classes live in `app/lib/` following existing conventions
+- Ingestion logic lives in `TelemetryIngester` (`app/lib/`)
 - Simulator components live in `simulator/`: `agent_simulator`, `trace_generator`, `span_generator`
-- New DB tables: `traces`, `spans`
+- API controllers live in `app/controllers/api/v1/`
 
 ---
 
@@ -104,11 +100,73 @@ Visit `http://localhost:3000` to use the web interface.
 
 ---
 
+### API
+
+All API endpoints are under `/api/v1`. Telemetry submission requires a Bearer token obtained via key registration.
+
+#### Register an API key
+
+```
+POST /api/v1/keys
+Content-Type: application/json
+
+{ "agent_type": "support-agent" }
+```
+
+Response `201 Created`:
+```json
+{
+  "token": "<your-token>",
+  "agent_type": "support-agent",
+  "message": "Store this token securely — it will not be shown again."
+}
+```
+
+> The token is returned **once**. Store it immediately.
+
+Valid `agent_type` values: `support-agent`, `research-agent`, `automation-agent`, `triage-agent`, `data-agent`, `monitoring-agent`, `code-agent`, `notification-agent`
+
+---
+
+#### Validate a token
+
+```
+POST /api/v1/auth/token
+Content-Type: application/json
+
+{ "token": "<your-token>" }
+```
+
+Response `200 OK`:
+```json
+{ "valid": true, "agent_type": "support-agent" }
+```
+
+---
+
+#### Submit telemetry
+
+```
+POST /api/v1/telemetry
+Authorization: Bearer <your-token>
+Content-Type: text/plain
+
+{"trace_id":"a1b2c3d4e5f6a7b8","agent_id":"support-agent","task_name":"classify_customer_ticket","start_time":"2026-04-02T12:00:00Z","status":"success"}
+{"trace_id":"a1b2c3d4e5f6a7b8","span_id":"s1","parent_span_id":null,"span_type":"agent_run_started","timestamp":"2026-04-02T12:00:01Z","agent_id":"support-agent","metadata":{"task":"classify_customer_ticket"}}
+```
+
+The body is **NDJSON** — one JSON object per line. Line 1 is the trace record; subsequent lines are span records. This format matches the output of `AgentSimulator#emit`.
+
+Response `201 Created`:
+```json
+{ "trace_id": "a1b2c3d4e5f6a7b8", "spans_ingested": 1 }
+```
+
+---
+
 ### Testing
 
-The project uses **RSpec** for testing models and controller logic.
-
-#### Run Tests:
+The project uses **RSpec** for testing.
 
 ```bash
 bundle exec rspec
@@ -117,8 +175,9 @@ bundle exec rspec
 Test coverage includes:
 
 * Unit tests for parsing, utility, and analysis classes
-* Controller specs for upload, summary, and graph actions
-* Simulator specs use fixed seeds for deterministic span sequences
+* Model specs for `Trace`, `Span`, and `ApiKey`
+* Request specs for all API endpoints
+* Simulator specs use fixed seeds for deterministic output
 
 ---
 
@@ -144,10 +203,10 @@ Test coverage includes:
 - [x] Database-backed event storage and analysis
 
 #### Agent Observability Platform
-- [ ] `traces` and `spans` database tables and models
-- [ ] Agent telemetry simulator (`trace_generator`, `span_generator`, `agent_simulator`)
+- [x] `traces` and `spans` database tables and models
+- [x] Agent telemetry simulator (`trace_generator`, `span_generator`, `agent_simulator`)
+- [x] Ingestion API with key registration and Bearer token auth
 - [ ] Agent observability dashboard (trace viewer, span timeline)
-- [ ] Ingestion API for real agent telemetry
 
 ---
 

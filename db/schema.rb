@@ -10,7 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_02_181853) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_02_185617) do
+  create_table "api_keys", force: :cascade do |t|
+    t.string "token", null: false
+    t.string "agent_type"
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["token"], name: "index_api_keys_on_token", unique: true
+  end
+
   create_table "events", force: :cascade do |t|
     t.string "event_type", null: false
     t.string "date"
