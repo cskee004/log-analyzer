@@ -1,29 +1,31 @@
 require "json"
 
-# Immutable value object representing a single agent execution run.
-#
-# Fields:
-#   trace_id   — 16-char lowercase hex uniquely identifying this trace
-#   agent_id   — the agent type that performed the task
-#   task_name  — the task the agent was asked to complete
-#   start_time — ISO 8601 UTC string marking when the run began
-#   status     — one of "in_progress", "success", "error"
-Trace = Data.define(:trace_id, :agent_id, :task_name, :start_time, :status)
+module Simulator
+  # Immutable value object representing a single agent execution run.
+  #
+  # Fields:
+  #   trace_id   — 16-char lowercase hex uniquely identifying this trace
+  #   agent_id   — the agent type that performed the task
+  #   task_name  — the task the agent was asked to complete
+  #   start_time — ISO 8601 UTC string marking when the run began
+  #   status     — one of "in_progress", "success", "error"
+  Trace = Data.define(:trace_id, :agent_id, :task_name, :start_time, :status)
 
-Trace::VALID_STATUSES = %w[in_progress success error].freeze
+  Trace::VALID_STATUSES = %w[in_progress success error].freeze
 
-# Reopen with class syntax so that VALID_STATUSES is in the constant lookup chain.
-class Trace
-  def self.build(trace_id:, agent_id:, task_name:, start_time:, status:)
-    unless VALID_STATUSES.include?(status)
-      raise ArgumentError, "Unknown status '#{status}'. Must be one of: #{VALID_STATUSES.join(', ')}"
+  # Reopen with class syntax so that VALID_STATUSES is in the constant lookup chain.
+  class Trace
+    def self.build(trace_id:, agent_id:, task_name:, start_time:, status:)
+      unless VALID_STATUSES.include?(status)
+        raise ArgumentError, "Unknown status '#{status}'. Must be one of: #{VALID_STATUSES.join(', ')}"
+      end
+
+      new(trace_id: trace_id, agent_id: agent_id, task_name: task_name,
+          start_time: start_time, status: status)
     end
 
-    new(trace_id: trace_id, agent_id: agent_id, task_name: task_name,
-        start_time: start_time, status: status)
+    def to_json(*args) = to_h.to_json(*args)
   end
-
-  def to_json(*args) = to_h.to_json(*args)
 end
 
 # Generates synthetic Trace metadata for simulated agent runs.
@@ -70,7 +72,7 @@ class TraceGenerator
   def generate(agent_id: nil, task_name: nil, start_time: Time.now.utc)
     selected_agent = agent_id || AGENT_TYPES.sample(random: @rng)
 
-    Trace.build(
+    Simulator::Trace.build(
       trace_id:   generate_trace_id,
       agent_id:   selected_agent,
       task_name:  task_name || TASK_NAMES[selected_agent].sample(random: @rng),

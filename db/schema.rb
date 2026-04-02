@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_19_195800) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_02_180359) do
   create_table "events", force: :cascade do |t|
     t.string "event_type", null: false
     t.string "date"
@@ -27,5 +27,19 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_19_195800) do
     t.datetime "updated_at", null: false
     t.string "host"
     t.string "line_number"
+  end
+
+  create_table "traces", force: :cascade do |t|
+    t.string "trace_id", null: false
+    t.string "agent_id", null: false
+    t.string "task_name", null: false
+    t.datetime "start_time", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["agent_id"], name: "index_traces_on_agent_id"
+    t.index ["start_time"], name: "index_traces_on_start_time"
+    t.index ["status"], name: "index_traces_on_status"
+    t.index ["trace_id"], name: "index_traces_on_trace_id", unique: true
   end
 end

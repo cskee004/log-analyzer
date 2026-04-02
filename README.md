@@ -13,7 +13,7 @@ This project started as a Ruby on Rails application that parses and analyzes Lin
 
 The project is now evolving into an **Agent Observability Platform** — a control plane for monitoring autonomous AI agents. The existing log analysis features remain in place while new agent telemetry features are being built alongside them.
 
-This project is part of a personal portfolio and demonstrates experience with Ruby, Rails, log analysis, data visualization, OpenTelemetry-inspired design, and security-focused software engineering.
+This project is part of a personal portfolio and demonstrates experience with Ruby, Rails, log analysis, data visualization, OpenTelemetry-inspired design, security-focused software engineering, and AI-assisted development using [Claude Code](https://claude.ai/code).
 
 ---
 

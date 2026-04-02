@@ -41,7 +41,7 @@ RSpec.describe TraceGenerator do
     subject(:trace) { seeded.generate }
 
     it "returns a Trace instance" do
-      expect(trace).to be_a(Trace)
+      expect(trace).to be_a(Simulator::Trace)
     end
 
     it "populates all five fields" do
@@ -106,10 +106,10 @@ RSpec.describe TraceGenerator do
   end
 end
 
-RSpec.describe Trace do
+RSpec.describe Simulator::Trace do
   describe "VALID_STATUSES" do
     it "contains in_progress, success, and error" do
-      expect(Trace::VALID_STATUSES).to match_array(%w[in_progress success error])
+      expect(Simulator::Trace::VALID_STATUSES).to match_array(%w[in_progress success error])
     end
   end
 
@@ -125,27 +125,27 @@ RSpec.describe Trace do
     end
 
     it "constructs a Trace with all fields" do
-      trace = Trace.build(**valid_attrs)
+      trace = Simulator::Trace.build(**valid_attrs)
       expect(trace.trace_id).to eq("abc123def456abcd")
       expect(trace.status).to eq("in_progress")
     end
 
     it "raises ArgumentError for an unknown status" do
       expect {
-        Trace.build(**valid_attrs, status: "unknown")
+        Simulator::Trace.build(**valid_attrs, status: "unknown")
       }.to raise_error(ArgumentError, /unknown/)
     end
 
     it "raises ArgumentError and names valid statuses" do
       expect {
-        Trace.build(**valid_attrs, status: "pending")
+        Simulator::Trace.build(**valid_attrs, status: "pending")
       }.to raise_error(ArgumentError, /in_progress/)
     end
   end
 
   describe "#to_json" do
     it "serializes all fields" do
-      trace = Trace.build(
+      trace = Simulator::Trace.build(
         trace_id: "abc123def456abcd", agent_id: "triage-agent",
         task_name: "route_support_ticket", start_time: "2026-03-07T12:00:00Z",
         status: "success"

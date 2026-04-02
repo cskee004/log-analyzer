@@ -17,7 +17,7 @@ RSpec.describe AgentSimulator do
     end
 
     it "SimulatedRun carries a Trace" do
-      expect(success_sim.run.trace).to be_a(Trace)
+      expect(success_sim.run.trace).to be_a(Simulator::Trace)
     end
 
     it "SimulatedRun carries an array of TelemetryEvent spans" do
