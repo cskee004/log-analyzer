@@ -1,3 +1,8 @@
 .reset-link:hover {
     text-decoration: underline;
-  }
+}
+
+.nav-link:hover {
+    color: #1f2937;
+    text-decoration: underline;
+}

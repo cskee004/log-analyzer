@@ -121,4 +121,25 @@ turbo-frame#frame_panel {
     cursor: not-allowed;
 }
 
-  
+.status-badge--in_progress { background-color: #f3f4f6; color: #6b7280; }
+.status-badge--success     { background-color: #dcfce7; color: #15803d; }
+.status-badge--error       { background-color: #fee2e2; color: #b91c1c; }
+
+.nav-link { color: #374151; }
+
+.btn-seed {
+    background-color: #e2e8f0;
+    color: #1f2937;
+    border: 1px solid #cbd5e0;
+    padding: 0.45rem 0.9rem;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.btn-seed:hover { background-color: #cbd5e0; }
+
+.flash--notice { background-color: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+.flash--alert  { background-color: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }

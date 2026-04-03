@@ -102,4 +102,48 @@ RSpec.describe Trace, type: :model do
       expect(Trace.in_progress.count).to eq(1)
     end
   end
+
+  describe "#duration" do
+    let(:trace) { Trace.create!(valid_attrs) }
+
+    def create_span(span_id, span_type, timestamp)
+      Span.create!(
+        trace_id:  trace.trace_id,
+        span_id:   span_id,
+        span_type: span_type,
+        timestamp: timestamp,
+        agent_id:  "support-agent",
+        metadata:  { "task" => "classify_customer_ticket" }
+      )
+    end
+
+    context "when the trace has no spans" do
+      it "returns nil" do
+        loaded = Trace.includes(:spans).find_by(trace_id: trace.trace_id)
+        expect(loaded.duration).to be_nil
+      end
+    end
+
+    context "when the trace has one span" do
+      before { create_span("s1", "agent_run_started", Time.utc(2026, 4, 2, 12, 0, 5)) }
+
+      it "returns 0.0" do
+        loaded = Trace.includes(:spans).find_by(trace_id: trace.trace_id)
+        expect(loaded.duration).to eq(0.0)
+      end
+    end
+
+    context "when the trace has multiple spans" do
+      before do
+        create_span("s1", "agent_run_started", Time.utc(2026, 4, 2, 12, 0, 0))
+        create_span("s2", "model_call",        Time.utc(2026, 4, 2, 12, 0, 2))
+        create_span("s3", "run_completed",     Time.utc(2026, 4, 2, 12, 0, 5))
+      end
+
+      it "returns elapsed seconds between earliest and latest span" do
+        loaded = Trace.includes(:spans).find_by(trace_id: trace.trace_id)
+        expect(loaded.duration).to eq(5.0)
+      end
+    end
+  end
 end

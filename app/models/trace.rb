@@ -14,4 +14,17 @@ class Trace < ApplicationRecord
   validates :task_name,  presence: true
   validates :start_time, presence: true
   validates :status,     presence: true
+
+  def to_param
+    trace_id
+  end
+
+  # Returns elapsed seconds as a Float, or nil if the trace has no spans.
+  # Assumes spans are already eager-loaded; does not issue additional queries.
+  def duration
+    return nil if spans.empty?
+
+    timestamps = spans.map(&:timestamp)
+    timestamps.max - timestamps.min
+  end
 end
