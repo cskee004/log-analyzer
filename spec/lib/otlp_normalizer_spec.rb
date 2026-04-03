@@ -1,0 +1,335 @@
+require "rails_helper"
+
+RSpec.describe OtlpNormalizer do
+  # ── Fixture helpers ────────────────────────────────────────────────────────
+
+  OTLP_TRACE_ID = "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6" # 32-char hex
+  EXPECTED_TRACE_ID = "a1b2c3d4e5f6a7b8"               # first 16 chars
+
+  def otlp_payload(spans:, session_key: "support-agent", extra_resource_attrs: [])
+    JSON.generate({
+      "resourceSpans" => [{
+        "resource" => {
+          "attributes" => [
+            { "key" => "openclaw.session.key", "value" => { "stringValue" => session_key } }
+          ] + extra_resource_attrs
+        },
+        "scopeSpans" => [{ "spans" => spans }]
+      }]
+    })
+  end
+
+  def otlp_span(name:, span_id:, timestamp_ns:, parent_span_id: nil, status_code: nil, attributes: [])
+    span = {
+      "traceId"            => OTLP_TRACE_ID,
+      "spanId"             => span_id,
+      "name"               => name,
+      "startTimeUnixNano"  => timestamp_ns.to_s,
+      "attributes"         => attributes
+    }
+    span["parentSpanId"] = parent_span_id if parent_span_id
+    span["status"] = { "code" => status_code } if status_code
+    span
+  end
+
+  # Returns parsed lines from OtlpNormalizer output as an array of hashes.
+  def normalize_and_parse(json_string)
+    OtlpNormalizer.call(json_string)
+      .split("\n")
+      .map { |line| JSON.parse(line) }
+  end
+
+  # ── Span type mapping ──────────────────────────────────────────────────────
+
+  describe "span type mapping" do
+    # Two-span helper: the tested span comes first (lower timestamp) so it gets
+    # a name-based mapping; the trailing span gets run_completed as the final span.
+    def two_span_payload(name:, status_code: nil)
+      tested = otlp_span(name: name, span_id: "aaaa0000aaaa0000", timestamp_ns: 1_000_000_000_000_000_000,
+                         status_code: status_code)
+      final  = otlp_span(name: "openclaw.request", span_id: "bbbb0000bbbb0000",
+                         parent_span_id: "aaaa0000aaaa0000", timestamp_ns: 2_000_000_000_000_000_000)
+      otlp_payload(spans: [tested, final])
+    end
+
+    it "maps openclaw.request → agent_run_started" do
+      payload = otlp_payload(spans: [
+        otlp_span(name: "openclaw.request",   span_id: "aaaa0000aaaa0000", timestamp_ns: 1_000_000_000_000_000_000),
+        otlp_span(name: "openclaw.agent.turn", span_id: "bbbb0000bbbb0000",
+                  parent_span_id: "aaaa0000aaaa0000", timestamp_ns: 2_000_000_000_000_000_000)
+      ])
+      lines = normalize_and_parse(payload)
+      expect(lines[1]["span_type"]).to eq("agent_run_started")
+    end
+
+    it "maps openclaw.agent.turn → model_call" do
+      lines = normalize_and_parse(two_span_payload(name: "openclaw.agent.turn"))
+      expect(lines[1]["span_type"]).to eq("model_call")
+    end
+
+    it "maps tool.* → tool_call" do
+      lines = normalize_and_parse(two_span_payload(name: "tool.web_search"))
+      expect(lines[1]["span_type"]).to eq("tool_call")
+    end
+
+    it "maps a different tool.* name → tool_call" do
+      lines = normalize_and_parse(two_span_payload(name: "tool.read_file"))
+      expect(lines[1]["span_type"]).to eq("tool_call")
+    end
+
+    it "maps openclaw.command.* → decision" do
+      lines = normalize_and_parse(two_span_payload(name: "openclaw.command.execute"))
+      expect(lines[1]["span_type"]).to eq("decision")
+    end
+
+    it "maps the final span (highest timestamp) → run_completed" do
+      lines = normalize_and_parse(two_span_payload(name: "openclaw.agent.turn"))
+      final_span_line = lines.last
+      expect(final_span_line["span_type"]).to eq("run_completed")
+    end
+
+    it "maps ERROR status (code 2) → error, overriding name-based mapping" do
+      lines = normalize_and_parse(two_span_payload(name: "openclaw.request", status_code: 2))
+      expect(lines[1]["span_type"]).to eq("error")
+    end
+
+    it "maps ERROR status on the final span → error (not run_completed)" do
+      payload = otlp_payload(spans: [
+        otlp_span(name: "openclaw.request", span_id: "aaaa0000aaaa0000", timestamp_ns: 1_000_000_000_000_000_000),
+        otlp_span(name: "openclaw.agent.turn", span_id: "bbbb0000bbbb0000",
+                  parent_span_id: "aaaa0000aaaa0000",
+                  timestamp_ns: 2_000_000_000_000_000_000, status_code: 2)
+      ])
+      lines = normalize_and_parse(payload)
+      expect(lines.last["span_type"]).to eq("error")
+    end
+
+    it "falls back to model_call for unrecognised span names" do
+      lines = normalize_and_parse(two_span_payload(name: "openclaw.unknown.thing"))
+      expect(lines[1]["span_type"]).to eq("model_call")
+    end
+  end
+
+  # ── Trace record ──────────────────────────────────────────────────────────
+
+  describe "trace record (line 1)" do
+    let(:single_span_payload) do
+      otlp_payload(spans: [
+        otlp_span(name: "openclaw.request", span_id: "aaaa0000aaaa0000",
+                  timestamp_ns: 1_712_345_678_000_000_000)
+      ])
+    end
+
+    it "truncates OTLP traceId to 16 characters" do
+      lines = normalize_and_parse(single_span_payload)
+      expect(lines[0]["trace_id"]).to eq(EXPECTED_TRACE_ID)
+      expect(lines[0]["trace_id"].length).to eq(16)
+    end
+
+    it "reads agent_id from openclaw.session.key resource attribute" do
+      lines = normalize_and_parse(single_span_payload)
+      expect(lines[0]["agent_id"]).to eq("support-agent")
+    end
+
+    it "sets task_name from the root span (no parentSpanId)" do
+      payload = otlp_payload(spans: [
+        otlp_span(name: "openclaw.request", span_id: "aaaa0000aaaa0000",
+                  timestamp_ns: 1_000_000_000_000_000_000),
+        otlp_span(name: "openclaw.agent.turn", span_id: "bbbb0000bbbb0000",
+                  parent_span_id: "aaaa0000aaaa0000", timestamp_ns: 2_000_000_000_000_000_000)
+      ])
+      lines = normalize_and_parse(payload)
+      expect(lines[0]["task_name"]).to eq("openclaw.request")
+    end
+
+    it "sets start_time from the earliest span timestamp as ISO8601" do
+      payload = otlp_payload(spans: [
+        otlp_span(name: "openclaw.agent.turn", span_id: "bbbb0000bbbb0000",
+                  timestamp_ns: 2_000_000_000_000_000_000),
+        otlp_span(name: "openclaw.request", span_id: "aaaa0000aaaa0000",
+                  timestamp_ns: 1_000_000_000_000_000_000)
+      ])
+      lines = normalize_and_parse(payload)
+      expected_time = Time.at(1_000_000_000.0).utc.iso8601(3)
+      expect(lines[0]["start_time"]).to eq(expected_time)
+    end
+
+    it "sets status to success when no spans have an error status" do
+      lines = normalize_and_parse(single_span_payload)
+      expect(lines[0]["status"]).to eq("success")
+    end
+
+    it "sets status to error when any span has OTLP error code 2" do
+      payload = otlp_payload(spans: [
+        otlp_span(name: "openclaw.request", span_id: "aaaa0000aaaa0000",
+                  timestamp_ns: 1_000_000_000_000_000_000, status_code: 2)
+      ])
+      lines = normalize_and_parse(payload)
+      expect(lines[0]["status"]).to eq("error")
+    end
+  end
+
+  # ── Span record fields ─────────────────────────────────────────────────────
+
+  describe "span record fields" do
+    it "sets trace_id on every span record" do
+      payload = otlp_payload(spans: [
+        otlp_span(name: "openclaw.request", span_id: "aaaa0000aaaa0000", timestamp_ns: 1_000_000_000_000_000_000)
+      ])
+      lines = normalize_and_parse(payload)
+      expect(lines[1]["trace_id"]).to eq(EXPECTED_TRACE_ID)
+    end
+
+    it "converts nanosecond timestamp to ISO8601" do
+      payload = otlp_payload(spans: [
+        otlp_span(name: "openclaw.request", span_id: "aaaa0000aaaa0000",
+                  timestamp_ns: 1_712_345_678_500_000_000)
+      ])
+      lines = normalize_and_parse(payload)
+      expected = Time.at(1_712_345_678.5).utc.iso8601(3)
+      expect(lines[1]["timestamp"]).to eq(expected)
+    end
+
+    it "carries span_id through unchanged" do
+      payload = otlp_payload(spans: [
+        otlp_span(name: "openclaw.request", span_id: "deadbeefdeadbeef", timestamp_ns: 1_000_000_000_000_000_000)
+      ])
+      lines = normalize_and_parse(payload)
+      expect(lines[1]["span_id"]).to eq("deadbeefdeadbeef")
+    end
+
+    it "sets parent_span_id when present" do
+      payload = otlp_payload(spans: [
+        otlp_span(name: "openclaw.request",    span_id: "aaaa0000aaaa0000", timestamp_ns: 1_000_000_000_000_000_000),
+        otlp_span(name: "openclaw.agent.turn", span_id: "bbbb0000bbbb0000",
+                  parent_span_id: "aaaa0000aaaa0000", timestamp_ns: 2_000_000_000_000_000_000)
+      ])
+      lines = normalize_and_parse(payload)
+      expect(lines[2]["parent_span_id"]).to eq("aaaa0000aaaa0000")
+    end
+
+    it "sets parent_span_id to nil when absent" do
+      payload = otlp_payload(spans: [
+        otlp_span(name: "openclaw.request", span_id: "aaaa0000aaaa0000", timestamp_ns: 1_000_000_000_000_000_000)
+      ])
+      lines = normalize_and_parse(payload)
+      expect(lines[1]["parent_span_id"]).to be_nil
+    end
+
+    it "sets metadata to {} when span has no attributes" do
+      payload = otlp_payload(spans: [
+        otlp_span(name: "openclaw.request", span_id: "aaaa0000aaaa0000",
+                  timestamp_ns: 1_000_000_000_000_000_000, attributes: [])
+      ])
+      lines = normalize_and_parse(payload)
+      expect(lines[1]["metadata"]).to eq({})
+    end
+  end
+
+  # ── attrs_to_hash ──────────────────────────────────────────────────────────
+
+  describe "attrs_to_hash (via span metadata)" do
+    def payload_with_span_attrs(attrs)
+      otlp_payload(spans: [
+        otlp_span(name: "openclaw.request", span_id: "aaaa0000aaaa0000",
+                  timestamp_ns: 1_000_000_000_000_000_000, attributes: attrs)
+      ])
+    end
+
+    it "extracts stringValue" do
+      attrs = [{ "key" => "model", "value" => { "stringValue" => "gpt-4o" } }]
+      lines = normalize_and_parse(payload_with_span_attrs(attrs))
+      expect(lines[1]["metadata"]["model"]).to eq("gpt-4o")
+    end
+
+    it "extracts intValue" do
+      attrs = [{ "key" => "tokens", "value" => { "intValue" => 512 } }]
+      lines = normalize_and_parse(payload_with_span_attrs(attrs))
+      expect(lines[1]["metadata"]["tokens"]).to eq(512)
+    end
+
+    it "extracts doubleValue" do
+      attrs = [{ "key" => "latency_ms", "value" => { "doubleValue" => 123.45 } }]
+      lines = normalize_and_parse(payload_with_span_attrs(attrs))
+      expect(lines[1]["metadata"]["latency_ms"]).to eq(123.45)
+    end
+
+    it "extracts boolValue: true" do
+      attrs = [{ "key" => "cached", "value" => { "boolValue" => true } }]
+      lines = normalize_and_parse(payload_with_span_attrs(attrs))
+      expect(lines[1]["metadata"]["cached"]).to eq(true)
+    end
+
+    it "extracts boolValue: false without losing the false value" do
+      attrs = [{ "key" => "cached", "value" => { "boolValue" => false } }]
+      lines = normalize_and_parse(payload_with_span_attrs(attrs))
+      expect(lines[1]["metadata"]["cached"]).to eq(false)
+    end
+
+    it "handles multiple attributes on one span" do
+      attrs = [
+        { "key" => "model",  "value" => { "stringValue" => "claude-3" } },
+        { "key" => "tokens", "value" => { "intValue" => 256 } }
+      ]
+      lines = normalize_and_parse(payload_with_span_attrs(attrs))
+      expect(lines[1]["metadata"]).to eq("model" => "claude-3", "tokens" => 256)
+    end
+  end
+
+  # ── Error handling ─────────────────────────────────────────────────────────
+
+  describe "error handling" do
+    it "raises OtlpNormalizer::Error on invalid JSON" do
+      expect { OtlpNormalizer.call("not json") }
+        .to raise_error(OtlpNormalizer::Error, /invalid JSON/)
+    end
+
+    it "raises OtlpNormalizer::Error when resourceSpans is missing" do
+      expect { OtlpNormalizer.call("{}") }
+        .to raise_error(OtlpNormalizer::Error, /no resourceSpans/)
+    end
+
+    it "raises OtlpNormalizer::Error when resourceSpans is empty" do
+      expect { OtlpNormalizer.call(JSON.generate("resourceSpans" => [])) }
+        .to raise_error(OtlpNormalizer::Error, /no resourceSpans/)
+    end
+
+    it "raises OtlpNormalizer::Error when spans array is empty" do
+      payload = otlp_payload(spans: [])
+      expect { OtlpNormalizer.call(payload) }
+        .to raise_error(OtlpNormalizer::Error, /no spans/)
+    end
+  end
+
+  # ── Output structure ───────────────────────────────────────────────────────
+
+  describe "output structure" do
+    it "returns valid NDJSON (one JSON object per line)" do
+      payload = otlp_payload(spans: [
+        otlp_span(name: "openclaw.request",    span_id: "aaaa0000aaaa0000", timestamp_ns: 1_000_000_000_000_000_000),
+        otlp_span(name: "openclaw.agent.turn", span_id: "bbbb0000bbbb0000",
+                  parent_span_id: "aaaa0000aaaa0000", timestamp_ns: 2_000_000_000_000_000_000)
+      ])
+      result = OtlpNormalizer.call(payload)
+      lines  = result.split("\n")
+      expect(lines.length).to eq(3) # 1 trace + 2 spans
+      expect { lines.each { |l| JSON.parse(l) } }.not_to raise_error
+    end
+
+    it "line 1 has trace fields" do
+      payload = otlp_payload(spans: [
+        otlp_span(name: "openclaw.request", span_id: "aaaa0000aaaa0000", timestamp_ns: 1_000_000_000_000_000_000)
+      ])
+      trace_line = normalize_and_parse(payload).first
+      expect(trace_line.keys).to include("trace_id", "agent_id", "task_name", "start_time", "status")
+    end
+
+    it "lines 2+ have span fields" do
+      payload = otlp_payload(spans: [
+        otlp_span(name: "openclaw.request", span_id: "aaaa0000aaaa0000", timestamp_ns: 1_000_000_000_000_000_000)
+      ])
+      span_line = normalize_and_parse(payload)[1]
+      expect(span_line.keys).to include("trace_id", "span_id", "span_type", "timestamp", "agent_id", "metadata")
+    end
+  end
+end
